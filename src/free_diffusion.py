@@ -18,7 +18,7 @@ def random_tree(n, yule=False):
         else:
             dt = np.random.exponential()/(len(tree)-1)/len(tree)*2
 
-        t += dt
+        t -= dt
         new_node = node(t, children=[tree[i], tree[j]], node_type="internal", name=node_count)
         tree.append(new_node)
         node_count += 1
@@ -34,7 +34,7 @@ def add_positions(tree, D):
     def add_positions_rec(node, D):
         if node["type"] == "internal":
             for child in node["children"]:
-                dt = node["time"] - child["time"]
+                dt = child["time"] - node["time"]
                 dx = np.random.randn()*np.sqrt(2*D*dt)
                 dy = np.random.randn()*np.sqrt(2*D*dt)
                 child['dt'] = dt
