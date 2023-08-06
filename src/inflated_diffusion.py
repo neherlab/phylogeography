@@ -31,7 +31,7 @@ if __name__=="__main__":
     parser.add_argument('--N', type=int, default=500)
     parser.add_argument('--D', type=float, default=0.1)
     parser.add_argument('--interaction-radius', type=float, default=0.1)
-    parser.add_argument('--density- reg', type=float, default=0.1)
+    parser.add_argument('--density-reg', type=float, default=0.1)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
