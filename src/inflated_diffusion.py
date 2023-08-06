@@ -26,25 +26,40 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=1, Ly=
     return {"density_variation": density_variation, "D_est": D_est}
 
 if __name__=="__main__":
-    N = 500
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--N', type=int, default=500)
+    parser.add_argument('--D', type=float, default=0.1)
+    parser.add_argument('--interaction-radius', type=float, default=0.1)
+    parser.add_argument('--density- reg', type=float, default=0.1)
+    parser.add_argument('--output', type=str)
+    args = parser.parse_args()
+
+    N = args.N
     Lx, Ly = 1, 1
     res_density = {}
     res_density_mean = {}
     D_est = []
-    D_array_dens = np.logspace(-2,0,6)*Lx*Ly*2/N
+    D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
     n_iter = 10
     linear_bins=5
-    iR, dR = [0.02, 0.05, 0.1, 0.5, 2], [0.05, 0.1, 0.2]
-    iR, dR = [0.02], [0.05]
-    for interaction_radius, density_reg in product(iR, dR):
-        print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
-        for D in D_array_dens:
-            res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
-            Dx, Dy = np.mean(res["D_est"], axis=0)
-            stdDx, stdDy = np.std(res["D_est"], axis=0)
-            D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
-                              "D":D, "meanD_x": Dx, "meanD_y": Dx, "stdDx": stdDx, "stdDy": stdDy, "density_variation": res['density_variation'].mean()})
+    interaction_radius, density_reg = args.interaction_radius, args.density_reg
+    print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
+    for D in D_array_dens:
+        res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
+        tmpD = np.mean(res["D_est"], axis=0)
+        tmpStdD = np.std(res["D_est"], axis=0)
+        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
+                            "D":D, "meanD": tmpD, "stdD": tmpStdD, "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd
-    pd.DataFrame(D_est).to_csv('data/inflated_diffusion_{N=}.csv')
+    if args.output:
+        fname = args.output
+    else:
+        import os
+        if not os.path.exists('data'):
+            os.makedirs('data')
+        f'data/inflated_diffusion_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
+
+    pd.DataFrame(D_est).to_csv(fname, index=False)
 
