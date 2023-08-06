@@ -59,7 +59,7 @@ if __name__=="__main__":
         import os
         if not os.path.exists('data'):
             os.makedirs('data')
-        f'data/inflated_diffusion_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
+        fname = f'data/inflated_diffusion_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
 
     pd.DataFrame(D_est).to_csv(fname, index=False)
 
