@@ -5,8 +5,8 @@ rule inflated_diffusion_one:
         "data/inflated_diffusion_N={N}_ir={interaction_radius}_dr={density_reg}.csv"
     shell:
         """
-        python3 src/inflated_diffusion.py --N {N} --interaction-radius {interaction_radius} \
-                                          --density-reg {density_reg} --output {output}
+        python3 src/inflated_diffusion.py --N {wildcards.N} --interaction-radius {wildcards.interaction_radius} \
+                                          --density-reg {wildcards.density_reg} --output {output}
         """
 
 
