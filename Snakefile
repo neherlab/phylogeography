@@ -10,12 +10,12 @@ rule inflated_diffusion_one:
         """
 
 
-N = [500]
-interaction_radius = [0.02, 0.05, 0.1, 0.2, 0.5]
-density_reg = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
+N_array = [500]
+interaction_radius_array = [0.02, 0.05, 0.1, 0.2, 0.5]
+density_reg_array = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
 rule inflated_diffusion_all:
     input:
-        expand("data/inflated_diffusion_N={N}_ir={interaction_radius}_dr={density_reg}.csv", N=N, interaction_radius=interaction_radius, density_reg=density_reg)
+        expand("data/inflated_diffusion_N={N}_ir={interaction_radius}_dr={density_reg}.csv", N=N_array, interaction_radius=interaction_radius_array, density_reg=density_reg_array)
     output:
         "data/inflated_diffusion.csv"
     run:
