@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from heterogeneity import get_granularity
+from itertools import product
 
 def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 10
@@ -22,29 +23,29 @@ if __name__=="__main__":
     data = pd.read_csv(args.data)
 
     linear_bins=5
-    Lx, Ly = 1
+    Lx, Ly = 1, 1
     nbins=linear_bins**2
 
-    density_variation = data.groupby(['interaction_radius', 'density_reg', 'D', 'N'])['density_variation'].mean()
-    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N'])['meanD'].mean()
-    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N'])['stdD'].mean()
+    density_variation = data.groupby(['interaction_radius', 'density_reg', 'D'])['density_variation'].mean()
+    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanD'].mean()
+    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdD'].mean()
     D_array = data.D.unique()
     interaction_radius = data.interaction_radius.unique()
     density_reg = data.density_reg.unique()
-    N_vals = data.N.unique()
+    N_vals = [500] #data.N.unique()
 
     area = np.minimum(1,D_array*np.pi**2)
 
+    ls = ['-', '-.', "--", ":", "-", "--"]
     plt.figure()
     for N in N_vals:
-        ls = ['-', '-.', "--"]
-        for i, ir, dr in enumerate(interaction_radius, density_reg):
-            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :, N],
+        for i, (ir, dr) in enumerate(product(interaction_radius, density_reg)):
+            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :],
                     label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
-        free_diffusion_heterogeneity = free_diffusion(D_array, N, linear_bins=linear_bins)
-        plt.plot(D_array, free_diffusion_heterogeneity, label='diffusion')
-        plt.plot(D_array, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit')
+        free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
+        plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion')
+        plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit')
     plt.xscale('log')
     plt.xlabel('diffusion constant')
     plt.ylabel('heterogeneity')
@@ -54,10 +55,9 @@ if __name__=="__main__":
 
     plt.figure()
     for N in N_vals:
-        ls = ['-', '-.', "--"]
-        for i, ir, dr in enumerate(interaction_radius, density_reg):
-            plt.errorbar(D_array*N, diffusion_mean[ir, dr, :, N]/D_array,
-                                    diffusion_mean[ir, dr, :, N]/D_array/np.sqrt(10),
+        for i, (ir, dr) in enumerate(product(interaction_radius, density_reg)):
+            plt.errorbar(D_array*N, diffusion_mean[ir, dr, :]/D_array,
+                                    diffusion_mean[ir, dr, :]/D_array/np.sqrt(10),
                  label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()

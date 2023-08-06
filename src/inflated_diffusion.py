@@ -41,7 +41,7 @@ if __name__=="__main__":
     res_density_mean = {}
     D_est = []
     D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
-    n_iter = 10
+    n_iter = 30
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
@@ -49,7 +49,7 @@ if __name__=="__main__":
         res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
-        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
+        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg, "N": N, "n": len(res["D_est"]),
                             "D":D, "meanD": tmpD, "stdD": tmpStdD, "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd
