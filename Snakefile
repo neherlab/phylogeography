@@ -25,3 +25,27 @@ rule inflated_diffusion_all:
         df = pd.concat([pd.read_csv(f) for f in input])
         df.to_csv(output[0], index=False)
 
+rule habitat_diffusion_one:
+    output:
+        "data/habitat_diffusion_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_T={T}_p={p}.csv"
+    shell:
+        """
+        python3 src/habitat_shifts.py --N {wildcards.N} --subsampling {wildcards.p} \
+                    --interaction-radius {wildcards.interaction_radius}
+                    --period {wildcards.T}\
+                    --density-reg {wildcards.density_reg} --output {output}
+        """
+
+T_array = [10,50,100,200]
+N_array = [500,1000]
+rule habitat_diffusion_all:
+    input:
+        expand("data/habitat_diffusion_subsampled_N={N}_ir=0.1_dr=0.2_T={T}_p={p}.csv",
+                N=N_array, T=T_array, p=[0.1, 0.5, 1.0])
+    output:
+        "data/habitat_diffusion.csv"
+    run:
+        import pandas as pd
+        df = pd.concat([pd.read_csv(f) for f in input])
+        df.to_csv(output[0], index=False)
+
