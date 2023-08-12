@@ -2,7 +2,7 @@ import numpy as np
 from heterogeneity import get_2d_hist
 
 def make_node(x,y,t,parent):
-    return {'children':[], 'x':x,'y':y, 'n_offspring':0, 'time':t, 'parent':parent}
+    return {'children':[], 'x':x,'y':y, 'n_offspring':0, 'time':t, 'parent':parent, 'alive':True}
 
 def calc_density(terminal_nodes, interaction_radius, Lx, Ly, bins_per_std = 5.0):
     '''

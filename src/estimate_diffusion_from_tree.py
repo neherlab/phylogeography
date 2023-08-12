@@ -1,8 +1,9 @@
 import numpy as np
 
 def branch_contribution(b, x0, y0, t, non_trivial_nodes):
-    while len(b['children'])==1:
-        b = b['children'][0]
+    while len([c for c in b['children'] if c['alive']])==1:
+        i = np.argmax([c['alive'] for c in b['children']])
+        b = b['children'][i]
     return {'dx': b['x']-x0, 'dy':b['y'] - y0, 'dt': b['time']-t, 'next_node':b}
 
 def estimate_diffusion_rec(node, displacements, non_trivial_nodes=False):

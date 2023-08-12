@@ -36,16 +36,16 @@ if __name__=="__main__":
 
     area = np.minimum(1,D_array*np.pi**2)
 
-    ls = ['-', '-.', "--", ":", "-", "--"]
+    ls = ['-', '-.', "--", ":"] #, "-", "--"]
     plt.figure()
     for N in N_vals:
-        for i, (ir, dr) in enumerate(product(interaction_radius, density_reg)):
+        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
             plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :],
                     label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
-        plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion')
-        plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit')
+        plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion', c='k')
+        plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit', c='k', ls='--')
     plt.xscale('log')
     plt.xlabel('diffusion constant')
     plt.ylabel('heterogeneity')
@@ -53,9 +53,10 @@ if __name__=="__main__":
     if args.output_heterogeneity:
         plt.savefig(args.output_heterogeneity)
 
+
     plt.figure()
     for N in N_vals:
-        for i, (ir, dr) in enumerate(product(interaction_radius, density_reg)):
+        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
             plt.errorbar(D_array*N, diffusion_mean[ir, dr, :]/D_array,
                                     diffusion_mean[ir, dr, :]/D_array/np.sqrt(10),
                  label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")

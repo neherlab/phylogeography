@@ -5,6 +5,27 @@ from heterogeneity import get_2d_hist, get_granularity
 from estimate_diffusion_from_tree import estimate_diffusion
 import matplotlib.pyplot as plt
 
+def set_alive_rec(node):
+    alive_children = 0
+    for child in node['children']:
+        next_node = child
+        while len(next_node['children'])==1:
+            next_node = next_node['children'][0]
+        if len(next_node['children'])>0:
+            set_alive_rec(next_node)
+
+        if next_node['alive']:
+            alive_children += 1
+    node['alive'] = alive_children>0
+
+def subsample_tree(terminal_nodes, tree, p=0.1):
+    alive = np.random.random(len(terminal_nodes))<p
+    for state, n in zip(alive, terminal_nodes):
+        n['alive'] = state
+
+    set_alive_rec(tree)
+
+
 def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=1, Ly=1, linear_bins=5, n_iter=10):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
@@ -20,12 +41,16 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=1, Ly=
         if t%(N//5)==0 and t>2*N: # take samples after burnin every 5 Tc
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
-            D_res = estimate_diffusion(tree)
-            D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
+            for sample in range(5):
+                subsample_tree(terminal_nodes, tree, p=0.1)
+                D_res = estimate_diffusion(tree)
+                D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
 
     return {"density_variation": density_variation, "D_est": D_est}
 
 if __name__=="__main__":
+    import sys
+    sys.setrecursionlimit(10000)
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--N', type=int, default=500)
