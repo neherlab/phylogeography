@@ -40,7 +40,7 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
     fitness = np.maximum(0.1,1 + density_reg*(1-dens_array/target_density_vals))
     #print(fitness.mean(), dens_array.mean(), target_density, len(terminals))
     if global_pop_reg: # add global density regulation (set average fitness to one, add density independent term)
-        fitness += (1 - fitness.mean()) + 0.1*(1-len(terminals)/(target_density_vals*Lx*Ly))
+        fitness += (1 - fitness.mean()) + 0.1*(1-len(terminals)/np.mean(target_density_vals*Lx*Ly))
 
     # determine offspring number and generate new population
     offspring = np.random.poisson(np.maximum(0.001,fitness))
@@ -53,6 +53,8 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
         new_terminals.extend(parent['children'])
 
     # prune branches that didn't yield any offspring.
+    if len(new_terminals)<10:
+        print("new nodes:", len(new_terminals))
     for n in terminals:
         if n['children']: continue
         x = n
