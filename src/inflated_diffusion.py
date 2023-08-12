@@ -26,7 +26,8 @@ def subsample_tree(terminal_nodes, tree, p=0.1):
     set_alive_rec(tree)
 
 
-def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=1, Ly=1, linear_bins=5, n_iter=10):
+def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=1.0,
+                                Lx=1, Ly=1, linear_bins=5, n_iter=10):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -42,7 +43,7 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=1, Ly=
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
             for sample in range(5):
-                subsample_tree(terminal_nodes, tree, p=0.1)
+                subsample_tree(terminal_nodes, tree, p=subsampling)
                 D_res = estimate_diffusion(tree)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
 
@@ -57,6 +58,7 @@ if __name__=="__main__":
     parser.add_argument('--D', type=float, default=0.1)
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
+    parser.add_argument('--subsampling', type=float, default=1.0)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
@@ -71,7 +73,8 @@ if __name__=="__main__":
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
     for D in D_array_dens:
-        res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
+        res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
+                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg, "N": N, "n": len(res["D_est"]),
