@@ -31,7 +31,7 @@ rule habitat_diffusion_one:
     shell:
         """
         python3 src/habitat_shifts.py --N {wildcards.N} --subsampling {wildcards.p} \
-                    --interaction-radius {wildcards.interaction_radius}
+                    --interaction-radius {wildcards.interaction_radius} \
                     --period {wildcards.T}\
                     --density-reg {wildcards.density_reg} --output {output}
         """

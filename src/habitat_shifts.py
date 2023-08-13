@@ -65,8 +65,9 @@ if __name__=="__main__":
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, period=args.period)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
-        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg, "N": N, "n": len(res["D_est"]),
-                            "D":D, "meanD": tmpD, "stdD": tmpStdD, "density_variation": np.mean(res['density_variation'])})
+        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
+                      "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling,
+                      "D":D, "meanD": tmpD, "stdD": tmpStdD, "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd
     if args.output:
