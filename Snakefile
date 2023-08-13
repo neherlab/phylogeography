@@ -36,8 +36,8 @@ rule habitat_diffusion_one:
                     --density-reg {wildcards.density_reg} --output {output}
         """
 
-T_array = [10,50,100,200]
-N_array = [500,1000]
+T_array = [10,50,100,200, 500]
+N_array = [500,1000, 2000]
 rule habitat_diffusion_all:
     input:
         expand("data/habitat_diffusion_subsampled_N={N}_ir=0.1_dr=0.2_T={T}_p={p}.csv",

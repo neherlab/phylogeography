@@ -6,7 +6,7 @@ from estimate_diffusion_from_tree import estimate_diffusion
 
 def generate_target_density(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
-        return N*(1+np.sin(2*np.pi*(x/wave_length/Lx + 0.5*t/period))*np.cos(2*np.pi*(y/wave_length/Ly + 0.25*t/period)))
+        return N*(1+np.sin(2*np.pi*(x/wave_length/Lx + t/period))*np.cos(2*np.pi*(y/wave_length/Ly + 0.5*t/period)))
     return f
 
 
@@ -34,6 +34,15 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
 
     return {"density_variation": density_variation, "D_est": D_est}
+
+def test_density(Lx, Ly, period, wave_length):
+    d = generate_target_density(1, Lx, Ly, period, wave_length)
+    import matplotlib.pyplot as plt
+    x_points = np.linspace(0,Lx,20)
+    y_points = np.linspace(0,Ly,20)
+    for i in np.linspace(0, 4*period, 9):
+        plt.matshow([[d(x,y,i) for x in x_points] for y in y_points])
+    plt.show()
 
 
 if __name__=="__main__":

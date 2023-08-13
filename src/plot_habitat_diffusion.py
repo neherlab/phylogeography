@@ -21,28 +21,29 @@ if __name__=="__main__":
     parser.add_argument('--output-heterogeneity', type=str)
     args = parser.parse_args()
     data = pd.read_csv(args.data)
-
     linear_bins=5
     Lx, Ly = 1, 1
     nbins=linear_bins**2
 
-    density_variation = data.groupby(['interaction_radius', 'density_reg', 'D'])['density_variation'].mean()
-    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanD'].mean()
-    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdD'].mean()
-    D_array = data.D.unique()
+    density_variation = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['density_variation'].mean()
+    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanD'].mean()
+    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdD'].mean()
     interaction_radius = data.interaction_radius.unique()
-    #period = data.period.unique()
+    period = data.period.unique()
+    subsampling = data.subsampling.unique()
     density_reg = data.density_reg.unique()
-    N_vals = [500] #data.N.unique()
+    N_vals = data.N.unique()
 
-    area = np.minimum(1,D_array*np.pi**2)
 
-    ls = ['-', '-.', "--", ":"] #, "-", "--"]
+    ls = ['-', '-.', "--"] #, ":"] #, "-", "--"]
     plt.figure()
     for N in N_vals:
-        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
-            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :],
-                    label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+        D_array = data.loc[data.N==N].D.unique()
+        area = np.minimum(1,D_array*np.pi**2)
+        for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
+                                                   period, subsampling)):
+            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :, N, T, p],
+                    label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
         plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion', c='k')
@@ -56,17 +57,20 @@ if __name__=="__main__":
 
 
     plt.figure()
-    for N in N_vals:
-        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
-            plt.errorbar(D_array*N, diffusion_mean[ir, dr, :]/D_array,
-                                    diffusion_mean[ir, dr, :]/D_array/np.sqrt(10),
-                 label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+    for m, N in zip(['o', 'd'], N_vals):
+        D_array = data.loc[data.N==N].D.unique()
+        print(D_array[0])
+        for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
+                                                   period, subsampling)):
+            plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
+                                    diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(10), marker=m,
+                    label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
+        plt.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
     plt.legend()
-    plt.plot(N*D_array, np.ones_like(D_array), c='k')
     plt.xlabel('true N*D')
     plt.xlabel('estimated N*D')
-    # plt.yscale('log')
+    plt.yscale('log')
     plt.xscale('log')
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
