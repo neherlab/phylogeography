@@ -42,8 +42,11 @@ if __name__=="__main__":
         area = np.minimum(1,D_array*np.pi**2)
         for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
                                                    period, subsampling)):
-            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :, N, T, p],
-                    label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+            try:
+                plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :, N, T, p],
+                        label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+            except:
+                pass
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
         plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion', c='k')
@@ -62,9 +65,12 @@ if __name__=="__main__":
         print(D_array[0])
         for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
                                                    period, subsampling)):
-            plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
+            try:
+                plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
                                     diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(10), marker=m,
                     label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+            except:
+                pass
 
         plt.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
     plt.legend()

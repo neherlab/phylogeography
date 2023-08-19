@@ -2,7 +2,7 @@ import numpy as np
 from itertools import product
 from density_regulation import make_node, evolve
 from heterogeneity import get_2d_hist, get_granularity
-from estimate_diffusion_from_tree import estimate_diffusion
+from estimate_diffusion_from_tree import estimate_diffusion, clean_tree
 import matplotlib.pyplot as plt
 
 def set_alive_rec(node):
@@ -44,6 +44,7 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
             density_variation.append(np.std(H)/N*np.prod(H.shape))
             for sample in range(5):
                 subsample_tree(terminal_nodes, tree, p=subsampling)
+                clean_tree(tree)
                 D_res = estimate_diffusion(tree)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
 

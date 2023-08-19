@@ -1,29 +1,41 @@
 import numpy as np
 
-def branch_contribution(b, x0, y0, t, non_trivial_nodes):
+def next_nontrivial_child(node):
+    b = node
     while len([c for c in b['children'] if c['alive']])==1:
         i = np.argmax([c['alive'] for c in b['children']])
         b = b['children'][i]
-    return {'dx': b['x']-x0, 'dy':b['y'] - y0, 'dt': b['time']-t, 'next_node':b}
+    return b
 
-def estimate_diffusion_rec(node, displacements, non_trivial_nodes=False):
-    for child in node['children']:
-        data = branch_contribution(child, node['x'], node['y'], node['time'], non_trivial_nodes)
+def clean_tree(tree):
+    def recursively_bridge(node):
+        node["clades"] = [next_nontrivial_child(c) for c in node['children'] if c['alive']]
+        for c in node['clades']:
+            recursively_bridge(c)
+
+    recursively_bridge(tree)
+
+
+def branch_contribution(b, x0, y0, t):
+    return {'dx': b['x']-x0, 'dy':b['y'] - y0, 'dt': b['time']-t}
+
+
+def estimate_diffusion_rec(node, displacements):
+    for child in node['clades']:
+        data = branch_contribution(child, node['x'], node['y'], node['time'])
         displacements.append(data)
-        estimate_diffusion_rec(data['next_node'], displacements, non_trivial_nodes)
+        estimate_diffusion_rec(child, displacements)
 
 # produce empirical estimates of the diffusion constant from the simulated tree annotated with
 # positions and time.
-def estimate_diffusion(tree, include_root=False, non_trivial_nodes=False):
+def estimate_diffusion(tree, include_root=False):
     displacements = []
 
     # handle root-parent-branch contribution separately
-    if len(tree['children'])==1:
+    if len(tree['clades'])==1 and include_root:
         #advance to first furcating node
-        data = branch_contribution(tree, tree['x'], tree['y'], tree['time'], non_trivial_nodes)
-        c = data['next_node']
-        if include_root: # otherwise ignore
-            displacements.append(data)
+        data = branch_contribution(tree, tree['x'], tree['y'], tree['time'])
+        displacements.append(data)
     else:
         c=tree
 

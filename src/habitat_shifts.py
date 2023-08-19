@@ -2,7 +2,7 @@ import numpy as np
 from density_regulation import make_node, evolve
 from heterogeneity import get_2d_hist
 from inflated_diffusion import subsample_tree
-from estimate_diffusion_from_tree import estimate_diffusion
+from estimate_diffusion_from_tree import estimate_diffusion, clean_tree
 
 def generate_target_density(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
@@ -30,6 +30,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
             density_variation.append(np.std(H)/N*np.prod(H.shape))
             for sample in range(5):
                 subsample_tree(terminal_nodes, tree, p=subsampling)
+                clean_tree(tree)
                 D_res = estimate_diffusion(tree)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
 
