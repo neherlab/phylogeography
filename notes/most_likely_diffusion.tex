@@ -1,0 +1,77 @@
+\documentclass[aps,rmp, onecolumn]{revtex4}
+%\documentclass[a4paper,10pt]{scrartcl}
+%\documentclass[aps,rmp,twocolumn]{revtex4}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,graphicx}
+\usepackage{color}
+%\usepackage{cite}
+
+\newcommand{\bq}{\begin{equation}}
+\newcommand{\eq}{\end{equation}}
+\newcommand{\bn}{\begin{eqnarray}}
+\newcommand{\en}{\end{eqnarray}}
+\newcommand{\Richard}[1]{{\color{red}Richard: #1}}
+\newcommand{\LH}{\mathcal{L}}
+
+\begin{document}
+\title{Inference of ancestral locations}
+\author{Richard Neher}
+\date{\today}
+\maketitle
+A common phylogeographic model is diffusion.
+Given the sampling locations $r_i$ of the tips $i$ of the tree, the ancestral locations $r_n$ of internal nodes of the tree have a likelihood function
+\begin{equation}
+    \log L = -\sum_{n\neq root} \frac{(r_n - r_p)^2}{4Dt_n}
+\end{equation}
+where $r_p$ is the location of the parent of $n$ and $t_n$ is the length of the branch leading to node $n$.
+The ancestral locations are not observed and to calculate the overall likelihood need to be integrated over.
+
+This can be done recursively, where the likelihood of a subtree $n$ given the position of node $r_n$ is given by
+\begin{equation}
+    \begin{split}
+        L_n(r_n) & = \prod_{c\in n}\frac{1}{4\pi D t_c}\int  d\, r_c e^{- \frac{(r_c - r_n)^2}{4Dt_c}}P(r_c) \\
+        & = \prod_{c\in n} \frac{\sqrt{d_c}}{\sqrt{\pi}}\int d\, r_c e^{- d_c r_n^2 + 2d_c r_n r_c - d_c r_c^2 - a_c r_c^2 + 2 b_c r_c - c_c} \\
+        & = \prod_{c\in n} \frac{\sqrt{d_c}}{\sqrt{\pi}}\int d\, r_c e^{- d_c r_n^2 + 2r_c(b_c + r_n d_c) - r_c^2 \left(d_c + a_c\right) - c_c} \\
+        & = \prod_{c\in n} \frac{\sqrt{d_c}}{\sqrt{\pi}}\int d\, r_c e^{- d_c r_n^2 - (d_c + a_c)(r_c^2 - 2r_c\frac{b_c + d_c r_n}{d_c + a_c} + \frac{(b_c + d_c r_n)^2}{(d_c + a_c)^2}) + \frac{(b_c + d_c r_n)^2}{d_c + a_c} - c_c} \\
+        & = \prod_{c\in n} \frac{\sqrt{d_c}}{\sqrt{\pi}}\int d\, r_c e^{- d_c r_n^2 + (d_c + a_c)(r_c - \frac{b_c + d_c r_n}{d_c + a_c})^2 + \frac{(b_c + d_c r_n)^2}{d_c + a_c} - c_c} \\
+        & = \frac{\sqrt{d_c}}{\sqrt{a_c + d_c}} e^{- d_c r_n^2 + (b_c^2 + 2r_n b_c d_c + d_c^2 r_n^2 )/\left(d_c + a_c\right) - c_c} \\
+        & = \frac{\sqrt{d_c}}{\sqrt{a_c + d_c}} e^{- d_c\left(1 - \frac{d_c}{a_c+d_c}\right) r_n^2 +  2\frac{b_c d_c}{d_c+a_c} r_n  - c_c + \frac{b_c^2}{d_c + a_c}} \\
+    \end{split}
+\end{equation}
+This allows calculation of the parameters $a_n$, $b_n$, and $c_n$ of node $n$ from the children that are not terminal nodes as.
+\begin{equation}
+    a_n = \sum_{c\in n}d_c \left(1-\frac{d_c}{a_c+d_c}\right) = \sum_{c\in n} \frac{d_c a_c}{a_c+d_c}
+\end{equation}
+\begin{equation}
+    b_n = \sum_{c\in n}\frac{b_c d_c}{a_c + d_c}
+\end{equation}
+\begin{equation}
+    c_n = \sum_{c\in n} c_c  + \frac{b_c^2}{d_c + a_c} + \frac{\log(d_c) - \log(a_c+d_c)}{2}
+\end{equation}
+If a child is a terminal node, the terms in the sum need to be replaced by
+\begin{equation}
+    a_n = \sum_{c\in n} d_c
+\end{equation}
+\begin{equation}
+    b_n = \sum_{c\in n} d_c r_c
+\end{equation}
+\begin{equation}
+    c_n = \sum_{c\in n} d_c r_c^2 - \log(2\pi/d_c)/2
+\end{equation}
+Note that for a single child, the variances add ($a_n^{-1} = a_c^{-1} + d_c^{-1}$) and the most likely positions don't change ($b_n/a_n = b_c/a_c$).
+
+The same propagation can be used up the tree
+\begin{equation}
+    a'_n  =  \frac{d_p a'_p}{a'_p+d_c} + \sum_{c\in p, c\neq n} \frac{d_c a_c}{a_c+d_c}
+\end{equation}
+\begin{equation}
+    b'_n = \frac{b'_p d_p}{a'_p + d_p} + \sum_{c\in p, c\neq n}\frac{b_c d_c}{a_c + d_c}
+\end{equation}
+\begin{equation}
+    c'_n = c'_p + + \frac{b'_p^2}{d_p + a'_p} + \frac{\log(d_p) - \log(a'_p+d_p)}{2} +  \sum_{c\in p, c\neq n} c_c  + \frac{b_c^2}{d_c + a_c} + \frac{\log(d_c) - \log(a_c+d_c)}{2}
+\end{equation}
+
+
+
+\end{document}
