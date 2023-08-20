@@ -72,14 +72,14 @@ def dict_to_phylo_tree(d):
 
     def clade_from_dict(d, parent=None):
         clade = Clade()
-        clade.name = 'root'
+        clade.name = f'{d["t"]:1.2f}_{d["x"]:1.2f}_{d["y"]:1.2f}'
         clade.branch_length = d['time'] - parent.t if parent else 0.001
         clade.t = d['time']
         clade.pos = [d['x'], d['y']]
         return clade
 
     def add_clades(clade, d):
-        for k in d['children']:
+        for k in d['clades']:
             new_clade = clade_from_dict(k, clade)
             clade.clades.append(new_clade)
             add_clades(new_clade, k)

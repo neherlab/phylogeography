@@ -57,7 +57,6 @@ def estimate_ancestral_positions(tree, D):
         node['dis_to_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}}
         for c in node['clades']:
             dc = 1.0/(4*D*(c['time']-node['time']))
-            print(dc)
             if 'clades' in c and len(c['clades']):
                 preorder(c)
                 for x in ['x', 'y']:
@@ -72,6 +71,9 @@ def estimate_ancestral_positions(tree, D):
                     node['dis_to_parent'][x]['a'] += dc
                     node['dis_to_parent'][x]['b'] += dc*c[x]
                     node['dis_to_parent'][x]['c'] += dc*c[x]**2 - 0.5*np.log(np.pi/dc)
+            for x in ['x', 'y']:
+                node['dis_to_parent'][x]['var'] = 2.0/node['dis_to_parent'][x]['a']
+                node['dis_to_parent'][x]['mean'] = 0.5*node['dis_to_parent'][x]['b']*node['dis_to_parent'][x]['var']
 
 
     preorder(tree)
@@ -90,7 +92,7 @@ def estimate_ancestral_positions(tree, D):
                 if 'clades' in c1 and len(c1['clades']):
                     c1_d = c1['dis_to_parent'][x]
                     c1['dis_from_parent'][x]['a'] = node['dis_to_parent'][x]['a'] - dc*c1_d['a']/(dc + c1_d['a'])
-                    c1['dis_from_parent'][x]['b'] = node['dis_to_parent'][x]['b'] - dc*c_d['b']/(dc + c1_d['c'])
+                    c1['dis_from_parent'][x]['b'] = node['dis_to_parent'][x]['b'] - dc*c1_d['b']/(dc + c1_d['a'])
                     c1['dis_from_parent'][x]['c'] = node['dis_to_parent'][x]['c'] - c1_d['c'] - c1_d['b']**2/(dc + c1_d['a']) - 0.5*np.log(dc/(dc + c1_d['a']))
                 else:
                     c1['dis_from_parent'][x]['a'] = node['dis_to_parent'][x]['a'] - dc
@@ -107,9 +109,9 @@ def estimate_ancestral_positions(tree, D):
 
     def marginal_positions(node):
         node['position'] = {}
+        dn = 1/(4*D*node['dis_from_parent']['dt'])
         for x in ['x', 'y']:
             d = node['dis_from_parent'][x]
-            dn = 1/(4*D*node['dis_from_parent']['dt'])
             if "clades" in node and len(node['clades']):
                 n = node['dis_to_parent'][x]
                 node['position'][x] = {'var': 2.0/(n['a'] + d['a']*dn/(d['a'] + dn))}
@@ -125,3 +127,20 @@ def estimate_ancestral_positions(tree, D):
             assign_positions(c)
 
     assign_positions(tree)
+
+
+def collect_positioning(tree):
+    res = []
+    def collect_positioning_rec(node, res):
+        nonterminal = 'clades' in node and len(node['clades'])>0
+        res.append({'time': node['time'], 'x': node['x'], 'x_mean': node['position']['x']['mean'], 'x_std': node['position']['x']['var']**0.5,
+                    'y': node['y'], 'y_mean': node['position']['y']['mean'], 'y_std': node['position']['y']['var']**0.5, 'nonterminal': nonterminal})
+        if nonterminal:
+            res[-1]['subtree_x_mean'] = node['dis_to_parent']['x']['mean']
+            res[-1]['subtree_x_std'] = node['dis_to_parent']['x']['var']**0.5
+            res[-1]['subtree_y_mean'] = node['dis_to_parent']['y']['mean']
+            res[-1]['subtree_y_std'] = node['dis_to_parent']['y']['var']**0.5
+            for c in node['clades']:
+                collect_positioning_rec(c, res)
+    collect_positioning_rec(tree, res)
+    return res
