@@ -63,15 +63,18 @@ Note that for a single child, the variances add ($a_n^{-1} = a_c^{-1} + d_c^{-1}
 
 The same propagation can be used up the tree
 \begin{equation}
-    a'_n  =  \frac{d_p a'_p}{a'_p+d_c} + \sum_{c\in p, c\neq n} \frac{d_c a_c}{a_c+d_c}
+    a'_n  =  \frac{d_n a'_p}{a'_p+d_n} + \sum_{c\in p, c\neq n} \frac{d_c a_c}{a_c+d_c}
 \end{equation}
 \begin{equation}
-    b'_n = \frac{b'_p d_p}{a'_p + d_p} + \sum_{c\in p, c\neq n}\frac{b_c d_c}{a_c + d_c}
+    b'_n = \frac{b'_p d_n}{a'_p + d_n} + \sum_{c\in p, c\neq n}\frac{b_c d_c}{a_c + d_c}
 \end{equation}
 \begin{equation}
-    c'_n = c'_p + + \frac{b'_p^2}{d_p + a'_p} + \frac{\log(d_p) - \log(a'_p+d_p)}{2} +  \sum_{c\in p, c\neq n} c_c  + \frac{b_c^2}{d_c + a_c} + \frac{\log(d_c) - \log(a_c+d_c)}{2}
+    c'_n = c'_p + + \frac{b'_p^2}{d_n + a'_p} + \frac{\log(d_p) - \log(a'_p+d_p)}{2} +  \sum_{c\in p, c\neq n} c_c  + \frac{b_c^2}{d_c + a_c} + \frac{\log(d_c) - \log(a_c+d_c)}{2}
 \end{equation}
 
-
+The distribution of positions at an internal node is then
+\begin{equation}
+    log P(x) = -a_n r_n^2 + 2 b_n r_n - a'_n d_n/(d_n + a'_n) r_n^2 + b'_n d_n/(d_n + a'_n) + C
+\end{equation}
 
 \end{document}

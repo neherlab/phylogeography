@@ -15,7 +15,6 @@ def clean_tree(tree):
 
     recursively_bridge(tree)
 
-
 def branch_contribution(b, x0, y0, t):
     return {'dx': b['x']-x0, 'dy':b['y'] - y0, 'dt': b['time']-t}
 
@@ -50,3 +49,79 @@ def estimate_diffusion(tree, include_root=False):
             'vx_total': 0.5*np.sum(np.abs([d['dx'] for d in displacements])/np.sum([d['dt'] for d in displacements])),
             'vy_total': 0.5*np.sum(np.abs([d['dy'] for d in displacements])/np.sum([d['dt'] for d in displacements]))
             }
+
+
+def estimate_ancestral_positions(tree, D):
+    def preorder(node):
+
+        node['dis_to_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}}
+        for c in node['clades']:
+            dc = 1.0/(4*D*(c['time']-node['time']))
+            print(dc)
+            if 'clades' in c and len(c['clades']):
+                preorder(c)
+                for x in ['x', 'y']:
+                    child_d = c['dis_to_parent'][x]
+                    node['dis_to_parent'][x]['a'] += dc*child_d['a']/(dc + child_d['a'])
+                    node['dis_to_parent'][x]['b'] += dc*child_d['b']/(dc + child_d['a'])
+                    node['dis_to_parent'][x]['c'] += child_d['c'] \
+                                        + child_d['b']**2/(dc + child_d['a']) \
+                                        + 0.5*np.log(dc/(dc + child_d['a']))
+            else:
+                for x in ['x', 'y']:
+                    node['dis_to_parent'][x]['a'] += dc
+                    node['dis_to_parent'][x]['b'] += dc*c[x]
+                    node['dis_to_parent'][x]['c'] += dc*c[x]**2 - 0.5*np.log(np.pi/dc)
+
+
+    preorder(tree)
+    tree['dis_from_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}, 'dt': np.inf}
+    tree['position'] = {}
+    for x in ['x', 'y']:
+        d = tree['dis_to_parent'][x]
+        tree['position'][x] = {'var': 2.0/d['a'], 'mean': d['b']/d['a']}
+
+    def postorder(node):
+        dn = 1.0/(4*D*node['dis_from_parent']['dt'])
+        for c1 in node['clades']:
+            c1['dis_from_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}, 'dt':c1['time']-node['time']}
+            dc = 1.0/(4*D*(c1['time']-node['time']))
+            for x in ['x', 'y']:
+                if 'clades' in c1 and len(c1['clades']):
+                    c1_d = c1['dis_to_parent'][x]
+                    c1['dis_from_parent'][x]['a'] = node['dis_to_parent'][x]['a'] - dc*c1_d['a']/(dc + c1_d['a'])
+                    c1['dis_from_parent'][x]['b'] = node['dis_to_parent'][x]['b'] - dc*c_d['b']/(dc + c1_d['c'])
+                    c1['dis_from_parent'][x]['c'] = node['dis_to_parent'][x]['c'] - c1_d['c'] - c1_d['b']**2/(dc + c1_d['a']) - 0.5*np.log(dc/(dc + c1_d['a']))
+                else:
+                    c1['dis_from_parent'][x]['a'] = node['dis_to_parent'][x]['a'] - dc
+                    c1['dis_from_parent'][x]['b'] = node['dis_to_parent'][x]['b'] - dc*c1[x]
+                    c1['dis_from_parent'][x]['c'] = node['dis_to_parent'][x]['c'] - dc*c1[x]**2 - 0.5*np.log(np.pi/dc)
+                if node!=tree:
+                    d = node['dis_from_parent'][x]
+                    c1['dis_from_parent'][x]['a'] += d['a']*dn/(dn + d['a'])
+                    c1['dis_from_parent'][x]['b'] += d['b']*dn/(dn + d['a'])
+                    c1['dis_from_parent'][x]['c'] += d['c'] + d['b']**2/(dn + d['a']) + 0.5*np.log(dn/(dn + d['a']))
+            postorder(c1)
+
+    postorder(tree)
+
+    def marginal_positions(node):
+        node['position'] = {}
+        for x in ['x', 'y']:
+            d = node['dis_from_parent'][x]
+            dn = 1/(4*D*node['dis_from_parent']['dt'])
+            if "clades" in node and len(node['clades']):
+                n = node['dis_to_parent'][x]
+                node['position'][x] = {'var': 2.0/(n['a'] + d['a']*dn/(d['a'] + dn))}
+                node['position'][x]['mean'] =  0.5*(n['b'] + d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
+            else:
+                node['position'][x] = {'var': 2.0/(d['a']*dn/(d['a'] + dn))}
+                node['position'][x]['mean'] =  0.5*(d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
+
+    def assign_positions(node):
+        if node!=tree:
+            marginal_positions(node)
+        for c in node['clades']:
+            assign_positions(c)
+
+    assign_positions(tree)

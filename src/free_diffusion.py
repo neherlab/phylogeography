@@ -5,7 +5,7 @@ def random_tree(n, yule=False):
     Generate a random tree either with kingman or yule branching properties
     '''
     def node(t, children=None, node_type="internal", name=None):
-        return {"time": t, "children": children or [], "type":node_type, "name":name}
+        return {"time": t, "children": children or [], "type":node_type, "name":name, "alive":True }
 
     t = 0
     tree = [node(t, node_type="terminal", name=i) for i in range(n)]

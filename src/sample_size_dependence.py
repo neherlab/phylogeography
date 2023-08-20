@@ -4,7 +4,7 @@ from estimate_diffusion_from_tree import *
 from itertools import product
 
 if __name__=="__main__":
-    replicates = 1000
+    replicates = 10
     results = {}
     fields = ['Dx_branch', 'Dy_branch', 'vx_branch', 'vy_branch', 'Dx_total', 'Dy_total', 'vx_total', 'vy_total']
     for n, yule in product([10,30, 100, 300, 1000], [True, False]):
@@ -12,6 +12,7 @@ if __name__=="__main__":
         for i in range(replicates):
             tree = random_tree(n, yule=yule)['tree']
             add_positions(tree, 1)
+            clean_tree(tree)
             D = estimate_diffusion(tree)
             res.append(D)
 
