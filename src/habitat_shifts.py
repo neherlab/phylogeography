@@ -39,7 +39,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 zscores.extend([np.mean(z.loc[z.nonterminal, 'zx']**2),
                                 np.mean(z.loc[z.nonterminal, 'zy']**2)])
 
-    return {"density_variation": density_variation, "D_est": D_est}
+    return {"density_variation": density_variation, "D_est": D_est, 'zscores':zscores}
 
 def test_density(Lx, Ly, period, wave_length):
     d = generate_target_density(1, Lx, Ly, period, wave_length)

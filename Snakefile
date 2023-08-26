@@ -40,8 +40,8 @@ T_array = [10,50,100,200, 500]
 N_array = [500,1000]
 rule habitat_diffusion_all:
     input:
-        expand("data/habitat_diffusion_subsampled_N={N}_ir=0.1_dr=0.2_T={T}_p={p}.csv",
-                N=N_array, T=T_array, p=[0.1, 0.5, 1.0])
+        expand("data/habitat_diffusion_subsampled_N={N}_ir={ir}_dr={dr}_T={T}_p={p}.csv",
+                N=N_array, T=T_array, p=[0.1, 0.5, 1.0], ir=[0.05, 0.1], dr=[0.1, 0.2])
     output:
         "data/habitat_diffusion.csv"
     run:
