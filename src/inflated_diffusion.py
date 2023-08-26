@@ -2,7 +2,7 @@ import numpy as np
 from itertools import product
 from density_regulation import make_node, evolve
 from heterogeneity import get_2d_hist, get_granularity
-from estimate_diffusion_from_tree import estimate_diffusion, clean_tree
+from estimate_diffusion_from_tree import estimate_diffusion, clean_tree, estimate_ancestral_positions, collect_zscore
 import matplotlib.pyplot as plt
 
 def set_alive_rec(node):
@@ -36,6 +36,7 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
 
     density_variation = []
     D_est = []
+    zscores = []
     for t in range((n_iter+2)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N)
@@ -46,9 +47,13 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
                 subsample_tree(terminal_nodes, tree, p=subsampling)
                 clean_tree(tree)
                 D_res = estimate_diffusion(tree)
+                estimate_ancestral_positions(tree, D)
+                z = collect_zscore(tree)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
+                zscores.extend([np.mean(z.loc[z.nonterminal, 'zx']**2),
+                                np.mean(z.loc[z.nonterminal, 'zy']**2)])
 
-    return {"density_variation": density_variation, "D_est": D_est}
+    return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores}
 
 if __name__=="__main__":
     import sys
@@ -78,9 +83,13 @@ if __name__=="__main__":
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
+        tmpZ = np.mean(res["zscores"], axis=0)
+        tmpStdZ = np.std(res["zscores"], axis=0)
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "subsampling": args.subsampling,
-                      "D":D, "meanD": tmpD, "stdD": tmpStdD, "density_variation": np.mean(res['density_variation'])})
+                      "D":D, "meanD": tmpD, "stdD": tmpStdD,
+                      "meanZsq": tmpZ, "stdZsq": tmpStdZ,
+                      "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd
     if args.output:

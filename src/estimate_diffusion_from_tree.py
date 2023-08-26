@@ -144,3 +144,17 @@ def collect_positioning(tree):
                 collect_positioning_rec(c, res)
     collect_positioning_rec(tree, res)
     return res
+
+def collect_zscore(tree):
+    import pandas as pd
+    res = []
+    def collect_zscore_rec(node):
+        nonterminal = 'clades' in node and len(node['clades'])>0
+        res.append({'zx': (node['x']-node['position']['x']['mean'])/node['position']['x']['var']**0.5,
+                    'zy': (node['y']-node['position']['y']['mean'])/node['position']['y']['var']**0.5,
+                    't': node['time'], 'nonterminal':nonterminal})
+        if nonterminal:
+            for c in node['clades']:
+                collect_zscore_rec(c)
+    collect_zscore_rec(tree)
+    return pd.DataFrame(res)
