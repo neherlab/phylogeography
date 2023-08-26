@@ -16,6 +16,12 @@ def set_alive_rec(node):
 
         if next_node['alive']:
             alive_children += 1
+
+        intermediate_node = child
+        while intermediate_node!=next_node:
+            intermediate_node['alive'] = next_node['alive']
+            intermediate_node = intermediate_node['children'][0]
+
     node['alive'] = alive_children>0
 
 def subsample_tree(terminal_nodes, tree, p=0.1):
