@@ -78,7 +78,8 @@ if __name__=="__main__":
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
-    for D in D_array_dens:
+    for di, D in enumerate(D_array_dens):
+        print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, period=args.period)
         tmpD = np.mean(res["D_est"], axis=0)

@@ -19,6 +19,7 @@ if __name__=="__main__":
     parser.add_argument('--data', type=str, default='data/habitat_diffusion.csv')
     parser.add_argument('--output-diffusion', type=str)
     parser.add_argument('--output-heterogeneity', type=str)
+    parser.add_argument('--output-zscore', type=str)
     args = parser.parse_args()
     data = pd.read_csv(args.data)
     linear_bins=5
@@ -28,6 +29,8 @@ if __name__=="__main__":
     density_variation = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['density_variation'].mean()
     diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanD'].mean()
     diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdD'].mean()
+    z_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanZsq'].mean()
+    z_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdZsq'].mean()
     interaction_radius = data.interaction_radius.unique()
     period = data.period.unique()
     subsampling = data.subsampling.unique()
@@ -35,7 +38,7 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
 
-    ls = ['-', '-.', "--"] #, ":"] #, "-", "--"]
+    ls = ['-', '-.', "--", ":", '-'] #, "-", "--"]
     plt.figure()
     for N in N_vals:
         D_array = data.loc[data.N==N].D.unique()
@@ -59,24 +62,41 @@ if __name__=="__main__":
         plt.savefig(args.output_heterogeneity)
 
 
-    plt.figure()
     for m, N in zip(['o', 'd'], N_vals):
-        D_array = data.loc[data.N==N].D.unique()
-        print(D_array[0])
-        for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
-                                                   period, subsampling)):
-            try:
-                plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
-                                    diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(10), marker=m,
-                    label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
-            except:
-                pass
+        for T in period:
+            plt.figure()
+            D_array = data.loc[data.N==N].D.unique()
+            print(D_array[0])
+            for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,
+                                                    subsampling)):
+                try:
+                    plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
+                                        diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(10), marker=m,
+                        label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                except:
+                    pass
 
-        plt.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
-    plt.legend()
-    plt.xlabel('true N*D')
-    plt.xlabel('estimated N*D')
-    plt.yscale('log')
-    plt.xscale('log')
+            plt.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
+            plt.legend()
+            plt.xlabel('true N*D')
+            plt.xlabel('estimated N*D')
+            plt.yscale('log')
+            plt.xscale('log')
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
+
+    plt.figure()
+    for N in N_vals:
+        for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg, period, subsampling)):
+            plt.errorbar(D_array*N, z_mean[ir, dr, :, N, T, p],
+                                    z_std[ir, dr, :, N, T, p],
+                 label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+
+    plt.legend()
+    plt.plot(N*D_array, np.ones_like(D_array), c='k')
+    plt.xlabel('true N*D')
+    plt.xlabel('z_sq')
+    # plt.yscale('log')
+    plt.xscale('log')
+    if args.output_zscore:
+        plt.savefig(args.output_zscore)
