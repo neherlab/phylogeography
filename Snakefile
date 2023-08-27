@@ -17,9 +17,9 @@ density_reg_array = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
 rule inflated_diffusion_all:
     input:
         expand("data/inflated_diffusion_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_p={p}.csv",
-                N=N_array, interaction_radius=interaction_radius_array, density_reg=density_reg_array, p=0.1)
+                N=N_array, interaction_radius=interaction_radius_array, density_reg=density_reg_array, p=[0.1, 0.5, 1.0])
     output:
-        "data/inflated_diffusion_p=0.1.csv"
+        "data/inflated_diffusion.csv"
     run:
         import pandas as pd
         df = pd.concat([pd.read_csv(f) for f in input])
