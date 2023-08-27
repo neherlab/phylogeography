@@ -4,8 +4,8 @@ def random_tree(n, yule=False):
     '''
     Generate a random tree either with kingman or yule branching properties
     '''
-    def node(t, children=None, node_type="internal", name=None):
-        return {"time": t, "children": children or [], "type":node_type, "name":name, "alive":True }
+    def node(t, clades=None, node_type="internal", name=None):
+        return {"time": t, "clades": clades or [], "type":node_type, "name":name, "alive":True }
 
     t = 0
     tree = [node(t, node_type="terminal", name=i) for i in range(n)]
@@ -19,7 +19,7 @@ def random_tree(n, yule=False):
             dt = np.random.exponential()/(len(tree)-1)/len(tree)*2
 
         t -= dt
-        new_node = node(t, children=[tree[i], tree[j]], node_type="internal", name=node_count)
+        new_node = node(t, clades=[tree[i], tree[j]], node_type="internal", name=node_count)
         tree.append(new_node)
         node_count += 1
         tree.pop(max(i,j))
@@ -33,7 +33,7 @@ def add_positions(tree, D):
     '''
     def add_positions_rec(node, D):
         if node["type"] == "internal":
-            for child in node["children"]:
+            for child in node["clades"]:
                 dt = child["time"] - node["time"]
                 dx = np.random.randn()*np.sqrt(2*D*dt)
                 dy = np.random.randn()*np.sqrt(2*D*dt)

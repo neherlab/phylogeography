@@ -1,39 +1,11 @@
 import numpy as np
-from itertools import product
-from density_regulation import make_node, evolve
-from heterogeneity import get_2d_hist, get_granularity
-from estimate_diffusion_from_tree import estimate_diffusion, clean_tree, estimate_ancestral_positions, collect_zscore
-import matplotlib.pyplot as plt
-
-def set_alive_rec(node):
-    alive_children = 0
-    for child in node['children']:
-        next_node = child
-        while len(next_node['children'])==1:
-            next_node = next_node['children'][0]
-        if len(next_node['children'])>0:
-            set_alive_rec(next_node)
-
-        if next_node['alive']:
-            alive_children += 1
-
-        intermediate_node = child
-        while intermediate_node!=next_node:
-            intermediate_node['alive'] = next_node['alive']
-            intermediate_node = intermediate_node['children'][0]
-
-    node['alive'] = alive_children>0
-
-def subsample_tree(terminal_nodes, tree, p=0.1):
-    alive = np.random.random(len(terminal_nodes))<p
-    for state, n in zip(alive, terminal_nodes):
-        n['alive'] = state
-
-    set_alive_rec(tree)
+from density_regulation import make_node, evolve, clean_tree, subsample_tree
+from heterogeneity import get_2d_hist
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
 
 
 def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=1.0,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10):
+                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -46,12 +18,15 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
     for t in range((n_iter+2)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N)
+        if len(terminal_nodes)<10:
+            print("population nearly extinct")
+            continue
         if t%(N//5)==0 and t>2*N: # take samples after burnin every 5 Tc
+            clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
-            for sample in range(5):
-                subsample_tree(terminal_nodes, tree, p=subsampling)
-                clean_tree(tree)
+            for sample in range(n_subsamples):
+                subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
                 z = collect_zscore(tree)
@@ -83,18 +58,21 @@ if __name__=="__main__":
     n_iter = 30
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
+    nsub = 1 if args.subsampling>0.9 else 5
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
-    for D in D_array_dens:
+    for di, D in enumerate(D_array_dens):
+        print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
-                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter)
+                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, n_subsamples=nsub)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
         tmpZ = np.mean(res["zscores"], axis=0)
         tmpStdZ = np.std(res["zscores"], axis=0)
+        nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "subsampling": args.subsampling,
                       "D":D, "meanD": tmpD, "stdD": tmpStdD,
-                      "meanZsq": tmpZ, "stdZsq": tmpStdZ,
+                      "meanZsq": tmpZ, "stdZsq": tmpStdZ, "observations": nobs,
                       "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd

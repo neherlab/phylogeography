@@ -52,21 +52,73 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
             parent['children'].append(make_node(parent['x']+dx, parent['y']+dy, t, parent))
         new_terminals.extend(parent['children'])
 
-    # prune branches that didn't yield any offspring.
     if len(new_terminals)<10:
         print("new nodes:", len(new_terminals))
+    # prune branches that didn't yield any offspring. Loop over parent generation "terminals"
     for n in terminals:
         if n['children']: continue
+        # walk up the dead branch until a node with offspring is found
         x = n
-        while len(x['children'])==0:
+        while len(x['children'])==0 and x['parent']:
             x['parent']['children'] = [c for c in x['parent']['children'] if c!=x]
             x = x['parent']
 
+    # bridge branches that only have a single child. Loop over parent generation "terminals"
+    for n in terminals:
+        if len(n['children'])!=1: continue
+        tip = n['children'][0]
+        x = n
+        while len(x['children'])==1 and x['parent']:
+            x['parent']['children'] = [c for c in x['parent']['children'] if c!=x] + [x['children'][0]]
+            x = x['parent']
+            tip['parent'] = x
+
     return new_terminals
 
-def dict_to_phylo_tree(d):
+def set_sampled_rec(node, subtree_attr):
+    sampled_children = 0
+    node[subtree_attr] = []
+    if len(node['children']):
+        for child in node['children']:
+            set_sampled_rec(child, subtree_attr)
+            if child['sampled']:
+                sampled_children += 1
+                node[subtree_attr].append(child)
+
+        node['sampled'] = sampled_children>0
+
+def make_subtree_rec(node, subtree_attr='clades'):
+    node[subtree_attr] = [next_nontrivial_child(c, subtree_attr=subtree_attr) for c in node[subtree_attr]]
+    for child in node[subtree_attr]:
+        make_subtree_rec(child, subtree_attr=subtree_attr)
+
+def subsample_tree(terminal_nodes, tree, p=0.1, subtree_attr='clades'):
+    sampled = np.random.random(len(terminal_nodes))<p
+    for state, n in zip(sampled, terminal_nodes):
+        n['sampled'] = state
+
+    set_sampled_rec(tree, subtree_attr=subtree_attr)
+    make_subtree_rec(tree, subtree_attr=subtree_attr)
+
+def next_nontrivial_child(node, subtree_attr='children'):
+    b = node
+    while len(b[subtree_attr])==1:
+        b = b[subtree_attr][0]
+    return b
+
+def clean_tree(tree):
+    def recursively_bridge(node):
+        node["children"] = [next_nontrivial_child(c) for c in node['children']]
+        for c in node['children']:
+            c['parent'] = node
+            recursively_bridge(c)
+
+    recursively_bridge(tree)
+
+
+def dict_to_phylo_tree(d, child_attr='children'):
     '''
-    Convert custom tree to a Biopython tree. Very slow due to many trivial nodes.
+    Convert custom tree to a Biopython tree.
     '''
     from Bio.Phylo.BaseTree import Clade, Tree
 
@@ -79,7 +131,7 @@ def dict_to_phylo_tree(d):
         return clade
 
     def add_clades(clade, d):
-        for k in d['clades']:
+        for k in d[child_attr]:
             new_clade = clade_from_dict(k, clade)
             clade.clades.append(new_clade)
             add_clades(new_clade, k)
@@ -92,7 +144,10 @@ def dict_to_phylo_tree(d):
 
 
 if __name__=="__main__":
-    N = 2000
+    import matplotlib.pyplot as plt
+    plt.ion()
+
+    N = 200
     L = 1
     D = 0.1*L**2/N
     tree = make_node(L/2,L/2,-2, None)
@@ -106,12 +161,17 @@ if __name__=="__main__":
         terminal_nodes = evolve(terminal_nodes, t, Lx=3*L, Ly=L, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N/3, global_pop_reg=False)
         if t%(N/5)==0: print(t, len(terminal_nodes))
+    clean_tree(tree)
     T = dict_to_phylo_tree(tree)
     from Bio import Phylo
     Phylo.draw(T)
 
+    subsample_tree(terminal_nodes, tree, p=0.1, subtree_attr='clades')
+    T1 = dict_to_phylo_tree(tree, child_attr='clades')
+    from Bio import Phylo
+    Phylo.draw(T1)
+
     from heterogeneity import get_2d_hist
-    import matplotlib.pyplot as plt
     H, bx, by = get_2d_hist(terminal_nodes, 3*L, L, 20)
     plt.figure()
     plt.matshow(H)

@@ -19,6 +19,7 @@ if __name__=="__main__":
     parser.add_argument('--data', type=str, default='data/inflated_diffusion.csv')
     parser.add_argument('--output-diffusion', type=str)
     parser.add_argument('--output-heterogeneity', type=str)
+    parser.add_argument('--output-zscore', type=str)
     args = parser.parse_args()
     data = pd.read_csv(args.data)
 
@@ -29,6 +30,8 @@ if __name__=="__main__":
     density_variation = data.groupby(['interaction_radius', 'density_reg', 'D'])['density_variation'].mean()
     diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanD'].mean()
     diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdD'].mean()
+    z_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanZsq'].mean()
+    z_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdZsq'].mean()
     D_array = data.D.unique()
     interaction_radius = data.interaction_radius.unique()
     density_reg = data.density_reg.unique()
@@ -65,6 +68,22 @@ if __name__=="__main__":
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
     plt.xlabel('true N*D')
     plt.xlabel('estimated N*D')
+    # plt.yscale('log')
+    plt.xscale('log')
+    if args.output_diffusion:
+        plt.savefig(args.output_diffusion)
+
+    plt.figure()
+    for N in N_vals:
+        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
+            plt.errorbar(D_array*N, z_mean[ir, dr, :],
+                                    z_mean[ir, dr, :],
+                 label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+
+    plt.legend()
+    plt.plot(N*D_array, np.ones_like(D_array), c='k')
+    plt.xlabel('true N*D')
+    plt.xlabel('z_sq')
     # plt.yscale('log')
     plt.xscale('log')
     if args.output_diffusion:

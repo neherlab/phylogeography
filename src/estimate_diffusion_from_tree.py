@@ -1,23 +1,7 @@
 import numpy as np
 
-def next_nontrivial_child(node):
-    b = node
-    while len([c for c in b['children'] if c['alive']])==1:
-        i = np.argmax([c['alive'] for c in b['children']])
-        b = b['children'][i]
-    return b
-
-def clean_tree(tree):
-    def recursively_bridge(node):
-        node["clades"] = [next_nontrivial_child(c) for c in node['children'] if c['alive']]
-        for c in node['clades']:
-            recursively_bridge(c)
-
-    recursively_bridge(tree)
-
 def branch_contribution(b, x0, y0, t):
     return {'dx': b['x']-x0, 'dy':b['y'] - y0, 'dt': b['time']-t}
-
 
 def estimate_diffusion_rec(node, displacements):
     for child in node['clades']:
@@ -117,6 +101,8 @@ def estimate_ancestral_positions(tree, D):
                 node['position'][x] = {'var': 2.0/(n['a'] + d['a']*dn/(d['a'] + dn))}
                 node['position'][x]['mean'] =  0.5*(n['b'] + d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
             else:
+                if (d['a']*dn/(d['a'] + dn))==0:
+                    import ipdb; ipdb.set_trace()
                 node['position'][x] = {'var': 2.0/(d['a']*dn/(d['a'] + dn))}
                 node['position'][x]['mean'] =  0.5*(d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
 

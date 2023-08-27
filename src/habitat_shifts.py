@@ -1,8 +1,8 @@
 import numpy as np
-from density_regulation import make_node, evolve
+from density_regulation import make_node, evolve, clean_tree, subsample_tree
 from heterogeneity import get_2d_hist
 from inflated_diffusion import subsample_tree
-from estimate_diffusion_from_tree import estimate_diffusion, clean_tree, estimate_ancestral_positions, collect_zscore
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
 
 def generate_target_density(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
@@ -11,7 +11,7 @@ def generate_target_density(N, Lx, Ly, period, wave_length):
 
 
 def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10, period=100, wave_length=1.0):
+                                Lx=1, Ly=1, linear_bins=5, n_iter=10, period=100, wave_length=1.0, n_subsamples=1):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -26,12 +26,15 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
         target_density = generate_target_density(N, Lx, Ly, period=period, wave_length=wave_length)
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density)
+        if len(terminal_nodes)<10:
+            print("population nearly extinct")
+            continue
         if t%(N//5)==0 and t>2*N: # take samples after burnin every 5 Tc
+            clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
-            for sample in range(5):
-                subsample_tree(terminal_nodes, tree, p=subsampling)
-                clean_tree(tree)
+            for sample in range(n_subsamples):
+                subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
                 z = collect_zscore(tree)
@@ -82,10 +85,11 @@ if __name__=="__main__":
         tmpStdD = np.std(res["D_est"], axis=0)
         tmpZ = np.mean(res["zscores"], axis=0)
         tmpStdZ = np.std(res["zscores"], axis=0)
+        nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling,
                       "D":D, "meanD": tmpD, "stdD": tmpStdD,
-                      "meanZsq": tmpZ, "stdZsq": tmpStdZ,
+                      "meanZsq": tmpZ, "stdZsq": tmpStdZ, 'observations': nobs,
                       "density_variation": np.mean(res['density_variation'])})
 
     import pandas as pd

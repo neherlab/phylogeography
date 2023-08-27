@@ -12,7 +12,6 @@ if __name__=="__main__":
         for i in range(replicates):
             tree = random_tree(n, yule=yule)['tree']
             add_positions(tree, 1)
-            clean_tree(tree)
             D = estimate_diffusion(tree)
             res.append(D)
 
