@@ -59,7 +59,7 @@ if __name__=="__main__":
     res_density = {}
     res_density_mean = {}
     D_est = []
-    D_array_dens = np.logspace(-1,0,1)*Lx*Ly*2/N
+    D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
     n_iter = 30
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
