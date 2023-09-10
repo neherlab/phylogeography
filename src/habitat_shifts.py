@@ -21,15 +21,16 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
     density_variation = []
     D_est = []
     zscores = []
+    Tmrca = []
 
-    for t in range((n_iter+2)*N):
+    for t in range((n_iter+5)*N):
         target_density = generate_target_density(N, Lx, Ly, period=period, wave_length=wave_length)
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
-        if t%(N//5)==0 and t>2*N: # take samples after burnin every 5 Tc
+        if t%(N//5)==0 and t>5*N: # take samples after burnin every Tc//5
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -38,11 +39,15 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
                 z = collect_zscore(tree)
+                if len(tree['clades'])==1:
+                    Tmrca.append(t-tree['clades'][0]['time'])
+                else:
+                    Tmrca.append(t)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
                 zscores.extend([np.mean(z.loc[z.nonterminal, 'zx']**2),
                                 np.mean(z.loc[z.nonterminal, 'zy']**2)])
 
-    return {"density_variation": density_variation, "D_est": D_est, 'zscores':zscores}
+    return {"density_variation": density_variation, "D_est": D_est, 'zscores':zscores, "Tmrca":Tmrca}
 
 def test_density(Lx, Ly, period, wave_length):
     d = generate_target_density(1, Lx, Ly, period, wave_length)
@@ -91,7 +96,8 @@ if __name__=="__main__":
                       "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling,
                       "D":D, "meanD": tmpD, "stdD": tmpStdD,
                       "meanZsq": tmpZ, "stdZsq": tmpStdZ, 'observations': nobs,
-                      "density_variation": np.mean(res['density_variation'])})
+                      "density_variation": np.mean(res['density_variation']),
+                      "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
 
     import pandas as pd
     if args.output:
