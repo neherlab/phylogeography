@@ -98,13 +98,13 @@ def estimate_ancestral_positions(tree, D):
             d = node['dis_from_parent'][x]
             if "clades" in node and len(node['clades']):
                 n = node['dis_to_parent'][x]
-                node['position'][x] = {'var': 2.0/(n['a'] + d['a']*dn/(d['a'] + dn))}
-                node['position'][x]['mean'] =  0.5*(n['b'] + d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
+                node['position'][x] = {'var': 0.5/(n['a'] + d['a']*dn/(d['a'] + dn))}
+                node['position'][x]['mean'] =  2.0*(n['b'] + d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
             else:
                 if (d['a']*dn/(d['a'] + dn))==0:
                     import ipdb; ipdb.set_trace()
-                node['position'][x] = {'var': 2.0/(d['a']*dn/(d['a'] + dn))}
-                node['position'][x]['mean'] =  0.5*(d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
+                node['position'][x] = {'var': 0.5/(d['a']*dn/(d['a'] + dn))}
+                node['position'][x]['mean'] =  2.0*(d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
 
     def assign_positions(node):
         if node!=tree:

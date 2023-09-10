@@ -127,7 +127,9 @@ def dict_to_phylo_tree(d, child_attr='children'):
         clade.name = f'{d["time"]:1.2f}_{d["x"]:1.2f}_{d["y"]:1.2f}'
         clade.branch_length = d['time'] - parent.t if parent else 0.001
         clade.t = d['time']
-        clade.pos = [d['x'], d['y']]
+        clade.pos = {'x': d['x'], 'y': d['y']}
+        if 'position' in d:
+            clade.inferred_pos = d['position']
         return clade
 
     def add_clades(clade, d):
@@ -142,6 +144,20 @@ def dict_to_phylo_tree(d, child_attr='children'):
 
     return tree
 
+def add_as_color(tree, quantity = 'x', cmap = None):
+    if cmap is None:
+        from matplotlib.cm import RdBu
+        cmap = RdBu
+
+    def value(n):
+        if quantity=='x':
+            return n.pos['x']
+        elif quantity == 'devx':
+            return 0.5 + 0.2*(n.pos['x']-n.inferred_pos['x']['mean'])/n.inferred_pos['x']['var']**0.5
+
+
+    for n in tree.find_clades():
+        n.color = [int(255*x) for x in  cmap(value(n))[:3]]
 
 if __name__=="__main__":
     import matplotlib.pyplot as plt

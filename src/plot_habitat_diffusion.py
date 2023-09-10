@@ -8,7 +8,7 @@ def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 10
     res = []
     for D in D_array:
-        res.append([get_granularity(N, D, bins=linear_bins) for i in range(n_iter)])
+        res.append([get_granularity(N, D, bins=linear_bins)[0] for i in range(n_iter)])
 
     res = np.array(res)
     return res.mean(axis=1)
@@ -38,7 +38,7 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
 
-    ls = ['-', '-.', "--", ":", '-'] #, "-", "--"]
+    ls = ['-', '-.', "--"] #, ":", '-'] #, "-", "--"]
     plt.figure()
     for N in N_vals:
         D_array = data.loc[data.N==N].D.unique()
@@ -62,26 +62,26 @@ if __name__=="__main__":
         plt.savefig(args.output_heterogeneity)
 
 
-    for m, N in zip(['o', 'd'], N_vals):
-        for T in period:
-            plt.figure()
+    plt.figure()
+    for T in period:
+        for m, N in zip(['o', 'd'], N_vals):
             D_array = data.loc[data.N==N].D.unique()
             print(D_array[0])
             for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,
-                                                    subsampling)):
+                                                    [1])):
                 try:
-                    plt.errorbar(D_array*N/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
+                    plt.errorbar(D_array*T/Lx/Ly, diffusion_mean[ir, dr, :, N, T, p]/D_array,
                                         diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(10), marker=m,
                         label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
                 except:
                     pass
 
-            plt.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
-            plt.legend()
-            plt.xlabel('true N*D')
-            plt.xlabel('estimated N*D')
-            plt.yscale('log')
-            plt.xscale('log')
+        #plt.plot(D_array/Lx/Ly, np.ones_like(D_array), c='k')
+        plt.xlabel('true N*D')
+        plt.xlabel('estimated N*D')
+        plt.yscale('log')
+        plt.xscale('log')
+#        plt.legend()
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
 

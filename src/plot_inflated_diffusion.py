@@ -8,7 +8,7 @@ def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 10
     res = []
     for D in D_array:
-        res.append([get_granularity(N, D, bins=linear_bins) for i in range(n_iter)])
+        res.append([get_granularity(N, D, bins=linear_bins)[0] for i in range(n_iter)])
 
     res = np.array(res)
     return res.mean(axis=1)

@@ -76,5 +76,18 @@ The distribution of positions at an internal node is then
 \begin{equation}
     log P(x) = -a_n r_n^2 + 2 b_n r_n - a'_n d_n/(d_n + a'_n) r_n^2 + b'_n d_n/(d_n + a'_n) + C
 \end{equation}
+This can be rearranged into a standard Gaussian form
+\begin{equation}
+    log P(x) = -(a_n + a'_n d_n/(d_n + a'_n)) (r_n - (b_n + b'_n d_n/(d_n + a'_n))/(a_n + a'_n d_n/(d_n + a'_n)))^2 + C
+\end{equation}
+such that the mean is
+\begin{equation}
+    x_n = b_n/a_n + b'_n d_n/(d_n + a'_n)
+\end{equation}
+and the variance ($() = 1/2\sigma^2$)
+\begin{equation}
+    \sigma^2_n = \frac{1}{2(a_n + a'_n d_n/(d_n + a'_n))} = \frac{(d_n + a'_n)}{2(a_n(d_n + a'_n) + a'_n d_n)}
+\end{equation}
+
 
 \end{document}

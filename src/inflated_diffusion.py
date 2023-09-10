@@ -15,13 +15,14 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
     density_variation = []
     D_est = []
     zscores = []
-    for t in range((n_iter+2)*N):
+    Tmrca = []
+    for t in range((n_iter+5)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
-        if t%(N//5)==0 and t>2*N: # take samples after burnin every 5 Tc
+        if t%(N//5)==0 and t>5*N: # take samples after burnin every Tc//5
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -30,11 +31,15 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
                 z = collect_zscore(tree)
+                if len(tree['clades'])==1:
+                    Tmrca.append(t-tree['clades'][0]['time'])
+                else:
+                    Tmrca.append(t)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
                 zscores.extend([np.mean(z.loc[z.nonterminal, 'zx']**2),
                                 np.mean(z.loc[z.nonterminal, 'zy']**2)])
 
-    return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores}
+    return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores, "Tmrca":Tmrca}
 
 if __name__=="__main__":
     import sys
@@ -54,8 +59,8 @@ if __name__=="__main__":
     res_density = {}
     res_density_mean = {}
     D_est = []
-    D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
-    n_iter = 30
+    D_array_dens = np.logspace(-1,0,1)*Lx*Ly*2/N
+    n_iter = 1
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     nsub = 1 if args.subsampling>0.9 else 5
@@ -73,7 +78,8 @@ if __name__=="__main__":
                       "N": N, "n": len(res["D_est"]), "subsampling": args.subsampling,
                       "D":D, "meanD": tmpD, "stdD": tmpStdD,
                       "meanZsq": tmpZ, "stdZsq": tmpStdZ, "observations": nobs,
-                      "density_variation": np.mean(res['density_variation'])})
+                      "density_variation": np.mean(res['density_variation']),
+                      "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
 
     import pandas as pd
     if args.output:
