@@ -20,6 +20,7 @@ if __name__=="__main__":
     parser.add_argument('--output-diffusion', type=str)
     parser.add_argument('--output-heterogeneity', type=str)
     parser.add_argument('--output-zscore', type=str)
+    parser.add_argument('--output-tmrca', type=str)
     args = parser.parse_args()
     data = pd.read_csv(args.data)
 
@@ -30,13 +31,15 @@ if __name__=="__main__":
     density_variation = data.groupby(['interaction_radius', 'density_reg', 'D'])['density_variation'].mean()
     diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanD'].mean()
     diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdD'].mean()
+    tmrca_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanTmrca'].mean()
+    tmrca_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdTmrca'].mean()
     z_mean = data.groupby(['interaction_radius', 'density_reg', 'D'])['meanZsq'].mean()
     z_std = data.groupby(['interaction_radius', 'density_reg', 'D'])['stdZsq'].mean()
     D_array = data.D.unique()
     interaction_radius = data.interaction_radius.unique()
     density_reg = data.density_reg.unique()
     N_vals = [500] #data.N.unique()
-
+    nobs = 10
     area = np.minimum(1,D_array*np.pi**2)
 
     ls = ['-', '-.', "--", ":"] #, "-", "--"]
@@ -61,7 +64,7 @@ if __name__=="__main__":
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
             plt.errorbar(D_array*N, diffusion_mean[ir, dr, :]/D_array,
-                                    diffusion_mean[ir, dr, :]/D_array/np.sqrt(10),
+                                    diffusion_std[ir, dr, :]/D_array/np.sqrt(nobs),
                  label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
@@ -77,7 +80,7 @@ if __name__=="__main__":
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
             plt.errorbar(D_array*N, z_mean[ir, dr, :],
-                                    z_mean[ir, dr, :],
+                                    z_std[ir, dr, :],
                  label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
@@ -88,3 +91,19 @@ if __name__=="__main__":
     plt.xscale('log')
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
+
+    plt.figure()
+    for N in N_vals:
+        for i, (ir, dr) in enumerate(product(interaction_radius[1:], density_reg[:-2])):
+            plt.errorbar(D_array*N, tmrca_mean[ir, dr, :]/N/2,
+                                    tmrca_std[ir, dr, :]/N/2/np.sqrt(nobs),
+                 label=f'r={ir}, a={dr}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+
+    plt.legend()
+    plt.plot(N*D_array, np.ones_like(D_array), c='k')
+    plt.xlabel('true N*D')
+    plt.xlabel('estimated N*D')
+    # plt.yscale('log')
+    plt.xscale('log')
+    if args.output_tmrca:
+        plt.savefig(args.output_tmrca)

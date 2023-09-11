@@ -11,7 +11,7 @@ rule inflated_diffusion_one:
         """
 
 
-N_array = [500]
+N_array = [500, 1000]
 interaction_radius_array = [0.02, 0.05, 0.1, 0.2, 0.5]
 density_reg_array = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
 rule inflated_diffusion_all:
@@ -49,3 +49,17 @@ rule habitat_diffusion_all:
         df = pd.concat([pd.read_csv(f) for f in input])
         df.to_csv(output[0], index=False)
 
+
+
+rule plot_inflated_diffusion:
+    input:
+        "data/inflated_diffusion.csv"
+    output:
+        heterogeneity = "manuscript/figures/density_reg_heterogeneity.pdf",
+        tmrca = "manuscript/figures/density_reg_tmrca.pdf"
+    shell:
+        """
+        python3 src/plot_inflated_diffusion.py --data {input} \
+            --output-heterogeneity {output.heterogeneity} \
+            --output-tmrca {output.tmrca}
+        """

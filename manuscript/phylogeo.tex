@@ -92,7 +92,20 @@ The speed at which the population invades space is given as compound of diffusio
 
 This dependence of growth rate (and thus tree structure) on density is one key element that phylogeographic models ignore because it is very difficult to capture mathematically.
 It is, however, fairly straightforward to include this in simulation and these simulations can be used to investigate the nature of phylogeographic inferences when some of the assumptions are violated.
+We calculate the population density using a Gaussian kernel with interaction radius $r$
+\begin{equation}
+    \phi(\rvec) = \sum_{i\in N} \frac{e^{-|\rvec_i - \rvec|^2/2r^2}}{N\sqrt{2\pi r^2}}
+\end{equation}
+where the sum is over all individuals $i$ in the population of size $N$.
+As soon as the interaction radius $r$ is much smaller than the habitat size, this density regulation leads to a more homogeneous population density, see Fig.~\ref{fig:density_reg}.
+Diffusion constants estimated from the population remain accurate, but with decreasing diffusion, the population fragments into smaller than smaller subpopulations that don't interact.
+This manifests in an increasing time to the MRCA.
 
+\begin{figure}
+    \includegraphics[width=0.5\textwidth]{figures/density_reg_heterogeneity.pdf}
+    \includegraphics[width=0.5\textwidth]{figures/density_reg_tmrca.pdf}
+    \caption{\label{fig:density_reg} {\bf Density regulation reduces fluctuations in density regulation, but results in population fragmentation at low diffusion constants.}}
+\end{figure}
 
 
 
