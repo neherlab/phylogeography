@@ -16,13 +16,13 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
     D_est = []
     zscores = []
     Tmrca = []
-    for t in range((n_iter+5)*N):
+    for t in range((n_iter+10)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
-        if t%(N//5)==0 and t>5*N: # take samples after burnin every Tc//5
+        if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -60,7 +60,7 @@ if __name__=="__main__":
     res_density_mean = {}
     D_est = []
     D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
-    n_iter = 30
+    n_iter = 50
     linear_bins=5
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     nsub = 1 if args.subsampling>0.9 else 5

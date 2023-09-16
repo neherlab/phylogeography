@@ -12,8 +12,8 @@ rule inflated_diffusion_one:
 
 
 N_array = [500, 1000]
-interaction_radius_array = [0.02, 0.05, 0.1, 0.2, 0.5]
-density_reg_array = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
+interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 0.5]
+density_reg_array = [0.02, 0.05, 0.1, 0.2, 0.5, 1.0]
 rule inflated_diffusion_all:
     input:
         expand("data/inflated_diffusion_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_p={p}.csv",
@@ -56,10 +56,12 @@ rule plot_inflated_diffusion:
         "data/inflated_diffusion.csv"
     output:
         heterogeneity = "manuscript/figures/density_reg_heterogeneity.pdf",
+        dest = "manuscript/figures/density_reg_dest.pdf",
         tmrca = "manuscript/figures/density_reg_tmrca.pdf"
     shell:
         """
         python3 src/plot_inflated_diffusion.py --data {input} \
             --output-heterogeneity {output.heterogeneity} \
+            --output-diffusion {output.dest} \
             --output-tmrca {output.tmrca}
         """

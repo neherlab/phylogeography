@@ -72,7 +72,7 @@ Phylogeographic assume that the spatial diffusion process is independent of the 
 If one simulates a diffusive spatial process in a square of length $L$, the population density shows strong fluctuations whenever the diffusion constant $D<L^2/N$, see Fig.~\ref{fig:heterogeneity}.
 $N$ here plays the role of the time to the MRCA of the population.
 At $D=0.1L^2/N$, the population distribution is patchy with large areas un-inhabited (Fig.~\ref{fig:heterogeneity} left).
-This heterogeneity increases substantially for even lower $D$, when the population is essentially a cloud of width $\sqrt{4DN}$.
+This heterogeneity increases substantially for even lower $D$, when the population is essentially a cloud of width $\sqrt{4DN}\ll L$.
 
 \begin{figure}
     \includegraphics*[width=\textwidth]{figures/heterogeneity_free_diffusion.pdf}
@@ -80,32 +80,37 @@ This heterogeneity increases substantially for even lower $D$, when the populati
     When spatial motion is independent of population density, the realized population density in the population will be much larger than biologically plausible. The left panel shows the population density for the case $D = 0.1 L^2/N$ in linear bins of size $L/20$. The right panels shows the standard deviation of the population density for different bin sizes as a function of the diffusion coefficient. For $D>L^2/N$, the heterogeneity approaches the expected value in the well mixed limit. }
 \end{figure}
 
-Biological populations spread into areas that support them.
-The simplest model of this process are FKPP waves that model the population density $\phi(x,t)$ as
+Biological populations spread into areas that support them and will quickly populate fertile areas that are below their carrying capacity.
+The simplest model of this process are FKPP waves that model the population density $\phi(x,t)$ as \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}
 \begin{equation}
     \frac{\partial \phi(x,t)}{\partial t} = D\frac{\partial^2 \phi(x,t)}{\partial x^2} + \alpha phi(x,t)(1-\phi(x,t)/\phi_0)
 \end{equation}
 where $\phi_0$ is the carrying capacity and $\alpha$ is the population growth rate at zero density.
-This equation admits solutions with a traveling front, that the population "invades" the empty territory with velocity $v = \sqrt{D \alpha}$.
+This equation admits solutions with a traveling front, that the population ``invades" the empty territory with velocity $v = 2\sqrt{D \alpha}$.
 Note that the model itself does not have an intrinsic velocity.
-The speed at which the population invades space is given as compound of diffusion and accelerated growth in regions of low density.
+The speed at which the population invades space is given as compound of diffusion and accelerated growth in regions of low density and only grows like the square root of diffusion constant.
+It is thus not clear a priori how estimates of $D$ will be affected by density regulation, even in a constant habitat.
 
-This dependence of growth rate (and thus tree structure) on density is one key element that phylogeographic models ignore because it is very difficult to capture mathematically.
-It is, however, fairly straightforward to include this in simulation and these simulations can be used to investigate the nature of phylogeographic inferences when some of the assumptions are violated.
+Dependence of growth rate (and thus tree structure) on density is one key element that phylogeographic models ignore because it is very difficult to capture mathematically.
+It is, however, fairly straightforward to include this in simulations and these simulations can be used to investigate the nature of phylogeographic inferences when some of the assumptions are violated.
 We calculate the population density using a Gaussian kernel with interaction radius $r$
 \begin{equation}
     \phi(\rvec) = \sum_{i\in N} \frac{e^{-|\rvec_i - \rvec|^2/2r^2}}{N\sqrt{2\pi r^2}}
 \end{equation}
 where the sum is over all individuals $i$ in the population of size $N$.
 As soon as the interaction radius $r$ is much smaller than the habitat size, this density regulation leads to a more homogeneous population density, see Fig.~\ref{fig:density_reg}.
-Diffusion constants estimated from the population remain accurate, but with decreasing diffusion, the population fragments into smaller than smaller subpopulations that don't interact.
-This manifests in an increasing time to the MRCA.
+Diffusion constants estimated from the population remain accurate with moderate overestimation of small diffusion constants.
+But with decreasing diffusion, the population fragments into smaller than smaller subpopulations that don't interact or coalesce.
+This manifests in an increasing time to the MRCA, see Fig.~\ref{fig:density_reg}.
+Spatial location and the coalescence process are thus strongly coupled, in conflict with model assumptions and estimates of population processes are likely biased.
 
 \begin{figure}
-    \includegraphics[width=0.5\textwidth]{figures/density_reg_heterogeneity.pdf}
-    \includegraphics[width=0.5\textwidth]{figures/density_reg_tmrca.pdf}
+    \includegraphics[width=0.48\textwidth]{figures/density_reg_heterogeneity.pdf}
+    \includegraphics[width=0.48\textwidth]{figures/density_reg_tmrca.pdf}
     \caption{\label{fig:density_reg} {\bf Density regulation reduces fluctuations in density regulation, but results in population fragmentation at low diffusion constants.}}
 \end{figure}
+
+The above example assumed a habitat that is constant over times comparable to the time to the most recent common ancestor of the population.
 
 
 
