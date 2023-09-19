@@ -5,6 +5,11 @@ from plot_inflated_diffusion import free_diffusion
 from itertools import product
 from habitat_shifts import generate_target_density
 
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "Helvetica"
+})
+
 def make_figure(fname=None):
     fig, axs = plt.subplots(1,10, sharex=True, sharey=True, figsize=(15,2))
     f = generate_target_density(1, 1, 1, period=9, wave_length=1.0)
@@ -48,6 +53,7 @@ if __name__=="__main__":
     make_figure(fname = args.illustration)
 
     ls = ['-', ':', "--", ".-"][len(interaction_radius)]
+    markers = ['o', '<', '>', 's', 'd', '^', 'v']
     plt.figure()
     for N in N_vals:
         D_array = data.loc[data.N==N].D.unique()
@@ -64,7 +70,7 @@ if __name__=="__main__":
         plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion', c='k')
         plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit', c='k', ls='--')
     plt.xscale('log')
-    plt.xlabel('diffusion constant')
+    plt.xlabel('diffusion constant $D$')
     plt.ylabel('heterogeneity')
     plt.legend()
     if args.output_heterogeneity:
@@ -73,24 +79,28 @@ if __name__=="__main__":
 
     plt.figure()
     #plt.title(f"{T}")
-    for T in period:
+    for ti,T in enumerate(period):
         for m, N in zip(['o', '<'], N_vals):
             D_array = data.loc[data.N==N].D.unique()
             for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,
                                                     [1])):
                 try:
-                    plt.errorbar(np.sqrt(D_array*dr)*T/Lx, diffusion_mean[ir, dr, :, N, T, p]/D_array,
-                                        diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(nobs[ir, dr, N, T, p]), marker=m,
-                        label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                    # plt.errorbar(np.sqrt(D_array*dr)*T/Lx, diffusion_mean[ir, dr, :, N, T, p]/D_array,
+                    #                     diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(nobs[ir, dr, N, T, p]), marker=m,
+                    #     label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                    plt.scatter(np.sqrt(D_array*dr)*T/Lx, diffusion_mean[ir, dr, :, N, T, p]/D_array**1.0,
+                                        c=tmrca_mean[ir, dr, :, N, T, p]/2/N, marker=markers[ti],
+                        label=f'r={ir}, a={dr} N={N}, T={T} p={p}')
                 except:
                     pass
 
         #plt.plot(D_array/Lx/Ly, np.ones_like(D_array), c='k')
-        plt.xlabel('sqrt(D a)T/L')
-        plt.ylabel('estimated D / true D')
+        plt.xlabel(r'$\sqrt{D\alpha} T/L$')
+        plt.ylabel(r'$\hat{D} / D$')
         plt.yscale('log')
         plt.xscale('log')
-        #plt.legend()
+    plt.colorbar()
+    #plt.legend()
     plt.plot(plt.gca().get_xlim(), [1,1], ls='-', c='k', lw=3, alpha=0.3)
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
@@ -130,8 +140,8 @@ if __name__=="__main__":
 
         plt.legend()
         plt.plot(N*D_array, np.ones_like(D_array), c='k')
-        plt.xlabel('true N*D')
-        plt.ylabel('T_mrca/2N')
+        plt.xlabel(r'$N\times D$')
+        plt.ylabel(r'$T_{mrca}/2N$')
         plt.xscale('log')
     if args.output_tmrca:
         plt.savefig(args.output_tmrca)

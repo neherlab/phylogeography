@@ -31,6 +31,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
             print("population nearly extinct")
             continue
         if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
+            tbins = sorted([0] + [t - i*N/10 for i in range(4)])
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -44,8 +45,8 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 else:
                     Tmrca.append(t)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
-                zscores.extend([np.mean(z.loc[z.nonterminal, 'zx']**2),
-                                np.mean(z.loc[z.nonterminal, 'zy']**2)])
+                zscores.extend([[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
+                                [np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
 
     return {"density_variation": density_variation, "D_est": D_est, 'zscores':zscores, "Tmrca":Tmrca}
 
@@ -89,8 +90,8 @@ if __name__=="__main__":
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, period=args.period)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
-        tmpZ = np.mean(res["zscores"], axis=0)
-        tmpStdZ = np.std(res["zscores"], axis=0)
+        tmpZ =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
+        tmpStdZ = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
         nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling,

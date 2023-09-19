@@ -11,7 +11,6 @@
 \newcommand{\LH}{\mathcal{L}}
 \newcommand{\rvec}{\mathbf{r}}
 
-\bibliography{bib}
 
 \begin{document}
 \title{When to trust phylogeographic inferences?}
@@ -112,10 +111,19 @@ Spatial location and the coalescence process are thus strongly coupled, in confl
 
 The above example assumed a habitat that is constant over times comparable to the time to the most recent common ancestor of the population.
 If instead the habitat shifts on shorter time scales, the population has to move and such population movement will skew estimates of dispersal.
+We simulated such changing habitats by assuming the carrying capacity of the habitat varies periodically in time and space
+\begin{equation}
+    \phi_0(\rvec, t) = N\left(1 + \sin(2\pi (r_x/L_x + t/T)\cos(2\pi (r_y/L_y + t/2T)))
+\end{equation}
+This results in moving peaks and troughs in carrying capacity (and thus population density) as illustrated in
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/habitats.png}
+    \caption{\label{fig:moving_habitats}}
+\end{figure}
 
 
-
-
+\bibliography{bib}
 
 
 \end{document}

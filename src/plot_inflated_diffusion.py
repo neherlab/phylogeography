@@ -40,8 +40,8 @@ if __name__=="__main__":
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
 
-    ir_to_plot = interaction_radius[1:]
-    density_reg_to_plot = density_reg[:-2:2]
+    ir_to_plot = interaction_radius[:]
+    density_reg_to_plot = density_reg[:-2]
 
     ls = ['-', '-.', "--", ":"][:len(density_reg_to_plot)]
     plt.figure()

@@ -65,3 +65,18 @@ rule plot_inflated_diffusion:
             --output-diffusion {output.dest} \
             --output-tmrca {output.tmrca}
         """
+
+rule plot_habitat_diffusion:
+    input:
+        "data/habitat_diffusion.csv"
+    output:
+        illustration = "manuscript/figures/habitats.png",
+        dest = "manuscript/figures/habitat_diffusion.pdf",
+        tmrca = "manuscript/figures/habitat_tmrca.pdf"
+    shell:
+        """
+        python3 src/plot_habitat_diffusion.py --data {input} \
+            --output-diffusion {output.dest} \
+            --output-tmrca {output.tmrca} \
+            --illustration {output.illustration}
+        """
