@@ -4,6 +4,7 @@ from heterogeneity import get_2d_hist
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
 
 
+
 def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=1.0,
                                 Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
     # set up tree and initial population uniformly in space

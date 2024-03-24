@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from plot_inflated_diffusion import free_diffusion
+from plot_inflated_diffusion import free_diffusion, parse_data
 from itertools import product
 from habitat_shifts import generate_target_density
 
@@ -21,6 +21,7 @@ def make_figure(fname=None):
     if fname:
         plt.savefig(fname)
 
+
 if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -36,14 +37,7 @@ if __name__=="__main__":
     Lx, Ly = 1, 1
     nbins=linear_bins**2
 
-    density_variation = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['density_variation'].mean()
-    nobs = data.groupby(['interaction_radius', 'density_reg', 'N', 'period', 'subsampling'])['n'].mean()/25
-    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanD'].mean()
-    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdD'].mean()
-    z_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanZsq'].mean()
-    z_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdZsq'].mean()
-    tmrca_mean = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['meanTmrca'].mean()
-    tmrca_std = data.groupby(['interaction_radius', 'density_reg', 'D', 'N', 'period', 'subsampling'])['stdTmrca'].mean()
+    res = parse_data(data, groupby=['interaction_radius', 'density_reg', 'N', 'period', 'subsampling'])
     interaction_radius = data.interaction_radius.unique()
     period = data.period.unique()
     subsampling = data.subsampling.unique()
@@ -61,7 +55,7 @@ if __name__=="__main__":
         for i, (ir, dr, T, p) in enumerate(product(interaction_radius, density_reg,
                                                    period, subsampling)):
             try:
-                plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, :, N, T, p],
+                plt.plot(D_array*N/Lx/Ly, res["density_variation"][ir, dr, N, T, p,:],
                         label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
             except:
                 pass
@@ -88,8 +82,8 @@ if __name__=="__main__":
                     # plt.errorbar(np.sqrt(D_array*dr)*T/Lx, diffusion_mean[ir, dr, :, N, T, p]/D_array,
                     #                     diffusion_std[ir, dr, :, N, T, p]/D_array/np.sqrt(nobs[ir, dr, N, T, p]), marker=m,
                     #     label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
-                    plt.scatter(np.sqrt(D_array*dr)*T/Lx, diffusion_mean[ir, dr, :, N, T, p]/D_array**1.0,
-                                        c=tmrca_mean[ir, dr, :, N, T, p]/2/N, marker=markers[ti],
+                    plt.scatter(np.sqrt(D_array*dr)*T/Lx, res["diffusion_mean"][ir, dr, N, T, p,:]/D_array**1.0,
+                                        c=res["tmrca_mean"][ir, dr, N, T, p,:]/2/N, marker=markers[ti],
                         label=f'r={ir}, a={dr} N={N}, T={T} p={p}')
                 except:
                     pass
@@ -111,8 +105,8 @@ if __name__=="__main__":
             D_array = data.loc[data.N==N].D.unique()
             for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,
                                                     [1])):
-                plt.errorbar(D_array*N, z_mean[ir, dr, :, N, T, p],
-                                    z_std[ir, dr, :, N, T, p]/np.sqrt(nobs[ir, dr, N, T, p]),
+                plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,:-2].mean(axis=1),
+                                    np.array([res["z_std"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,:-2].mean(axis=1)/np.sqrt(res["nobs"][ir, dr, N, T, p]),
                  label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
 
         plt.legend()
@@ -132,8 +126,8 @@ if __name__=="__main__":
             for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,
                                                     [1])):
                 try:
-                    plt.errorbar(D_array*N, tmrca_mean[ir, dr, :, N, T, p]/N/2,
-                                            tmrca_std[ir, dr, :, N, T, p]/N/2/np.sqrt(nobs[ir, dr, N, T, p]),
+                    plt.errorbar(D_array*N, res["tmrca_mean"][ir, dr, N, T, p, :]/N/2,
+                                            res["tmrca_std"][ir, dr, N, T, p, :]/N/2/np.sqrt(res["nobs"][ir, dr, N, T, p]),
                         label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
                 except:
                     pass

@@ -4,6 +4,30 @@ import pandas as pd
 from heterogeneity import get_granularity
 from itertools import product
 
+
+def parse_data(data, groupby=None):
+    density_variation = data.groupby(groupby + ['D'])['density_variation'].mean()
+    nobs = data.groupby(groupby)['n'].mean()/25
+    diffusion_mean = data.groupby(groupby + ['D'])['meanD'].mean()
+    diffusion_std = data.groupby(groupby + ['D'])['stdD'].mean()
+    tmrca_mean = data.groupby(groupby + ['D'])['meanTmrca'].mean()
+    tmrca_std = data.groupby(groupby + ['D'])['stdTmrca'].mean()
+
+    z_mean = {}
+    for g, d in data.groupby(groupby + ['D'])['meanZsq']:
+        z_mean[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+
+    z_std = {}
+    for g, d in data.groupby(groupby + ['D'])['stdZsq']:
+        z_std[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+
+    return {"density_variation": density_variation, "nobs":nobs,
+            "diffusion_mean":diffusion_mean, "diffusion_std":diffusion_std,
+            "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
+            "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
+            }
+
+
 def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 10
     res = []
@@ -27,15 +51,8 @@ if __name__=="__main__":
     linear_bins=5
     Lx, Ly = 1, 1
     nbins=linear_bins**2
+    res = parse_data(data, groupby=['interaction_radius', 'density_reg', 'N'])
 
-    density_variation = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['density_variation'].mean()
-    nobs = data.groupby(['interaction_radius', 'density_reg', 'N'])['n'].mean()/25
-    diffusion_mean = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['meanD'].mean()
-    diffusion_std = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['stdD'].mean()
-    tmrca_mean = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['meanTmrca'].mean()
-    tmrca_std = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['stdTmrca'].mean()
-    z_mean = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['meanZsq'].mean()
-    z_std = data.groupby(['interaction_radius', 'density_reg', 'N', 'D'])['stdZsq'].mean()
     interaction_radius = data.interaction_radius.unique()
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
@@ -47,9 +64,9 @@ if __name__=="__main__":
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
-            D_array = np.array(density_variation[ir, dr, N, :].index)
+            D_array = np.array(res["density_variation"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.plot(D_array*N/Lx/Ly, density_variation[ir, dr, N, :],
+            plt.plot(D_array*N/Lx/Ly, res["density_variation"][ir, dr, N, :],
                     label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
@@ -66,10 +83,10 @@ if __name__=="__main__":
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
-            D_array = np.array(diffusion_mean[ir, dr, N, :].index)
+            D_array = np.array(res["diffusion_mean"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.errorbar(D_array*N, diffusion_mean[ir, dr, N, :]/D_array,
-                                    diffusion_std[ir, dr, N, :]/D_array/np.sqrt(nobs[ir, dr, N]),
+            plt.errorbar(D_array*N, res["diffusion_mean"][ir, dr, N, :]/D_array,
+                                    res["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]),
                  label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
@@ -84,10 +101,10 @@ if __name__=="__main__":
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
-            D_array = np.array(z_mean[ir, dr, N, :].index)
+            D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.errorbar(D_array*N, z_mean[ir, dr, N, :],
-                                    z_std[ir, dr, N, :]/np.sqrt(nobs[ir, dr, N]),
+            plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)] for d in D_array]).mean(axis=1),
+                                    np.array([res["z_std"].loc[(ir, dr, N, d)]/np.sqrt(res["nobs"][ir, dr, N]) for d in D_array]).mean(axis=1),
                  label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
@@ -102,10 +119,10 @@ if __name__=="__main__":
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
-            D_array = np.array(tmrca_mean[ir, dr, N, :].index)
+            D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.errorbar(D_array*N, tmrca_mean[ir, dr, N, :]/N/2,
-                                    tmrca_std[ir, dr, N, :]/N/2/np.sqrt(nobs[ir, dr, N]),
+            plt.errorbar(D_array*N, res["tmrca_mean"][ir, dr, N, :]/N/2,
+                                    res["tmrca_std"][ir, dr, N, :]/N/2/np.sqrt(res["nobs"][ir, dr, N]),
                  label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()

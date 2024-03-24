@@ -25,7 +25,7 @@ if __name__=="__main__":
     g, H = get_granularity(ntips, 0.1, bins=20)
     axs[0].matshow(H)
 
-    for line_style, linear_bins in zip(['-', '--', '-.'], [3,5,10]):
+    for line_style, linear_bins in zip(['-', '--', '-.'], [3,10,30]):
         nbins=linear_bins**2
         res = []
         for D in D_array:
@@ -33,16 +33,16 @@ if __name__=="__main__":
 
         res = np.array(res)
         res_mean = res.mean(axis=1)
-        axs[1].plot(D_array, res_mean, label=f'free diffusion, dx=L/{linear_bins}', c='C0', ls=line_style)
-        axs[1].plot(D_array, np.ones_like(D_array)*np.sqrt(nbins/ntips), label=f'well mixed limit dx=L/{linear_bins}', c='C1', ls=line_style)
+        axs[1].plot(D_array, res_mean/np.sqrt(nbins/ntips), label=f'bin size=L/{linear_bins}') #, c='C0', ls=line_style)
+        # axs[1].plot(D_array, np.ones_like(D_array)*np.sqrt(nbins/ntips), label=f'well mixed limit dx=L/{linear_bins}', c='C1', ls=line_style)
 
     # area = np.minimum(1,D_array*np.pi**2)
     # pred_heterogeneity = np.sqrt(1/area - 1)  # p*(1/p - 1)**2 + (1-p) = p*(1/p^2 - 2/p + 1) + (1-p) = 1/p - 2 + p -1 + p = 1/p - 1
 
     #plt.plot(D_array, pred_heterogeneity, label='well mixed limit')
     plt.xscale('log')
-    plt.xlabel('diffusion constant [habitat_size^2/T_c]')
-    plt.ylabel('heterogeneity')
+    plt.yscale('log')
+    plt.xlabel('diffusion constant [L^2/T_c]')
+    plt.ylabel('heterogeneity (relative to well-mixed case)')
     plt.legend()
-    plt.savefig('figures/heterogeneity_free_diffusion.pdf')
     plt.savefig('figures/heterogeneity_free_diffusion.pdf')
