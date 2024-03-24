@@ -7,6 +7,7 @@ from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_
 
 def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=1.0,
                                 Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
+    from scipy.stats import scoreatpercentile
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -37,7 +38,8 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
                 else:
                     Tmrca.append(t)
 
-                tbins = np.linspace(Tmrca[-1], t, 5)
+                internal_node_times= sorted(z.loc[z.nonterminal, 't'])
+                tbins = scoreatpercentile(internal_node_times, [0, 20, 40, 60, 80, 100])
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
                 # calculate the mean squared z-scores for the root node and each time bin
                 zscores.extend([[z.iloc[2].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
