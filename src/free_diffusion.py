@@ -14,7 +14,7 @@ def random_tree(n, yule=False):
     while len(tree)>=2:
         i,j = np.random.choice(len(tree), size=2, replace=False)
         if yule:
-            dt = np.random.exponential()/(len(tree)-1)/n*2
+            dt = np.random.exponential()/(len(tree)-1)
         else:
             dt = np.random.exponential()/(len(tree)-1)/len(tree)*2
 

@@ -26,12 +26,17 @@ def estimate_diffusion(tree, include_root=False):
 
     return {'Dx_branch': 0.5*np.mean([d['dx']**2/d['dt'] for d in displacements]),
             'Dy_branch': 0.5*np.mean([d['dy']**2/d['dt'] for d in displacements]),
-            'vx_branch': 0.5*np.mean([np.abs(d['dx'])/d['dt'] for d in displacements]),
-            'vy_branch': 0.5*np.mean([np.abs(d['dy'])/d['dt'] for d in displacements]),
+            'vx_branch': np.mean([np.abs(d['dx'])/d['dt'] for d in displacements]),
+            'vy_branch': np.mean([np.abs(d['dy'])/d['dt'] for d in displacements]),
             'Dx_total': 0.5*np.sum([d['dx']**2 for d in displacements])/np.sum([d['dt'] for d in displacements]),
             'Dy_total': 0.5*np.sum([d['dy']**2 for d in displacements])/np.sum([d['dt'] for d in displacements]),
-            'vx_total': 0.5*np.sum(np.abs([d['dx'] for d in displacements])/np.sum([d['dt'] for d in displacements])),
-            'vy_total': 0.5*np.sum(np.abs([d['dy'] for d in displacements])/np.sum([d['dt'] for d in displacements]))
+            'vx_total': np.sum(np.abs([d['dx'] for d in displacements])/np.sum([d['dt'] for d in displacements])),
+            'vy_total': np.sum(np.abs([d['dy'] for d in displacements])/np.sum([d['dt'] for d in displacements])),
+            'Dxy_total': 0.25*np.sum([(d['dx']**2+d['dy']**2) for d in displacements])/np.sum([d['dt'] for d in displacements]),
+            'vxy_total': np.sum(np.sqrt([(d['dx']**2+d['dy']**2) for d in displacements])/np.sum([d['dt'] for d in displacements])),
+            'Dxy_branch': 0.25*np.mean([(d['dx']**2+d['dy']**2)/d['dt'] for d in displacements]),
+            'vxy_branch': np.mean([np.sqrt(d['dx']**2+d['dy']**2)/d['dt'] for d in displacements]),
+            't_total': np.sum([d['dt'] for d in displacements])
             }
 
 

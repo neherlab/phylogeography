@@ -24,7 +24,6 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
             print("population nearly extinct")
             continue
         if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
-            tbins = sorted([0] + [t - i*N/10 for i in range(4)])
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -37,9 +36,12 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
                     Tmrca.append(t-tree['clades'][0]['time'])
                 else:
                     Tmrca.append(t)
+
+                tbins = np.linspace(Tmrca[-1], t, 5)
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
-                zscores.extend([[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
-                                [np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
+                # calculate the mean squared z-scores for the root node and each time bin
+                zscores.extend([[z.iloc[2].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
+                                [z.iloc[2].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
 
     return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores, "Tmrca":Tmrca}
 
@@ -49,7 +51,6 @@ if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--N', type=int, default=500)
-    parser.add_argument('--D', type=float, default=0.1)
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
     parser.add_argument('--subsampling', type=float, default=1.0)

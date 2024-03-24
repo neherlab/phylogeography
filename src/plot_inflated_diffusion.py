@@ -29,7 +29,7 @@ def parse_data(data, groupby=None):
 
 
 def free_diffusion(D_array, N, linear_bins=5):
-    n_iter = 10
+    n_iter = 100
     res = []
     for D in D_array:
         res.append([get_granularity(N, D, bins=linear_bins)[0] for i in range(n_iter)])
@@ -58,28 +58,28 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
     ir_to_plot = interaction_radius[:]
-    density_reg_to_plot = density_reg[:-2]
+    density_reg_to_plot = density_reg[1:2]
 
     ls = ['-', '-.', "--", ":"][:len(density_reg_to_plot)]
     plt.figure()
-    for N in N_vals:
+    for N in N_vals[1:]:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["density_variation"][ir, dr, N, :].index)
-            label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.plot(D_array*N/Lx/Ly, res["density_variation"][ir, dr, N, :],
+            label = f'r={ir}' if N==N_vals[1] else ''
+            plt.plot(D_array*N/Lx/Ly, res["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
                     label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
-    plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity, label='diffusion', c='k')
-    plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array)*np.sqrt(nbins/N), label='well mixed limit', c='k', ls='--')
+    plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='diffusion', c='k')
+    plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     plt.xscale('log')
-    plt.xlabel('diffusion constant')
-    plt.ylabel('heterogeneity')
+    plt.xlabel('diffusion constant [L^2/N]')
+    plt.ylabel('heterogeneity (relative to well-mixed case)')
     plt.legend()
     if args.output_heterogeneity:
         plt.savefig(args.output_heterogeneity)
 
-
+    ## Plot the diffusion estiamtes
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
@@ -98,36 +98,38 @@ if __name__=="__main__":
     if args.output_diffusion:
         plt.savefig(args.output_diffusion)
 
+    # plot the z-scores, i.e. the degree to which the estimates cover the true value
     plt.figure()
     for N in N_vals:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)] for d in D_array]).mean(axis=1),
+            plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)][0:1] for d in D_array]).mean(axis=1),
                                     np.array([res["z_std"].loc[(ir, dr, N, d)]/np.sqrt(res["nobs"][ir, dr, N]) for d in D_array]).mean(axis=1),
                  label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
-    plt.xlabel('true N*D')
+    plt.xlabel('diffusion constant [L^2/N]')
     plt.ylabel('Coverage')
     # plt.yscale('log')
     plt.xscale('log')
-    if args.output_diffusion:
-        plt.savefig(args.output_diffusion)
+    if args.output_zscore:
+        plt.savefig(args.output_zscore)
 
+    # Figure showing the TMRCA of the population
     plt.figure()
-    for N in N_vals:
+    for N in N_vals[1:]:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
-            label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
+            label = f'r={ir}' if N==N_vals[1] else ''
             plt.errorbar(D_array*N, res["tmrca_mean"][ir, dr, N, :]/N/2,
                                     res["tmrca_std"][ir, dr, N, :]/N/2/np.sqrt(res["nobs"][ir, dr, N]),
                  label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
-    plt.xlabel('true N*D')
+    plt.xlabel('diffusion constant [L^2/N]')
     plt.ylabel('T_mrca/2N')
     # plt.yscale('log')
     plt.xscale('log')
