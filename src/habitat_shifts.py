@@ -28,6 +28,8 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
     density_variation = []
     D_est_x = []
     D_est_y = []
+    v_est_x = []
+    v_est_y = []
     zscores_x = []
     zscores_y = []
     Tmrca = []
@@ -55,10 +57,13 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                     Tmrca.append(t)
                 D_est_x.append(D_res['Dx_total'])
                 D_est_y.append(D_res['Dy_total'])
+                v_est_x.append(D_res['vx_total'])
+                v_est_y.append(D_res['vy_total'])
                 zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)])
                 zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
 
     return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y, "D_est": D_est_x + D_est_y,
+            "v_est_x": v_est_x, "v_est_y": v_est_y, "v_est": v_est_x + v_est_y,
             'zscores_x':zscores_x, 'zscores_y':zscores_y, "z_scores": zscores_x+zscores_y,  "Tmrca":Tmrca}
 
 def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):
