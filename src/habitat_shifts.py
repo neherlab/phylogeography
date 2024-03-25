@@ -60,7 +60,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 v_est_x.append(D_res['vx_total'])
                 v_est_y.append(D_res['vy_total'])
                 zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)])
-                zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
+                zscores_y.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
 
     return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y, "D_est": D_est_x + D_est_y,
             "v_est_x": v_est_x, "v_est_y": v_est_y, "v_est": v_est_x + v_est_y,
