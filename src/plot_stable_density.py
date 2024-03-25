@@ -40,7 +40,7 @@ def free_diffusion(D_array, N, linear_bins=5):
 if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='data/inflated_diffusion.csv')
+    parser.add_argument('--data', type=str, default='data/stable_density.csv')
     parser.add_argument('--output-diffusion', type=str)
     parser.add_argument('--output-heterogeneity', type=str)
     parser.add_argument('--output-zscore', type=str)
@@ -57,9 +57,11 @@ if __name__=="__main__":
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
 
+    # select the interaction radius and density regulation strength to plot
     ir_to_plot = interaction_radius[:]
     density_reg_to_plot = density_reg[1:2]
 
+    # Plot the heterogeneity
     ls = ['-', '-.', "--", ":"][:len(density_reg_to_plot)]
     plt.figure()
     for N in N_vals[1:]:
