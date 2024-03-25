@@ -33,15 +33,21 @@ if __name__=="__main__":
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
                                           gtd=waves, habitat_params={'velocity':args.velocity, 'width':width})
 
-        tmpD = np.mean(res["D_est"], axis=0)
-        tmpStdD = np.std(res["D_est"], axis=0)
-        tmpZ =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
-        tmpStdZ = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
+        tmpD_x = np.mean(res["D_est_x"], axis=0)
+        tmpD_y = np.mean(res["D_est_y"], axis=0)
+        tmpStdD_x = np.std(res["D_est_x"], axis=0)
+        tmpStdD_y = np.std(res["D_est_y"], axis=0)
+        tmpZ_x =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+        tmpStdZ_x = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+        tmpZ_y =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+        tmpStdZ_y = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
         nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
-                      "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling,
-                      "D":D, "meanD": tmpD, "stdD": tmpStdD,
-                      "meanZsq": tmpZ, "stdZsq": tmpStdZ, 'observations': nobs,
+                      "N": N, "n": len(res["D_est"]), "velocity": args.velocity, "subsampling": args.subsampling,
+                      "D":D, "meanDx": tmpD_x, "stdD_x": tmpStdD_x, "meanDy": tmpD_y, "stdD_y": tmpStdD_y,
+                      "meanZsq_x": tmpZ_x, "stdZsq_x": tmpStdZ_x, 
+                      "meanZsq_y": tmpZ_y, "stdZsq_y": tmpStdZ_y, 
+                      'observations': nobs,
                       "density_variation": np.mean(res['density_variation']),
                       "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
 
