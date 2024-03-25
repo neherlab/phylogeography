@@ -4,8 +4,7 @@ from heterogeneity import get_2d_hist
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
 
 
-
-def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=1.0,
+def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0,
                                 Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
     from scipy.stats import scoreatpercentile
     # set up tree and initial population uniformly in space
@@ -35,15 +34,17 @@ def estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampli
                 z = collect_zscore(tree)
                 if len(tree['clades'])==1:
                     Tmrca.append(t-tree['clades'][0]['time'])
+                    root_index = 1
                 else:
                     Tmrca.append(t)
+                    root_index = 0
 
                 internal_node_times= sorted(z.loc[z.nonterminal, 't'])
                 tbins = scoreatpercentile(internal_node_times, [0, 20, 40, 60, 80, 100])
                 D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
                 # calculate the mean squared z-scores for the root node and each time bin
-                zscores.extend([[z.iloc[2].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
-                                [z.iloc[2].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
+                zscores.extend([[z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
+                                [z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
 
     return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores, "Tmrca":Tmrca}
 
@@ -59,6 +60,8 @@ if __name__=="__main__":
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
+    # Evolve a population with density regulation and estimate the diffusion constant, the TMRCA and the coverage of diffusion estimates
+
     N = args.N
     Lx, Ly = 1, 1
     res_density = {}
@@ -72,7 +75,7 @@ if __name__=="__main__":
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
-        res = estimate_inflated_diffusion(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
+        res = evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, n_subsamples=nsub)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
@@ -93,7 +96,7 @@ if __name__=="__main__":
         import os
         if not os.path.exists('data'):
             os.makedirs('data')
-        fname = f'data/inflated_diffusion_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
+        fname = f'data/stable_density_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
 
     pd.DataFrame(D_est).to_csv(fname, index=False)
 
