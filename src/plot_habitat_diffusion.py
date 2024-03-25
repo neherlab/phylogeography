@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from plot_inflated_diffusion import free_diffusion, parse_data
+from plot_stable_density import free_diffusion, parse_data
 from itertools import product
-from habitat_shifts import generate_target_density
+from habitat_shifts import cycling_patches
 
 plt.rcParams.update({
     "text.usetex": True,
@@ -12,7 +12,7 @@ plt.rcParams.update({
 
 def make_figure(fname=None):
     fig, axs = plt.subplots(1,10, sharex=True, sharey=True, figsize=(15,2))
-    f = generate_target_density(1, 1, 1, period=9, wave_length=1.0)
+    f = cycling_patches(1, 1, 1, period=9, wave_length=1.0)
     for i, ax in enumerate(axs.flatten()):
         grid = np.meshgrid(np.linspace(0,1,30), np.linspace(0,1,30))
         ax.matshow(f(grid[0], grid[1], i))
@@ -44,8 +44,10 @@ if __name__=="__main__":
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
 
+    # make an illustration of the carrying capacity at different times
     make_figure(fname = args.illustration)
 
+    ## Population heterogeneity
     ls = ['-', ':', "--", ".-"][len(interaction_radius)]
     markers = ['o', '<', '>', 's', 'd', '^', 'v']
     plt.figure()
@@ -71,6 +73,7 @@ if __name__=="__main__":
         plt.savefig(args.output_heterogeneity)
 
 
+    ## Diffusion constant estimates
     plt.figure()
     #plt.title(f"{T}")
     for ti,T in enumerate(period):

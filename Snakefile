@@ -50,6 +50,30 @@ rule habitat_diffusion_all:
         df.to_csv(output[0], index=False)
 
 
+rule waves_one:
+    output:
+        "data/waves_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_v={v}_p={p}.csv"
+    shell:
+        """
+        python3 src/waves.py --N {wildcards.N} --subsampling {wildcards.p} \
+                    --interaction-radius {wildcards.interaction_radius} \
+                    --velocity {wildcards.v}\
+                    --density-reg {wildcards.density_reg} --output {output}
+        """
+
+v_array = [0.0003, 0.001, 0.003, 0.01, 0.03]
+N_array = [500,1000]
+rule waves_all:
+    input:
+        expand("data/waves_subsampled_N={N}_ir={ir}_dr={dr}_v={v}_p={p}.csv",
+                N=N_array, v=v_array, p=[0.1, 1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
+    output:
+        "data/waves.csv"
+    run:
+        import pandas as pd
+        df = pd.concat([pd.read_csv(f) for f in input])
+        df.to_csv(output[0], index=False)
+
 
 rule plot_inflated_diffusion:
     input:

@@ -1,17 +1,24 @@
 import numpy as np
 from density_regulation import make_node, evolve, clean_tree, subsample_tree
 from heterogeneity import get_2d_hist
-from inflated_diffusion import subsample_tree
+from density_regulation import subsample_tree
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
 
-def generate_target_density(N, Lx, Ly, period, wave_length):
+def cycling_patches(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
         return N*(1+np.sin(2*np.pi*(x/wave_length/Lx + t/period))*np.cos(2*np.pi*(y/wave_length/Ly + 0.5*t/period)))
     return f
 
 
+def waves(N, Lx, Ly, velocity, width):
+    def f(x,y,t):
+        pos = (Lx/2+velocity*t)%Lx 
+        return N*(np.exp(-0.5*(min((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2/width**2)))
+    return f
+
+
 def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10, period=100, wave_length=1.0, n_subsamples=1):
+                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -24,7 +31,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
     Tmrca = []
 
     for t in range((n_iter+10)*N):
-        target_density = generate_target_density(N, Lx, Ly, period=period, wave_length=wave_length)
+        target_density = gtd(N, Lx, Ly, **habitat_params)
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density)
         if len(terminal_nodes)<10:
@@ -50,12 +57,12 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
 
     return {"density_variation": density_variation, "D_est": D_est, 'zscores':zscores, "Tmrca":Tmrca}
 
-def test_density(Lx, Ly, period, wave_length):
-    d = generate_target_density(1, Lx, Ly, period, wave_length)
+def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):
+    d = gtd(1, Lx, Ly, **habitat_params)
     import matplotlib.pyplot as plt
-    x_points = np.linspace(0,Lx,20)
-    y_points = np.linspace(0,Ly,20)
-    for i in np.linspace(0, 4*period, 9):
+    x_points = np.linspace(0,Lx,int(20*Lx))
+    y_points = np.linspace(0,Ly,int(20*Ly))
+    for i in np.linspace(0, tmax, 9):
         plt.matshow([[d(x,y,i) for x in x_points] for y in y_points])
     plt.show()
 
@@ -87,7 +94,9 @@ if __name__=="__main__":
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
-                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, period=args.period)
+                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
+                                          gtd=cycling_patches, habitat_params={'period':args.period, 'wave_length':1.0})
+
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
         tmpZ =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
