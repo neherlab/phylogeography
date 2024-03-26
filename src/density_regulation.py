@@ -18,11 +18,10 @@ def calc_density(terminal_nodes, interaction_radius, Lx, Ly, bins_per_std = 5.0)
     dens = gaussian_filter(H, interaction_radius/dx, mode='wrap')
     dens *= 1.0/dx**2/dens.sum()*len(terminal_nodes)
 
-    return RegularGridInterpolator(((bx[1:]+bx[:-1])*0.5, (by[1:]+by[:-1])*0.5), dens,
-                                   method='linear', bounds_error=False, fill_value=None)
+    return RegularGridInterpolator(((bx[1:]+bx[:-1])*0.5, (by[1:]+by[:-1])*0.5), dens, method='linear', bounds_error=False, fill_value=None)
 
 def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg = 0.1,
-           interaction_radius = 0.1, global_pop_reg=True):
+           interaction_radius = 0.1, global_pop_reg=True, total_population=100):
     '''
     step the population forward. The population is a list of terminal nodes
     that generates a number of offspring dependent on local density.
@@ -40,7 +39,7 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
     fitness = np.maximum(0.1,1 + density_reg*(1-dens_array/target_density_vals))
     #print(fitness.mean(), dens_array.mean(), target_density, len(terminals))
     if global_pop_reg: # add global density regulation (set average fitness to one, add density independent term)
-        fitness += (1 - fitness.mean()) + 0.1*(1-len(terminals)/np.mean(target_density_vals*Lx*Ly))
+        fitness += (1 - fitness.mean()) + 0.1*(1-len(terminals)/total_population)
 
     # determine offspring number and generate new population
     offspring = np.random.poisson(np.maximum(0.001,fitness))
@@ -175,7 +174,8 @@ if __name__=="__main__":
     print(f"starting density: {float(density([0,0]).squeeze()):1.2f}")
     for t in range(3*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=3*L, Ly=L, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N/3, global_pop_reg=False)
+                                density_reg=density_reg, D=D, target_density=N/3, 
+                                global_pop_reg=False, total_population=N)
         if t%(N/5)==0: print(t, len(terminal_nodes))
     clean_tree(tree)
     T = dict_to_phylo_tree(tree)

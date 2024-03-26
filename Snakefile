@@ -75,6 +75,31 @@ rule waves_all:
         df.to_csv(output[0], index=False)
 
 
+rule breathing_one:
+    output:
+        "data/breathing_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_T={T}_p={p}.csv"
+    shell:
+        """
+        python3 src/breathing.py --N {wildcards.N} --subsampling {wildcards.p} \
+                    --interaction-radius {wildcards.interaction_radius} \
+                    --period {wildcards.T}\
+                    --density-reg {wildcards.density_reg} --output {output}
+        """
+
+T_array = [10,50,100,200, 500]
+N_array = [100,300]
+rule breathing_all:
+    input:
+        expand("data/breathing_subsampled_N={N}_ir={ir}_dr={dr}_T={T}_p={p}.csv",
+                N=N_array, T=T_array, p=[0.1, 1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
+    output:
+        "data/breathing.csv"
+    run:
+        import pandas as pd
+        df = pd.concat([pd.read_csv(f) for f in input])
+        df.to_csv(output[0], index=False)
+
+
 rule plot_inflated_diffusion:
     input:
         "data/inflated_diffusion.csv"

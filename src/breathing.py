@@ -1,5 +1,5 @@
 import numpy as np
-from habitat_shifts import waves, diffusion_in_changing_habitats
+from habitat_shifts import breathing, diffusion_in_changing_habitats
 
 
 if __name__=="__main__":
@@ -11,13 +11,13 @@ if __name__=="__main__":
     parser.add_argument('--D', type=float, default=0.1)
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
-    parser.add_argument('--velocity', type=float, default=0.01)
+    parser.add_argument('--period', type=float, default=100)
     parser.add_argument('--subsampling', type=float, default=1.0)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
     N = args.N
-    width = 0.5
+    width = 0.25
     Lx, Ly = 3, 1
     res_density = {}
     res_density_mean = {}
@@ -31,7 +31,7 @@ if __name__=="__main__":
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
-                                          gtd=waves, habitat_params={'velocity':args.velocity, 'width':width})
+                                          gtd=breathing, habitat_params={'period':args.period, 'width':width})
 
         tmpD_x = np.mean(res["D_est_x"], axis=0)
         tmpD_y = np.mean(res["D_est_y"], axis=0)
@@ -47,7 +47,7 @@ if __name__=="__main__":
         tmpStdZ_y = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
         nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
-                      "N": N, "n": len(res["D_est"]), "velocity": args.velocity, "subsampling": args.subsampling, "D":D, 
+                      "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling, "D":D, 
                       "meanDx": tmpD_x, "stdD_x": tmpStdD_x, "meanDy": tmpD_y, "stdD_y": tmpStdD_y,
                       "meanvx": tmpv_x, "stdv_x": tmpStdv_x, "meanvy": tmpv_y, "stdv_y": tmpStdv_y,
                       "meanZsq_x": tmpZ_x, "stdZsq_x": tmpStdZ_x, 

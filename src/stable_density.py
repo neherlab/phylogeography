@@ -19,7 +19,7 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
     Tmrca = []
     for t in range((n_iter+10)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N)
+                                density_reg=density_reg, D=D, target_density=N, total_population=N)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue

@@ -13,7 +13,14 @@ def cycling_patches(N, Lx, Ly, period, wave_length):
 def waves(N, Lx, Ly, velocity, width):
     def f(x,y,t):
         pos = (Lx/2+velocity*t)%Lx 
-        return N*(np.exp(-0.5*(min((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2/width**2)))
+        return N*(np.exp(-0.5*(np.minimum((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2/width**2)))
+    return f
+
+def breathing(N, Lx, Ly, period, width):
+    def f(x,y,t):
+        pos = (Lx/2)%Lx 
+        prefactor = 0.25*(1+np.cos(2*np.pi*t/period))/width**2
+        return N*(np.exp(-prefactor*(min((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2)))
     return f
 
 
@@ -37,7 +44,8 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
     for t in range((n_iter+10)*N):
         target_density = gtd(N, Lx, Ly, **habitat_params)
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=target_density)
+                                density_reg=density_reg, D=D, target_density=target_density, 
+                                total_population=N)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
@@ -72,7 +80,7 @@ def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):
     x_points = np.linspace(0,Lx,int(20*Lx))
     y_points = np.linspace(0,Ly,int(20*Ly))
     for i in np.linspace(0, tmax, 9):
-        plt.matshow([[d(x,y,i) for x in x_points] for y in y_points])
+        plt.matshow([[d(x,y,i) for x in x_points] for y in y_points], vmin=0, vmax=1)
     plt.show()
 
 
