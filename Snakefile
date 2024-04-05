@@ -117,7 +117,7 @@ rule seasaw_all:
         expand("data/seasaw_subsampled_N={N}_ir={ir}_dr={dr}_T={T}_p={p}.csv",
                 N=N_array, T=T_array, p=[0.1, 1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
     output:
-        "data/breathing.csv"
+        "data/seasaw.csv"
     run:
         import pandas as pd
         df = pd.concat([pd.read_csv(f) for f in input])

@@ -45,6 +45,8 @@ if __name__=="__main__":
         tmpStdZ_x = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
         tmpZ_y =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
         tmpStdZ_y = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+        tmp_x_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err']), axis=0).filled(fill_value=np.nan))}]"
+        tmp_y_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err']), axis=0).filled(fill_value=np.nan))}]"
         nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "period": args.period, "subsampling": args.subsampling, "D":D, 
@@ -52,6 +54,7 @@ if __name__=="__main__":
                       "meanvx": tmpv_x, "stdv_x": tmpStdv_x, "meanvy": tmpv_y, "stdv_y": tmpStdv_y,
                       "meanZsq_x": tmpZ_x, "stdZsq_x": tmpStdZ_x, 
                       "meanZsq_y": tmpZ_y, "stdZsq_y": tmpStdZ_y, 
+                      "x_err": tmp_x_err, "y_err": tmp_y_err, 
                       'observations': nobs,
                       "density_variation": np.mean(res['density_variation']),
                       "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
