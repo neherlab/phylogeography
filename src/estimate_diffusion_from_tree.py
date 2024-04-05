@@ -145,8 +145,8 @@ def collect_errors(tree):
         y_err = (node['y']-node['position']['y']['mean'])
         x_std = node['position']['x']['var']**0.5
         y_std = node['position']['y']['var']**0.5
-        res.append({'x_err': x_err, 'x_std': x_std, 'xz':x_err/x_std,
-                    'y_err': y_err, 'y_std': y_std, 'xz':y_err/y_std,
+        res.append({'x_err': x_err, 'x_std': x_std, 'zx':x_err/x_std,
+                    'y_err': y_err, 'y_std': y_std, 'zy':y_err/y_std,
                     't': node['time'], 'nonterminal':nonterminal})
         if nonterminal:
             for c in node['clades']:
