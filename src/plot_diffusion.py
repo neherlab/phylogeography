@@ -1,7 +1,7 @@
 import numpy as np
 from density_regulation import make_node, evolve, clean_tree, dict_to_phylo_tree, add_as_color, subsample_tree
 from heterogeneity import get_2d_hist
-from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
 from Bio import Phylo
 
 N=1000
@@ -26,7 +26,7 @@ clean_tree(tree)
 subsample_tree(terminal_nodes, tree, p=1.0)
 D_res = estimate_diffusion(tree)
 estimate_ancestral_positions(tree, D)
-z = collect_zscore(tree)
+z = collect_errors(tree)
 
 import matplotlib.pyplot as plt
 plt.ion()

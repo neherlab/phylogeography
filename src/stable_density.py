@@ -1,7 +1,7 @@
 import numpy as np
 from density_regulation import make_node, evolve, clean_tree, subsample_tree
 from heterogeneity import get_2d_hist
-from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
 
 
 def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0,
@@ -31,7 +31,7 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
                 subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
-                z = collect_zscore(tree)
+                z = collect_errors(tree)
                 if len(tree['clades'])==1:
                     Tmrca.append(t-tree['clades'][0]['time'])
                     root_index = 1

@@ -2,7 +2,7 @@ import numpy as np
 from density_regulation import make_node, evolve, clean_tree, subsample_tree
 from heterogeneity import get_2d_hist
 from density_regulation import subsample_tree
-from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_zscore
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
 
 def cycling_patches(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
@@ -23,6 +23,10 @@ def breathing(N, Lx, Ly, period, width):
         return N*(np.exp(-prefactor*(min((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2)))
     return f
 
+def seasaw(N, Lx, Ly, period):
+    def f(x,y,t):
+        return N*np.maximum(0.01,np.minimum(1,0.5*(1+0.8*np.cos(2*np.pi*t/period)*np.cos(2*np.pi*x/Lx)**1)))
+    return f
 
 def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,
                                 Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None):
@@ -39,6 +43,8 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
     v_est_y = []
     zscores_x = []
     zscores_y = []
+    x_err = []
+    y_err = []
     Tmrca = []
 
     for t in range((n_iter+10)*N):
@@ -58,7 +64,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
                 D_res = estimate_diffusion(tree)
                 estimate_ancestral_positions(tree, D)
-                z = collect_zscore(tree)
+                z = collect_errors(tree)
                 if len(tree['clades'])==1:
                     Tmrca.append(t-tree['clades'][0]['time'])
                 else:
@@ -69,10 +75,12 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                 v_est_y.append(D_res['vy_total'])
                 zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)])
                 zscores_y.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
+                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)])
+                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)])
 
     return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y, "D_est": D_est_x + D_est_y,
             "v_est_x": v_est_x, "v_est_y": v_est_y, "v_est": v_est_x + v_est_y,
-            'zscores_x':zscores_x, 'zscores_y':zscores_y, "z_scores": zscores_x+zscores_y,  "Tmrca":Tmrca}
+            'zscores_x':zscores_x, 'zscores_y':zscores_y,'x_err':x_err, 'y_err':y_err, "z_scores": zscores_x+zscores_y,  "Tmrca":Tmrca}
 
 def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):
     d = gtd(1, Lx, Ly, **habitat_params)

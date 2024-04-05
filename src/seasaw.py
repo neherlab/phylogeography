@@ -1,5 +1,5 @@
 import numpy as np
-from habitat_shifts import waves, diffusion_in_changing_habitats
+from habitat_shifts import seasaw, diffusion_in_changing_habitats
 
 
 if __name__=="__main__":
@@ -8,9 +8,10 @@ if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--N', type=int, default=500)
+    parser.add_argument('--D', type=float, default=0.1)
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
-    parser.add_argument('--velocity', type=float, default=0.01)
+    parser.add_argument('--period', type=int, default=100)
     parser.add_argument('--subsampling', type=float, default=1.0)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
@@ -30,7 +31,7 @@ if __name__=="__main__":
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
-                                          gtd=waves, habitat_params={'velocity':args.velocity, 'width':width})
+                                          gtd=seasaw, habitat_params={'period':args.period})
 
         tmpD_x = np.mean(res["D_est_x"], axis=0)
         tmpD_y = np.mean(res["D_est_y"], axis=0)
@@ -65,7 +66,7 @@ if __name__=="__main__":
         import os
         if not os.path.exists('data'):
             os.makedirs('data')
-        fname = f'data/habitats_diffusion_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
+        fname = f'data/seasaw_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
 
     pd.DataFrame(D_est).to_csv(fname, index=False)
 
