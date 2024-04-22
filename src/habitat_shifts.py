@@ -61,9 +61,15 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
             for sample in range(n_subsamples):
-                subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
-                D_res = estimate_diffusion(tree)
-                estimate_ancestral_positions(tree, D)
+                nsamples = subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
+                if nsamples<3:
+                    print("population too small")
+                    continue
+                try:
+                    D_res = estimate_diffusion(tree)
+                    estimate_ancestral_positions(tree, D)
+                except:
+                    import ipdb; ipdb.set_trace()
                 z = collect_errors(tree)
                 if len(tree['clades'])==1:
                     Tmrca.append(t-tree['clades'][0]['time'])
@@ -79,6 +85,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
                              [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
                 y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)] + 
                              [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
+
 
     return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y, "D_est": D_est_x + D_est_y,
             "v_est_x": v_est_x, "v_est_y": v_est_y, "v_est": v_est_x + v_est_y,

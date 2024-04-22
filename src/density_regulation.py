@@ -93,11 +93,15 @@ def make_subtree_rec(node, subtree_attr='clades'):
 
 def subsample_tree(terminal_nodes, tree, p=0.1, subtree_attr='clades'):
     sampled = np.random.random(len(terminal_nodes))<p
+    if sampled.sum()<2:
+        print(f"not enough samples: {sampled.sum()} out of {len(terminal_nodes)}")
+
     for state, n in zip(sampled, terminal_nodes):
         n['sampled'] = state
 
     set_sampled_rec(tree, subtree_attr=subtree_attr)
     make_subtree_rec(tree, subtree_attr=subtree_attr)
+    return sampled.sum()
 
 def next_nontrivial_child(node, subtree_attr='children'):
     b = node

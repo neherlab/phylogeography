@@ -41,13 +41,13 @@ def estimate_diffusion(tree, include_root=False):
 
 
 def estimate_ancestral_positions(tree, D):
-    def preorder(node):
+    def postorder(node):
 
         node['dis_to_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}}
         for c in node['clades']:
             dc = 1.0/(4*D*(c['time']-node['time']))
             if 'clades' in c and len(c['clades']):
-                preorder(c)
+                postorder(c)
                 for x in ['x', 'y']:
                     child_d = c['dis_to_parent'][x]
                     node['dis_to_parent'][x]['a'] += dc*child_d['a']/(dc + child_d['a'])
@@ -60,19 +60,19 @@ def estimate_ancestral_positions(tree, D):
                     node['dis_to_parent'][x]['a'] += dc
                     node['dis_to_parent'][x]['b'] += dc*c[x]
                     node['dis_to_parent'][x]['c'] += dc*c[x]**2 - 0.5*np.log(np.pi/dc)
-            for x in ['x', 'y']:
-                node['dis_to_parent'][x]['var'] = 2.0/node['dis_to_parent'][x]['a']
-                node['dis_to_parent'][x]['mean'] = 0.5*node['dis_to_parent'][x]['b']*node['dis_to_parent'][x]['var']
+        for x in ['x', 'y']:
+            node['dis_to_parent'][x]['var'] = 2.0/node['dis_to_parent'][x]['a']
+            node['dis_to_parent'][x]['mean'] = 0.5*node['dis_to_parent'][x]['b']*node['dis_to_parent'][x]['var']
 
 
-    preorder(tree)
+    postorder(tree)
     tree['dis_from_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}, 'dt': np.inf}
     tree['position'] = {}
     for x in ['x', 'y']:
         d = tree['dis_to_parent'][x]
         tree['position'][x] = {'var': 2.0/d['a'], 'mean': d['b']/d['a']}
 
-    def postorder(node):
+    def preorder(node):
         dn = 1.0/(4*D*node['dis_from_parent']['dt'])
         for c1 in node['clades']:
             c1['dis_from_parent'] = {'x':{'a':0, 'b':0, 'c':0}, 'y':{'a':0, 'b':0, 'c':0}, 'dt':c1['time']-node['time']}
@@ -87,14 +87,14 @@ def estimate_ancestral_positions(tree, D):
                     c1['dis_from_parent'][x]['a'] = node['dis_to_parent'][x]['a'] - dc
                     c1['dis_from_parent'][x]['b'] = node['dis_to_parent'][x]['b'] - dc*c1[x]
                     c1['dis_from_parent'][x]['c'] = node['dis_to_parent'][x]['c'] - dc*c1[x]**2 - 0.5*np.log(np.pi/dc)
-                if node!=tree:
+                if node!=tree and node['dis_from_parent'][x]['a']>0:
                     d = node['dis_from_parent'][x]
                     c1['dis_from_parent'][x]['a'] += d['a']*dn/(dn + d['a'])
                     c1['dis_from_parent'][x]['b'] += d['b']*dn/(dn + d['a'])
                     c1['dis_from_parent'][x]['c'] += d['c'] + d['b']**2/(dn + d['a']) + 0.5*np.log(dn/(dn + d['a']))
-            postorder(c1)
+            preorder(c1)
 
-    postorder(tree)
+    preorder(tree)
 
     def marginal_positions(node):
         node['position'] = {}
@@ -107,7 +107,7 @@ def estimate_ancestral_positions(tree, D):
                 node['position'][x]['mean'] =  2.0*(n['b'] + d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
             else:
                 if (d['a']*dn/(d['a'] + dn))==0:
-                    import ipdb; ipdb.set_trace()
+                    print("no info from parent!")
                 node['position'][x] = {'var': 0.5/(d['a']*dn/(d['a'] + dn))}
                 node['position'][x]['mean'] =  2.0*(d['b']*dn/(d['a'] + dn))*node['position'][x]['var']
 
@@ -153,3 +153,4 @@ def collect_errors(tree):
                 collect_errors_rec(c)
     collect_errors_rec(tree)
     return pd.DataFrame(res)
+    

@@ -32,7 +32,9 @@ if __name__=="__main__":
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
                                           gtd=breathing, habitat_params={'period':args.period, 'width':width})
-
+        if len(res['D_est_x'])==0:
+            print("no data")
+            continue
         tmpD_x = np.mean(res["D_est_x"], axis=0)
         tmpD_y = np.mean(res["D_est_y"], axis=0)
         tmpStdD_x = np.std(res["D_est_x"], axis=0)
