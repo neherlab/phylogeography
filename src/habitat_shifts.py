@@ -20,12 +20,12 @@ def breathing(N, Lx, Ly, period, width):
     def f(x,y,t):
         pos = (Lx/2)%Lx 
         prefactor = 0.25*(1+np.cos(2*np.pi*t/period))/width**2
-        return N*(np.exp(-prefactor*(min((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2)))
+        return N*(np.exp(-prefactor*(np.minimum((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2)))
     return f
 
-def seasaw(N, Lx, Ly, period):
+def seasaw(N, Lx, Ly, period, amplitude=0.9):
     def f(x,y,t):
-        return N*np.maximum(0.01,np.minimum(1,0.5*(1+0.8*np.cos(2*np.pi*t/period)*np.cos(2*np.pi*x/Lx)**1)))
+        return N*np.maximum(0.01,np.minimum(1,0.5*(1+amplitude*np.cos(2*np.pi*t/period)*np.cos(2*np.pi*x/Lx)**1)))
     return f
 
 def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,

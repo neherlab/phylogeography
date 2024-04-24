@@ -10,29 +10,49 @@ plt.rcParams.update({
 })
 
 def parse_data(data, groupby=None):
-    density_variation = data.groupby(groupby + ['D'])['density_variation'].mean()
+    dgb = data.groupby(groupby+['D'])
+
+    density_variation = dgb['density_variation'].mean()
     nobs = data.groupby(groupby)['n'].mean()/25
-    diffusion_mean_x = data.groupby(groupby + ['D'])['meanDx'].mean()
-    diffusion_mean_y = data.groupby(groupby + ['D'])['meanDy'].mean()
-    v_mean_x = data.groupby(groupby + ['D'])['meanvx'].mean()
-    v_mean_y = data.groupby(groupby + ['D'])['meanvy'].mean()
-    diffusion_std_x = data.groupby(groupby + ['D'])['stdD_x'].mean()
-    diffusion_std_y = data.groupby(groupby + ['D'])['stdD_y'].mean()
-    tmrca_mean = data.groupby(groupby + ['D'])['meanTmrca'].mean()
-    tmrca_std = data.groupby(groupby + ['D'])['stdTmrca'].mean()
+    diffusion_mean_x = dgb['meanDx'].mean()
+    diffusion_mean_y = dgb['meanDy'].mean()
+    v_mean_x = dgb['meanvx'].mean()
+    v_mean_y = dgb['meanvy'].mean()
+    diffusion_std_x = dgb['stdD_x'].mean()
+    diffusion_std_y = dgb['stdD_y'].mean()
+    tmrca_mean = dgb['meanTmrca'].mean()
+    tmrca_std = dgb['stdTmrca'].mean()
+
+    x_err = {}
+    for g, d in dgb['x_err']:
+        x_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[:5]), axis=0)
+
+    y_err = {}
+    for g, d in dgb['y_err']:
+        y_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[:5]), axis=0)
+
+    x_err_abs = {}
+    for g, d in dgb['x_err']:
+        x_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()][5:])), axis=0)
+
+    y_err_abs = {}
+    for g, d in dgb['y_err']:
+        y_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[5:]), axis=0)
 
     z_mean = {}
-    for g, d in data.groupby(groupby + ['D'])['meanZsq_x']:
+    for g, d in dgb['meanZsq_x']:
         z_mean[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     z_std = {}
-    for g, d in data.groupby(groupby + ['D'])['stdZsq_x']:
+    for g, d in dgb['stdZsq_x']:
         z_std[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     return {"density_variation": density_variation, "nobs":nobs,
             "diffusion_mean_x":diffusion_mean_x, "diffusion_std_x":diffusion_std_x,
             "diffusion_mean_y":diffusion_mean_y, "diffusion_std_y":diffusion_std_y,
             "v_mean_x":v_mean_x, "v_mean_y":v_mean_y,
+            "x_err": pd.DataFrame(x_err).T, "y_err": pd.DataFrame(y_err).T,
+            "x_err_abs": pd.DataFrame(x_err_abs).T, "y_err_abs": pd.DataFrame(y_err_abs).T,
             "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
             "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
             }
@@ -147,3 +167,46 @@ if __name__=="__main__":
             plt.savefig(args.output_velocity)
 
 
+
+    for v in velocity:
+        plt.figure()
+        for m, N in zip(['o', 'd'], N_vals):
+            D_array = data.loc[data.N==N].D.unique()
+            v_array = 2*np.sqrt(dr*D_array)
+            for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,[1])):
+                try:
+                    plt.plot(v_array, np.array([res["x_err"].loc[(ir, dr, N, v, p, d)] for d in D_array])[:,0],
+                    label=f'r={ir}, a={dr} N={N}, v={v} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
+                except:
+                    print(f"r={ir}, a={dr} N={N}, v={v} p={p}")
+
+        plt.legend()
+        plt.plot(v_array, np.zeros_like(D_array), c='k')
+        plt.axvline(v)
+        plt.xlabel('v_{fkpp}')
+        plt.ylabel('error')
+        plt.xscale('log')
+    if args.output_zscore:
+        plt.savefig(args.output_zscore)
+
+
+    for v in velocity:
+        plt.figure()
+        for m, N in zip(['o', 'd'], N_vals):
+            D_array = data.loc[data.N==N].D.unique()
+            v_array = 2*np.sqrt(dr*D_array)
+            for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,[1])):
+                try:
+                    plt.plot(v_array, np.array([res["x_err"].loc[(ir, dr, N, v, p, d)] for d in D_array])[:,1:-2].mean(axis=1),
+                    label=f'r={ir}, a={dr} N={N}, v={v} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
+                except:
+                    print(f"r={ir}, a={dr} N={N}, v={v} p={p}")
+
+        plt.legend()
+        plt.plot(v_array, np.zeros_like(D_array), c='k')
+        plt.axvline(v)
+        plt.xlabel('v_{fkpp}')
+        plt.ylabel('error')
+        plt.xscale('log')
+    if args.output_zscore:
+        plt.savefig(args.output_zscore)

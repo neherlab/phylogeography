@@ -27,8 +27,8 @@ if __name__=="__main__":
     D = args.D
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     #target_density = waves(N, Lx, Ly, **{'velocity':args.velocity, "width":width})
-    period = 100
-    target_density = seasaw(N, Lx, Ly, **{'period':period})
+    period = 200
+    target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
 
     v_FKPP = 2*np.sqrt(args.velocity*D)
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
@@ -39,7 +39,7 @@ if __name__=="__main__":
     terminal_nodes = tree['children']
 
     t = 0
-    for tmax in [5*N + i*period/3.0 for i in range(5)]:
+    for tmax in [5*N + i*period/6.0 for i in range(7)]:
         while t<tmax:
             terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density, total_population=N)
@@ -71,3 +71,4 @@ if __name__=="__main__":
 
     plt.figure()
     plt.plot(x, target_density(x, 0, t)/100, label='target density')
+    plt.hist([n.pos['x'] for n in phylo_tree.find_clades()], bins=20, density=True, alpha=0.5)

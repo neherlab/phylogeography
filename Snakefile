@@ -66,7 +66,7 @@ N_array = [1000, 500, 250]
 rule waves_all:
     input:
         expand("data/waves_subsampled_N={N}_ir={ir}_dr={dr}_v={v}_p={p}.csv",
-                N=N_array, v=v_array, p=[0.1, 1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
+                N=N_array, v=v_array, p=[1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
     output:
         "data/waves.csv"
     run:
@@ -87,11 +87,11 @@ rule breathing_one:
         """
 
 T_array = [10,50,100,200, 500]
-N_array = [100,300]
+N_array = [500, 250]
 rule breathing_all:
     input:
         expand("data/breathing_subsampled_N={N}_ir={ir}_dr={dr}_T={T}_p={p}.csv",
-                N=N_array, T=T_array, p=[0.1, 1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
+                N=N_array, T=T_array, p=[1.0], ir=[0.05, 0.1], dr=[0.025, 0.05, 0.1, 0.2])
     output:
         "data/breathing.csv"
     run:

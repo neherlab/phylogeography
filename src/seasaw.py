@@ -12,6 +12,7 @@ if __name__=="__main__":
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
     parser.add_argument('--period', type=int, default=100)
+    parser.add_argument('--amplitude', type=int, default=1.1)
     parser.add_argument('--subsampling', type=float, default=1.0)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
@@ -31,7 +32,7 @@ if __name__=="__main__":
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
-                                          gtd=seasaw, habitat_params={'period':args.period})
+                                          gtd=seasaw, habitat_params={'period':args.period, 'amplitude':1.1})
 
         tmpD_x = np.mean(res["D_est_x"], axis=0)
         tmpD_y = np.mean(res["D_est_y"], axis=0)
