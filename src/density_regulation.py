@@ -21,7 +21,7 @@ def calc_density(terminal_nodes, interaction_radius, Lx, Ly, bins_per_std = 5.0)
     return RegularGridInterpolator(((bx[1:]+bx[:-1])*0.5, (by[1:]+by[:-1])*0.5), dens, method='linear', bounds_error=False, fill_value=None)
 
 def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg = 0.1,
-           interaction_radius = 0.1, global_pop_reg=True, total_population=100):
+           interaction_radius = 0.1, global_pop_reg=True, total_population=100, periodic=True):
     '''
     step the population forward. The population is a list of terminal nodes
     that generates a number of offspring dependent on local density.
@@ -48,7 +48,16 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
     for noff, parent in zip(offspring, terminals):
         for c in range(noff):
             dx,dy = np.random.randn(2)*diff_std
-            parent['children'].append(make_node(parent['x']+dx, parent['y']+dy, t, parent))
+            if periodic:
+                parent['children'].append(make_node(parent['x']+dx, parent['y']+dy, t, parent))
+            else:
+                x,y = parent['x']+dx, parent['y']+dy
+                if x<0: x = np.abs(x)
+                if y<0: y = np.abs(y)
+                if x>Lx: x = max(0,2*Lx-x)
+                if y>Ly: y = max(0,2*Ly-y)
+                parent['children'].append(make_node(x, y, t, parent))
+
         new_terminals.extend(parent['children'])
 
     if len(new_terminals)<10:

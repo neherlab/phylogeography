@@ -134,6 +134,7 @@ if __name__=="__main__":
                 try:
                     plt.plot(D_array*N, np.array([res["x_err_abs"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,0],
                     label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
+                    plt.plot(D_array*N, np.array([res["y_err_abs"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,0], c='k')
                 except:
                     print(f"r={ir}, a={dr} N={N}, T={T} p={p}")
 
