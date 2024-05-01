@@ -29,7 +29,7 @@ def seasaw(N, Lx, Ly, period, amplitude=0.9):
     return f
 
 def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None):
+                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None, periodic=True):
     # set up tree and initial population uniformly in space
     tree = make_node(Lx/2,Ly/2,-2, None)
     tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
@@ -51,7 +51,7 @@ def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsam
         target_density = gtd(N, Lx, Ly, **habitat_params)
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density, 
-                                total_population=N)
+                                total_population=N, periodic=periodic)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue

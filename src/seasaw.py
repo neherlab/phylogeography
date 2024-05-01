@@ -18,7 +18,6 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     N = args.N
-    width = 0.5
     Lx, Ly = 3, 1
     res_density = {}
     res_density_mean = {}
@@ -31,7 +30,7 @@ if __name__=="__main__":
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
         res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
-                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
+                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, periodic=False,
                                           gtd=seasaw, habitat_params={'period':args.period, 'amplitude':1.1})
 
         tmpD_x = np.mean(res["D_est_x"], axis=0)
