@@ -17,6 +17,8 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
     D_est = []
     zscores = []
     Tmrca = []
+    x_err = []
+    y_err = []
     for t in range((n_iter+10)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=N, total_population=N, periodic=False)
@@ -24,6 +26,7 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
             print("population nearly extinct")
             continue
         if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
+            tbins = sorted([0] + [t - i*N/10 for i in range(4)])
             clean_tree(tree)
             H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
             density_variation.append(np.std(H)/N*np.prod(H.shape))
@@ -45,8 +48,13 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
                 # calculate the mean squared z-scores for the root node and each time bin
                 zscores.extend([[z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
                                 [z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
+                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)] + 
+                             [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
+                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)] + 
+                             [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
 
-    return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores, "Tmrca":Tmrca}
+
+    return {"density_variation": density_variation, "D_est": D_est, "zscores": zscores, "Tmrca":Tmrca, 'x_err':x_err, 'y_err':y_err}
 
 if __name__=="__main__":
     import sys
