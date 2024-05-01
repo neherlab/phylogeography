@@ -1,5 +1,5 @@
 import numpy as np
-from habitat_shifts import waves, seasaw
+from habitat_shifts import waves, seasaw, breathing
 from density_regulation import make_node, evolve, subsample_tree, dict_to_phylo_tree
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions
 import matplotlib.pyplot as plt
@@ -27,8 +27,10 @@ if __name__=="__main__":
     D = args.D
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     #target_density = waves(N, Lx, Ly, **{'velocity':args.velocity, "width":width})
+    # period = 500
+    # target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
     period = 500
-    target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
+    target_density = breathing(N, Lx, Ly, **{'period':period, 'width':0.5})
 
     v_FKPP = 2*np.sqrt(args.velocity*D)
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
@@ -68,6 +70,7 @@ if __name__=="__main__":
 
         x = np.linspace(*axs[1].get_xlim(),101)
         axs[1].plot(x, target_density(x, 0, t)/N, label='target density')
+        axs[1].set_xlim(0,Lx)
 
     plt.figure()
     plt.plot(x, target_density(x, 0, t)/100, label='target density')

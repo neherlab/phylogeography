@@ -19,7 +19,7 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
     Tmrca = []
     for t in range((n_iter+10)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N, total_population=N)
+                                density_reg=density_reg, D=D, target_density=N, total_population=N, periodic=False)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
@@ -81,11 +81,14 @@ if __name__=="__main__":
         tmpStdD = np.std(res["D_est"], axis=0)
         tmpZ =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
         tmpStdZ = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores']), axis=0).filled(fill_value=np.nan))}]"
+        tmp_x_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err']), axis=0).filled(fill_value=np.nan))}]"
+        tmp_y_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err']), axis=0).filled(fill_value=np.nan))}]"
         nobs = len(res["D_est"])
         D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
                       "N": N, "n": len(res["D_est"]), "subsampling": args.subsampling,
                       "D":D, "meanD": tmpD, "stdD": tmpStdD,
                       "meanZsq": tmpZ, "stdZsq": tmpStdZ, "observations": nobs,
+                      "x_err": tmp_x_err, "y_err": tmp_y_err,
                       "density_variation": np.mean(res['density_variation']),
                       "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
 

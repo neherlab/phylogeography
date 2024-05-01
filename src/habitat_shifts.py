@@ -18,9 +18,9 @@ def waves(N, Lx, Ly, velocity, width):
 
 def breathing(N, Lx, Ly, period, width):
     def f(x,y,t):
-        pos = (Lx/2)%Lx 
+        pos = 0
         prefactor = 0.25*(1+np.cos(2*np.pi*t/period))/width**2
-        return N*(np.exp(-prefactor*(np.minimum((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2)))
+        return N*(np.exp(-prefactor*(x-pos)**2))
     return f
 
 def seasaw(N, Lx, Ly, period, amplitude=0.9):
