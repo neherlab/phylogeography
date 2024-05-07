@@ -25,6 +25,32 @@ rule stable_density_all:
         df = pd.concat([pd.read_csv(f) for f in input])
         df.to_csv(output[0], index=False)
 
+rule stable_density_one_periodic:
+    output:
+        "data/stable_density_periodicBC_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_p={p}.csv"
+    shell:
+        """
+        python3 src/stable_density.py --N {wildcards.N} --subsampling {wildcards.p} \
+                    --interaction-radius {wildcards.interaction_radius} --periodic \
+                    --density-reg {wildcards.density_reg} --output {output}
+        """
+
+
+N_array = [1000, 500, 250]
+interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+density_reg_array = [0.02, 0.05, 0.1, 0.2]
+rule stable_density_all:
+    input:
+        expand("data/stable_density_periodicBC_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_p={p}.csv",
+                N=N_array, interaction_radius=interaction_radius_array, density_reg=density_reg_array, p=[0.1, 0.5, 1.0])
+    output:
+        "data/stable_density_periodicBC.csv"
+    run:
+        import pandas as pd
+        df = pd.concat([pd.read_csv(f) for f in input])
+        df.to_csv(output[0], index=False)
+
+
 rule habitat_diffusion_one:
     output:
         "data/habitat_diffusion_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_T={T}_p={p}.csv"

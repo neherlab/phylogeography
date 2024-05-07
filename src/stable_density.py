@@ -4,7 +4,7 @@ from heterogeneity import get_2d_hist
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
 
 
-def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0,
+def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0, periodic=False,
                                 Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
     from scipy.stats import scoreatpercentile
     # set up tree and initial population uniformly in space
@@ -21,7 +21,7 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
     y_err = []
     for t in range((n_iter+10)*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N, total_population=N, periodic=False)
+                                density_reg=density_reg, D=D, target_density=N, total_population=N, periodic=periodic)
         if len(terminal_nodes)<10:
             print("population nearly extinct")
             continue
@@ -48,9 +48,9 @@ def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0
                 # calculate the mean squared z-scores for the root node and each time bin
                 zscores.extend([[z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)],
                                 [z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)]])
-                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)] + 
+                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)] +
                              [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
-                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)] + 
+                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)] +
                              [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
 
 
@@ -65,6 +65,7 @@ if __name__=="__main__":
     parser.add_argument('--interaction-radius', type=float, default=0.1)
     parser.add_argument('--density-reg', type=float, default=0.1)
     parser.add_argument('--subsampling', type=float, default=1.0)
+    parser.add_argument('--periodic', action='store_true', default=False)
     parser.add_argument('--output', type=str)
     args = parser.parse_args()
 
@@ -83,7 +84,7 @@ if __name__=="__main__":
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
-        res = evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
+        res = evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=args.subsampling, periodic=args.periodic,
                                           Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, n_subsamples=nsub)
         tmpD = np.mean(res["D_est"], axis=0)
         tmpStdD = np.std(res["D_est"], axis=0)
