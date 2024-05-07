@@ -39,7 +39,7 @@ rule stable_density_one_periodic:
 N_array = [1000, 500, 250]
 interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
 density_reg_array = [0.02, 0.05, 0.1, 0.2]
-rule stable_density_all:
+rule stable_density_all_BC:
     input:
         expand("data/stable_density_periodicBC_subsampled_N={N}_ir={interaction_radius}_dr={density_reg}_p={p}.csv",
                 N=N_array, interaction_radius=interaction_radius_array, density_reg=density_reg_array, p=[0.1, 0.5, 1.0])
