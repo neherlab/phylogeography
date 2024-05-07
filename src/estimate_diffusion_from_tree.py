@@ -15,10 +15,12 @@ def estimate_diffusion(tree, include_root=False):
     displacements = []
 
     # handle root-parent-branch contribution separately
-    if len(tree['clades'])==1 and include_root:
-        #advance to first furcating node
-        data = branch_contribution(tree, tree['x'], tree['y'], tree['time'])
-        displacements.append(data)
+    if len(tree['clades'])==1:
+        c=tree['clades'][0]
+        if include_root:
+            #advance to first furcating node
+            data = branch_contribution(tree['clades'][0], tree['x'], tree['y'], tree['time'])
+            displacements.append(data)
     else:
         c=tree
 
@@ -153,4 +155,3 @@ def collect_errors(tree):
                 collect_errors_rec(c)
     collect_errors_rec(tree)
     return pd.DataFrame(res)
-    
