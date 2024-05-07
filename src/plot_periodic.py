@@ -1,29 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from plot_stable_density import free_diffusion, parse_data
-from plot_waves import parse_data
+from plot_stable_density import free_diffusion
+from parse_and_plot import parse_data, make_figure
 from itertools import product
 from habitat_shifts import cycling_patches,breathing, seasaw
-
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "Helvetica"
-})
-
-def make_figure(fname=None):
-    fig, axs = plt.subplots(1,10, sharex=True, sharey=True, figsize=(15,2))
-    Lx, Ly = 3,1
-    f = seasaw(1, Lx, Ly, period=9, amplitude=1.1)
-    # f = breathing(1, Lx, Ly, period=9, width=0.25)
-    for i, ax in enumerate(axs.flatten()):
-        grid = np.meshgrid(np.linspace(0,Lx,30*Lx), np.linspace(0,Ly,30))
-        ax.matshow(f(grid[0], grid[1], i))
-        ax.set_axis_off()
-    plt.tight_layout()
-    if fname:
-        plt.savefig(fname)
-
 
 if __name__=="__main__":
     import argparse
@@ -40,6 +21,11 @@ if __name__=="__main__":
     Lx, Ly = 1, 1
     nbins=linear_bins**2
 
+    # make an illustration of the carrying capacity at different times
+    make_figure(seasaw, {'period':9, 'amplitude':1.1}, fname=args.illustration)
+    # make an illustration of the carrying capacity at different times
+    make_figure(breathing, {'period':9, 'width':0.5}, fname=args.illustration)
+
     res = parse_data(data, groupby=['interaction_radius', 'density_reg', 'N', 'period', 'subsampling'])
     interaction_radius = data.interaction_radius.unique()
     period = data.period.unique()
@@ -47,8 +33,6 @@ if __name__=="__main__":
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
 
-    # make an illustration of the carrying capacity at different times
-    make_figure(fname = args.illustration)
 
     ## Population heterogeneity
     ls = ['-', ':', "--", ".-"][len(interaction_radius)]
@@ -141,30 +125,30 @@ if __name__=="__main__":
         plt.legend()
         plt.plot(N*D_array, np.zeros_like(D_array), c='k')
         plt.xlabel('true N*D')
-        plt.ylabel('error')
+        plt.ylabel('absolute error')
         plt.xscale('log')
     if args.output_zscore:
         plt.savefig(args.output_zscore)
 
 
-    for T in period:
-        plt.figure()
-        for m, N in zip(['o', 'd'], N_vals):
-            D_array = data.loc[data.N==N].D.unique()
-            for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,[1])):
-                try:
-                    plt.plot(D_array*N, np.array([res["y_err"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,1:-2].mean(axis=1),
-                    label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
-                except:
-                    print(f"r={ir}, a={dr} N={N}, T={T} p={p}")
+    # for T in period:
+    #     plt.figure()
+    #     for m, N in zip(['o', 'd'], N_vals):
+    #         D_array = data.loc[data.N==N].D.unique()
+    #         for i, (ir, dr, p) in enumerate(product(interaction_radius, density_reg,[1])):
+    #             try:
+    #                 plt.plot(D_array*N, np.array([res["y_err"].loc[(ir, dr, N, T, p, d)] for d in D_array])[:,1:-2].mean(axis=1),
+    #                 label=f'r={ir}, a={dr} N={N}, T={T} p={p}', ls=ls[i%len(ls)], c=f"C{i//len(ls)}", marker=m)
+    #             except:
+    #                 print(f"r={ir}, a={dr} N={N}, T={T} p={p}")
 
-        plt.legend()
-        plt.plot(N*D_array, np.zeros_like(D_array), c='k')
-        plt.xlabel('true N*D')
-        plt.ylabel('error')
-        plt.xscale('log')
-    if args.output_zscore:
-        plt.savefig(args.output_zscore)
+    #     plt.legend()
+    #     plt.plot(N*D_array, np.zeros_like(D_array), c='k')
+    #     plt.xlabel('true N*D')
+    #     plt.ylabel('error')
+    #     plt.xscale('log')
+    # if args.output_zscore:
+    #     plt.savefig(args.output_zscore)
 
     for T in period:
         plt.figure()

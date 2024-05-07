@@ -1,5 +1,6 @@
 from free_diffusion import *
 import matplotlib.pyplot as plt
+from parse_and_plot import *
 
 def get_2d_hist(terminal_nodes, Lx, Ly, bins):
     x_pos = (np.array([c['x'] for c in terminal_nodes]))%Lx
@@ -24,6 +25,7 @@ if __name__=="__main__":
 
     g, H = get_granularity(ntips, 0.1, bins=20)
     axs[0].matshow(H)
+    axs[0].set_axis_off()
 
     for line_style, linear_bins in zip(['-', '--', '-.'], [3,10,30]):
         nbins=linear_bins**2
@@ -42,7 +44,8 @@ if __name__=="__main__":
     #plt.plot(D_array, pred_heterogeneity, label='well mixed limit')
     plt.xscale('log')
     plt.yscale('log')
-    plt.xlabel('diffusion constant [L^2/T_c]')
+    plt.xlabel(r'diffusion constant $[L^2/T_c]$')
     plt.ylabel('heterogeneity (relative to well-mixed case)')
     plt.legend()
+    plt.tight_layout()
     plt.savefig('figures/heterogeneity_free_diffusion.pdf')

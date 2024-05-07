@@ -3,30 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from heterogeneity import get_granularity
 from itertools import product
-
-
-def parse_data(data, groupby=None):
-    density_variation = data.groupby(groupby + ['D'])['density_variation'].mean()
-    nobs = data.groupby(groupby)['n'].mean()/25
-    diffusion_mean = data.groupby(groupby + ['D'])['meanD'].mean()
-    diffusion_std = data.groupby(groupby + ['D'])['stdD'].mean()
-    tmrca_mean = data.groupby(groupby + ['D'])['meanTmrca'].mean()
-    tmrca_std = data.groupby(groupby + ['D'])['stdTmrca'].mean()
-
-    z_mean = {}
-    for g, d in data.groupby(groupby + ['D'])['meanZsq']:
-        z_mean[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
-
-    z_std = {}
-    for g, d in data.groupby(groupby + ['D'])['stdZsq']:
-        z_std[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
-
-    return {"density_variation": density_variation, "nobs":nobs,
-            "diffusion_mean":diffusion_mean, "diffusion_std":diffusion_std,
-            "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
-            "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
-            }
-
+from parse_and_plot import parse_data
 
 def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 100
@@ -75,7 +52,7 @@ if __name__=="__main__":
     plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='diffusion', c='k')
     plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     plt.xscale('log')
-    plt.xlabel('diffusion constant [L^2/N]')
+    plt.xlabel('diffusion constant $[L^2/N]$')
     plt.ylabel('heterogeneity (relative to well-mixed case)')
     plt.legend()
     if args.output_heterogeneity:
@@ -112,7 +89,7 @@ if __name__=="__main__":
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
-    plt.xlabel('diffusion constant [L^2/N]')
+    plt.xlabel('diffusion constant $[L^2/N]$')
     plt.ylabel('Coverage')
     # plt.yscale('log')
     plt.xscale('log')
@@ -131,8 +108,26 @@ if __name__=="__main__":
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
-    plt.xlabel('diffusion constant [L^2/N]')
-    plt.ylabel('T_mrca/2N')
+    plt.xlabel('diffusion constant $[L^2/N]$')
+    plt.ylabel('$T_mrca/2N$')
+    # plt.yscale('log')
+    plt.xscale('log')
+    if args.output_tmrca:
+        plt.savefig(args.output_tmrca)
+
+    # Figure showing the TMRCA of the population
+    plt.figure()
+    for N in N_vals[1:]:
+        for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
+            D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
+            label = f'r={ir}' if N==N_vals[1] else ''
+            for ti in range(4):
+                plt.plot(D_array*N, [res["x_err_abs"].loc[ir, dr, N, Dval][ti] for Dval in D_array],
+                     label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+
+    plt.legend()
+    plt.xlabel('diffusion constant $[L^2/N]$')
+    plt.ylabel('Error')
     # plt.yscale('log')
     plt.xscale('log')
     if args.output_tmrca:
