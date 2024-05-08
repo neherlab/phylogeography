@@ -1,5 +1,145 @@
 import numpy as np
 from heterogeneity import get_2d_hist
+from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
+from scipy.stats import scoreatpercentile
+
+def serialize_result(res):
+    tmpD_x = np.mean(res["D_est_x"], axis=0)
+    tmpD_y = np.mean(res["D_est_y"], axis=0)
+    tmpStdD_x = np.std(res["D_est_x"], axis=0)
+    tmpStdD_y = np.std(res["D_est_y"], axis=0)
+    tmpv_x = np.mean(res["v_est_x"], axis=0)
+    tmpv_y = np.mean(res["v_est_y"], axis=0)
+    tmpStdv_x = np.std(res["v_est_x"], axis=0)
+    tmpStdv_y = np.std(res["v_est_y"], axis=0)
+    tmpZ_x =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+    tmpStdZ_x = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+    tmpZ_y =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+    tmpStdZ_y = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_abs']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_abs']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_sq']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_sq']), axis=0).filled(fill_value=np.nan))}]"
+    nobs = len(res["D_est_x"])
+    return {"meanDx": tmpD_x, "stdD_x": tmpStdD_x, "meanDy": tmpD_y, "stdD_y": tmpStdD_y,
+            "meanvx": tmpv_x, "stdv_x": tmpStdv_x, "meanvy": tmpv_y, "stdv_y": tmpStdv_y,
+            "meanZsq_x": tmpZ_x, "stdZsq_x": tmpStdZ_x,
+            "meanZsq_y": tmpZ_y, "stdZsq_y": tmpStdZ_y,
+            "x_err": tmp_x_err, "y_err": tmp_y_err,
+            "x_err_abs": tmp_x_err_abs, "y_err_abs": tmp_y_err_abs,
+            "x_err_sq": tmp_x_err_sq, "y_err_sq": tmp_y_err_sq,
+            'observations': nobs,
+            "density_variation": np.mean(res['density_variation']),
+            "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])}
+
+def serialize_result_isotropic(res):
+    tmpD = np.mean(res["D_est_x"] + res["D_est_y"], axis=0)
+    tmpStdD = np.std(res["D_est_x"] + res["D_est_y"], axis=0)
+    tmpv = np.mean(res["v_est_x"] + res["v_est_y"], axis=0)
+    tmpStdv = np.std(res["v_est_x"]+res["v_est_y"], axis=0)
+    tmpZ_x =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+    tmpStdZ_x = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_x']), axis=0).filled(fill_value=np.nan))}]"
+    tmpZ_y =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+    tmpStdZ_y = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_abs']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_abs']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_x_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_sq']), axis=0).filled(fill_value=np.nan))}]"
+    tmp_y_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_sq']), axis=0).filled(fill_value=np.nan))}]"
+    nobs = len(res["D_est_x"])
+    return {"meanD": tmpD, "stdD": tmpStdD, "meanv": tmpv, "stdv": tmpStdv,
+            "meanZsq_x": tmpZ_x, "stdZsq_x": tmpStdZ_x,
+            "meanZsq_y": tmpZ_y, "stdZsq_y": tmpStdZ_y,
+            "x_err": tmp_x_err, "y_err": tmp_y_err,
+            "x_err_abs": tmp_x_err_abs, "y_err_abs": tmp_y_err_abs,
+            "x_err_sq": tmp_x_err_sq, "y_err_sq": tmp_y_err_sq,
+            'observations': nobs,
+            "density_variation": np.mean(res['density_variation']),
+            "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])}
+
+
+def run_simulation(D, interaction_radius, density_reg, N, subsampling=1.0, Lx=1, Ly=1,
+                   linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None, periodic=True):
+    # set up tree and initial population uniformly in space
+    tree = make_node(Lx/2,Ly/2,-2, None)
+    tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
+                        for i in range(N)]
+    terminal_nodes = tree['children']
+
+    # quantities to track
+    density_variation = []
+    D_est_x = []
+    D_est_y = []
+    v_est_x = []
+    v_est_y = []
+    zscores_x = []
+    zscores_y = []
+    x_err = []
+    y_err = []
+    x_err_abs = []
+    y_err_abs = []
+    x_err_sq = []
+    y_err_sq = []
+    Tmrca = []
+
+    # burn in
+    t0 = 10
+
+    if gtd:
+        target_density = gtd(N, Lx, Ly, **habitat_params)
+    else:
+        target_density = N
+
+    for t in range((n_iter+t0)*N):
+        terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
+                                density_reg=density_reg, D=D, target_density=target_density,
+                                total_population=N, periodic=periodic)
+        if len(terminal_nodes)<10:
+            print("population nearly extinct")
+            continue
+
+        if t%(N//5)==0 and t>t0*N: # take samples after burnin every Tc//5
+            clean_tree(tree)
+            H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
+            density_variation.append(np.std(H)/N*np.prod(H.shape))
+            for sample in range(n_subsamples):
+                subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
+                D_res = estimate_diffusion(tree)
+                estimate_ancestral_positions(tree, D)
+                z = collect_errors(tree) # this excludes the founding node, first node should be tree root
+                root_index = 0
+                if len(tree['clades'])==1:
+                    Tmrca.append(t-tree['clades'][0]['time'])
+                else:
+                    Tmrca.append(t)
+
+                internal_node_times= sorted(z.loc[z.nonterminal, 't'])
+                tbins = scoreatpercentile(internal_node_times, [0, 20, 40, 60, 80, 100])
+                D_est_x.append(D_res['Dx_total'])
+                D_est_y.append(D_res['Dy_total'])
+                v_est_x.append(D_res['vx_total'])
+                v_est_y.append(D_res['vy_total'])
+                # calculate the mean squared z-scores for the root node and each time bin
+                zscores_x.append([z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)]),
+                zscores_y.append([z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
+                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)])
+                x_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
+                x_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])**2) for i in range(len(tbins)-1)])
+                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)])
+                y_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
+                y_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])**2) for i in range(len(tbins)-1)])
+
+
+    return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y,
+            "v_est_x": v_est_x, "v_est_y": v_est_y,
+            "zscores_x": zscores_x, "zscores_y": zscores_y, "Tmrca":Tmrca,
+            'x_err':x_err, 'y_err':y_err, 'x_err_abs':x_err_abs, 'y_err_abs':y_err_abs, 'x_err_sq':x_err_sq, 'y_err_sq':y_err_sq}
+
+
+
 
 def make_node(x,y,t,parent):
     return {'children':[], 'x':x,'y':y, 'n_offspring':0, 'time':t, 'parent':parent, 'alive':True}
@@ -187,7 +327,7 @@ if __name__=="__main__":
     print(f"starting density: {float(density([0,0]).squeeze()):1.2f}")
     for t in range(3*N):
         terminal_nodes = evolve(terminal_nodes, t, Lx=3*L, Ly=L, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N/3, 
+                                density_reg=density_reg, D=D, target_density=N/3,
                                 global_pop_reg=False, total_population=N)
         if t%(N/5)==0: print(t, len(terminal_nodes))
     clean_tree(tree)

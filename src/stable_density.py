@@ -1,63 +1,5 @@
 import numpy as np
-from density_regulation import make_node, evolve, clean_tree, subsample_tree
-from heterogeneity import get_2d_hist
-from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
-
-
-def evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=1.0, periodic=False,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1):
-    from scipy.stats import scoreatpercentile
-    # set up tree and initial population uniformly in space
-    tree = make_node(Lx/2,Ly/2,-2, None)
-    tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
-                        for i in range(N)]
-    terminal_nodes = tree['children']
-
-    density_variation = []
-    D_est = []
-    zscores_x = []
-    zscores_y = []
-    Tmrca = []
-    x_err = []
-    y_err = []
-    x_err_abs = []
-    y_err_abs = []
-    x_err_sq = []
-    y_err_sq = []
-    for t in range((n_iter+10)*N):
-        terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=N, total_population=N, periodic=periodic)
-        if len(terminal_nodes)<10:
-            print("population nearly extinct")
-            continue
-        if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
-            tbins = sorted([0] + [t - i*N/10 for i in range(4)])
-            clean_tree(tree)
-            H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
-            density_variation.append(np.std(H)/N*np.prod(H.shape))
-            for sample in range(n_subsamples):
-                subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
-                D_res = estimate_diffusion(tree)
-                estimate_ancestral_positions(tree, D)
-                z = collect_errors(tree) # this excludes the founding node, first node should be tree root
-                root_index = 0
-
-                internal_node_times= sorted(z.loc[z.nonterminal, 't'])
-                tbins = scoreatpercentile(internal_node_times, [0, 20, 40, 60, 80, 100])
-                D_est.extend([D_res['Dx_total'], D_res['Dy_total']])
-                # calculate the mean squared z-scores for the root node and each time bin
-                zscores_x.append([z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)]),
-                zscores_y.append([z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
-                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)])
-                x_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
-                x_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])**2) for i in range(len(tbins)-1)])
-                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)])
-                y_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
-                y_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])**2) for i in range(len(tbins)-1)])
-
-
-    return {"density_variation": density_variation, "D_est": D_est, "zscores_x": zscores_x, "zscores_y": zscores_y, "Tmrca":Tmrca,
-            'x_err':x_err, 'y_err':y_err, 'x_err_abs':x_err_abs, 'y_err_abs':y_err_abs, 'x_err_sq':x_err_sq, 'y_err_sq':y_err_sq}
+from density_regulation import run_simulation, serialize_result_isotropic
 
 if __name__=="__main__":
     import sys
@@ -78,7 +20,7 @@ if __name__=="__main__":
     Lx, Ly = 1, 1
     res_density = {}
     res_density_mean = {}
-    D_est = []
+    results = []
     D_array_dens = np.logspace(-3,0,21)*Lx*Ly*2/N
     n_iter = 50
     linear_bins=5
@@ -87,28 +29,13 @@ if __name__=="__main__":
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
-        res = evolve_stable_density(D, interaction_radius, density_reg, N, subsampling=args.subsampling, periodic=args.periodic,
-                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, n_subsamples=nsub)
-        tmpD = np.mean(res["D_est"], axis=0)
-        tmpStdD = np.std(res["D_est"], axis=0)
-        tmpZ =    f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['zscores_x']+res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
-        tmpStdZ = f"[{' '.join(str(x) for x in np.ma.std(np.ma.masked_invalid(res['zscores_x']+res['zscores_y']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_x_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_y_err =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_x_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_abs']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_y_err_abs =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_abs']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_x_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['x_err_sq']), axis=0).filled(fill_value=np.nan))}]"
-        tmp_y_err_sq =  f"[{' '.join(str(x) for x in np.ma.mean(np.ma.masked_invalid(res['y_err_sq']), axis=0).filled(fill_value=np.nan))}]"
-        nobs = len(res["D_est"])
-        D_est.append({"interaction_radius":interaction_radius, "density_reg": density_reg,
-                      "N": N, "n": len(res["D_est"]), "subsampling": args.subsampling,
-                      "D":D, "meanD": tmpD, "stdD": tmpStdD,
-                      "meanZsq": tmpZ, "stdZsq": tmpStdZ, "observations": nobs,
-                      "x_err": tmp_x_err, "y_err": tmp_y_err,
-                      "x_err_abs": tmp_x_err_abs, "y_err_abs": tmp_y_err_abs,
-                      "x_err_sq": tmp_x_err_sq, "y_err_sq": tmp_y_err_sq,
-                      "density_variation": np.mean(res['density_variation']),
-                      "meanTmrca":np.mean(res["Tmrca"]), "stdTmrca":np.std(res["Tmrca"])})
+        res = run_simulation(D, interaction_radius, density_reg, N, subsampling=args.subsampling, periodic=args.periodic,
+                             Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, n_subsamples=nsub)
+        processed_res = serialize_result_isotropic(res)
+        processed_res.update({"interaction_radius":interaction_radius, "density_reg": density_reg,
+                             "N": N,  "subsampling": args.subsampling, "D":D, "periodic":args.periodic})
+
+        results.append(processed_res)
 
     import pandas as pd
     if args.output:
@@ -119,5 +46,5 @@ if __name__=="__main__":
             os.makedirs('data')
         fname = f'data/stable_density_{N=}_ir={interaction_radius}_dr={density_reg}.csv'
 
-    pd.DataFrame(D_est).to_csv(fname, index=False)
+    pd.DataFrame(results).to_csv(fname, index=False)
 

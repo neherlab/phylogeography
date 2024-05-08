@@ -30,19 +30,27 @@ def parse_data(data, groupby=None):
 
     x_err = {}
     for g, d in dgb['x_err']:
-        x_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[:5]), axis=0)
+        x_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     y_err = {}
     for g, d in dgb['y_err']:
-        y_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[:5]), axis=0)
+        y_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     x_err_abs = {}
-    for g, d in dgb['x_err']:
-        x_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()][5:])), axis=0)
+    for g, d in dgb['x_err_abs']:
+        x_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     y_err_abs = {}
-    for g, d in dgb['y_err']:
-        y_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])[5:]), axis=0)
+    for g, d in dgb['y_err_abs']:
+        y_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+
+    x_err_sq = {}
+    for g, d in dgb['x_err_sq']:
+        x_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+
+    y_err_sq = {}
+    for g, d in dgb['y_err_sq']:
+        y_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     if symmetric:
         z_mean = {}
@@ -66,6 +74,7 @@ def parse_data(data, groupby=None):
                 "diffusion_mean":diffusion_mean, "diffusion_std":diffusion_std,
                 "x_err": pd.DataFrame(x_err).T, "y_err": pd.DataFrame(y_err).T,
                 "x_err_abs": pd.DataFrame(x_err_abs).T, "y_err_abs": pd.DataFrame(y_err_abs).T,
+                "x_err_sq": pd.DataFrame(x_err_sq).T, "y_err_sq": pd.DataFrame(y_err_sq).T,
                 "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
                 "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
                 }
@@ -76,6 +85,7 @@ def parse_data(data, groupby=None):
                 "v_mean_x":v_mean_x, "v_mean_y":v_mean_y,
                 "x_err": pd.DataFrame(x_err).T, "y_err": pd.DataFrame(y_err).T,
                 "x_err_abs": pd.DataFrame(x_err_abs).T, "y_err_abs": pd.DataFrame(y_err_abs).T,
+                "x_err_sq": pd.DataFrame(x_err_sq).T, "y_err_sq": pd.DataFrame(y_err_sq).T,
                 "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
                 "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
                 }

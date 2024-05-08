@@ -1,8 +1,5 @@
 import numpy as np
-from density_regulation import make_node, evolve, clean_tree, subsample_tree
-from heterogeneity import get_2d_hist
-from density_regulation import subsample_tree
-from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions, collect_errors
+from density_regulation import run_simulation
 
 def cycling_patches(N, Lx, Ly, period, wave_length):
     def f(x,y,t):
@@ -12,7 +9,7 @@ def cycling_patches(N, Lx, Ly, period, wave_length):
 
 def waves(N, Lx, Ly, velocity, width):
     def f(x,y,t):
-        pos = (Lx/2+velocity*t)%Lx 
+        pos = (Lx/2+velocity*t)%Lx
         return N*(np.exp(-0.5*(np.minimum((pos - x%Lx)%Lx, (x%Lx - pos)%Lx)**2/width**2)))
     return f
 
@@ -27,69 +24,6 @@ def seasaw(N, Lx, Ly, period, amplitude=0.9):
     def f(x,y,t):
         return N*np.maximum(0.01,np.minimum(1,0.5*(0.1+amplitude*np.cos(2*np.pi*t/period)*np.cos(np.pi*x/Lx)**1)))
     return f
-
-def diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=1.0,
-                                Lx=1, Ly=1, linear_bins=5, n_iter=10, n_subsamples=1, gtd=None, habitat_params=None, periodic=True):
-    # set up tree and initial population uniformly in space
-    tree = make_node(Lx/2,Ly/2,-2, None)
-    tree['children'] = [make_node(np.random.random()*Lx, np.random.random()*Ly, -1, tree)
-                        for i in range(N)]
-    terminal_nodes = tree['children']
-
-    density_variation = []
-    D_est_x = []
-    D_est_y = []
-    v_est_x = []
-    v_est_y = []
-    zscores_x = []
-    zscores_y = []
-    x_err = []
-    y_err = []
-    Tmrca = []
-
-    for t in range((n_iter+10)*N):
-        target_density = gtd(N, Lx, Ly, **habitat_params)
-        terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
-                                density_reg=density_reg, D=D, target_density=target_density, 
-                                total_population=N, periodic=periodic)
-        if len(terminal_nodes)<10:
-            print("population nearly extinct")
-            continue
-        if t%(N//5)==0 and t>10*N: # take samples after burnin every Tc//5
-            tbins = sorted([0] + [t - i*N/10 for i in range(4)])
-            clean_tree(tree)
-            H, bx, by = get_2d_hist(terminal_nodes, Lx, Ly, linear_bins)
-            density_variation.append(np.std(H)/N*np.prod(H.shape))
-            for sample in range(n_subsamples):
-                nsamples = subsample_tree(terminal_nodes, tree, p=subsampling, subtree_attr='clades')
-                if nsamples<3:
-                    print("population too small")
-                    continue
-                try:
-                    D_res = estimate_diffusion(tree)
-                    estimate_ancestral_positions(tree, D)
-                except:
-                    import ipdb; ipdb.set_trace()
-                z = collect_errors(tree)
-                if len(tree['clades'])==1:
-                    Tmrca.append(t-tree['clades'][0]['time'])
-                else:
-                    Tmrca.append(t)
-                D_est_x.append(D_res['Dx_total'])
-                D_est_y.append(D_res['Dy_total'])
-                v_est_x.append(D_res['vx_total'])
-                v_est_y.append(D_res['vy_total'])
-                zscores_x.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)])
-                zscores_y.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
-                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)] + 
-                             [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
-                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)] + 
-                             [np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
-
-
-    return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y, "D_est": D_est_x + D_est_y,
-            "v_est_x": v_est_x, "v_est_y": v_est_y, "v_est": v_est_x + v_est_y,
-            'zscores_x':zscores_x, 'zscores_y':zscores_y,'x_err':x_err, 'y_err':y_err, "z_scores": zscores_x+zscores_y,  "Tmrca":Tmrca}
 
 def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):
     d = gtd(1, Lx, Ly, **habitat_params)
@@ -127,8 +61,8 @@ if __name__=="__main__":
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
     for di, D in enumerate(D_array_dens):
         print(f"{di} out of {len(D_array_dens)}: D={D:1.3e}")
-        res = diffusion_in_changing_habitats(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
-                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter, 
+        res = run_simulation(D, interaction_radius, density_reg, N, subsampling=args.subsampling,
+                                          Lx=Lx, Ly=Ly, linear_bins=linear_bins, n_iter=n_iter,
                                           gtd=cycling_patches, habitat_params={'period':args.period, 'wave_length':1.0})
 
         tmpD = np.mean(res["D_est"], axis=0)
