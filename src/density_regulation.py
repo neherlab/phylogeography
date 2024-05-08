@@ -118,19 +118,20 @@ def run_simulation(D, interaction_radius, density_reg, N, subsampling=1.0, Lx=1,
 
                 internal_node_times= sorted(z.loc[z.nonterminal, 't'])
                 tbins = scoreatpercentile(internal_node_times, [0, 20, 40, 60, 80, 100])
+                tbins[-1] += 1 # add one to include the time point
                 D_est_x.append(D_res['Dx_total'])
                 D_est_y.append(D_res['Dy_total'])
                 v_est_x.append(D_res['vx_total'])
                 v_est_y.append(D_res['vy_total'])
                 # calculate the mean squared z-scores for the root node and each time bin
-                zscores_x.append([z.iloc[root_index].zx**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)]),
-                zscores_y.append([z.iloc[root_index].zy**2]+[np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
-                x_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)])
-                x_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
-                x_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])**2) for i in range(len(tbins)-1)])
-                y_err.append([np.mean(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)])
-                y_err_abs.append([np.mean(np.abs(z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
-                y_err_sq.append([np.mean((z.loc[(z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])**2) for i in range(len(tbins)-1)])
+                zscores_x.append([z.iloc[root_index].zx**2]+[np.mean(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zx']**2) for i in range(len(tbins)-1)]),
+                zscores_y.append([z.iloc[root_index].zy**2]+[np.mean(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'zy']**2) for i in range(len(tbins)-1)])
+                x_err.append([np.mean(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err']) for i in range(len(tbins)-1)])
+                x_err_abs.append([np.mean(np.abs(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])) for i in range(len(tbins)-1)])
+                x_err_sq.append([np.mean((z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'x_err'])**2) for i in range(len(tbins)-1)])
+                y_err.append([np.mean(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err']) for i in range(len(tbins)-1)])
+                y_err_abs.append([np.mean(np.abs(z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])) for i in range(len(tbins)-1)])
+                y_err_sq.append([np.mean((z.loc[z.nonterminal & (z.t >= tbins[i]) & (z.t<tbins[i+1]), 'y_err'])**2) for i in range(len(tbins)-1)])
 
 
     return {"density_variation": density_variation, "D_est_x": D_est_x, "D_est_y": D_est_y,
