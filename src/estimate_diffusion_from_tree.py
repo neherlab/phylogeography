@@ -135,7 +135,7 @@ def collect_positioning(tree):
             res[-1]['subtree_y_std'] = node['dis_to_parent']['y']['var']**0.5
             for c in node['clades']:
                 collect_positioning_rec(c, res)
-    collect_positioning_rec(tree, res)
+    collect_positioning_rec(tree['clades'][0] if len(tree['clades'])==1 else tree, res)
     return res
 
 def collect_errors(tree):
@@ -153,5 +153,5 @@ def collect_errors(tree):
         if nonterminal:
             for c in node['clades']:
                 collect_errors_rec(c)
-    collect_errors_rec(tree)
+    collect_errors_rec(tree['clades'][0] if len(tree['clades'])==1 else tree)
     return pd.DataFrame(res)

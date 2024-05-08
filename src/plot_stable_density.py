@@ -35,21 +35,21 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
     # select the interaction radius and density regulation strength to plot
-    ir_to_plot = interaction_radius[:]
+    ir_to_plot = interaction_radius[1:]
     density_reg_to_plot = density_reg[1:2]
 
     # Plot the heterogeneity
-    ls = ['-', '-.', "--", ":"][:len(density_reg_to_plot)]
+    ls = ['-', '-.', "--", ":"] #[:len(density_reg_to_plot)]
     plt.figure()
-    for N in N_vals[1:]:
+    for N in N_vals[1:2]:
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["density_variation"][ir, dr, N, :].index)
             label = f'r={ir}' if N==N_vals[1] else ''
             plt.plot(D_array*N/Lx/Ly, res["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
-                    label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                    label=label, ls=ls[i%len(ls)], c=f"C{i%10}")
 
         free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
-    plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='diffusion', c='k')
+    plt.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='free diffusion', c='k')
     plt.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     plt.xscale('log')
     plt.xlabel('diffusion constant $[L^2/N]$')
@@ -60,13 +60,13 @@ if __name__=="__main__":
 
     ## Plot the diffusion estiamtes
     plt.figure()
-    for N in N_vals:
+    for ni,N in enumerate(N_vals):
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["diffusion_mean"][ir, dr, N, :].index)
             label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
             plt.errorbar(D_array*N, res["diffusion_mean"][ir, dr, N, :]/D_array,
                                     res["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]),
-                 label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                 label=label, ls=ls[ni%len(ls)], c=f"C{i%10}")
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
@@ -79,13 +79,17 @@ if __name__=="__main__":
 
     # plot the z-scores, i.e. the degree to which the estimates cover the true value
     plt.figure()
-    for N in N_vals:
-        for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
-            D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
-            label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
-            plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)][0:1] for d in D_array]).mean(axis=1),
-                                    np.array([res["z_std"].loc[(ir, dr, N, d)]/np.sqrt(res["nobs"][ir, dr, N]) for d in D_array]).mean(axis=1),
-                 label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+    for ni,N in enumerate(N_vals[1:2]):
+        for ti in range(1,5):
+            for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
+                D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
+                label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
+                plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)][ti] for d in D_array]),
+                                        np.array([res["z_std"].loc[(ir, dr, N, d)][ti]/np.sqrt(res["nobs"][ir, dr, N]) for d in D_array]),
+                    label=label, ls=ls[ti%len(ls)], c=f"C{i%10}")
+                # plt.errorbar(D_array*N, np.array([res["z_mean"].loc[(ir, dr, N, d)][0:1] for d in D_array]).mean(axis=1)/res["diffusion_mean"][ir, dr, N, :]*D_array,
+                #                         np.array([res["z_std"].loc[(ir, dr, N, d)]/np.sqrt(res["nobs"][ir, dr, N]) for d in D_array]).mean(axis=1),
+                #      label=label, ls=ls[ni%len(ls)], c=f"C{i%10}")
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
@@ -98,13 +102,13 @@ if __name__=="__main__":
 
     # Figure showing the TMRCA of the population
     plt.figure()
-    for N in N_vals[1:]:
+    for ni, N in enumerate(N_vals[:]):
         for i, (ir, dr) in enumerate(product(ir_to_plot, density_reg_to_plot)):
             D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
             label = f'r={ir}' if N==N_vals[1] else ''
             plt.errorbar(D_array*N, res["tmrca_mean"][ir, dr, N, :]/N/2,
                                     res["tmrca_std"][ir, dr, N, :]/N/2/np.sqrt(res["nobs"][ir, dr, N]),
-                 label=label, ls=ls[i%len(ls)], c=f"C{i//len(ls)}")
+                 label=label, ls=ls[ni%len(ls)], c=f"C{i%10}")
 
     plt.legend()
     plt.plot(N*D_array, np.ones_like(D_array), c='k')
