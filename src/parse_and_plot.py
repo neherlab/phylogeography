@@ -11,7 +11,7 @@ def parse_data(data, groupby=None):
     dgb = data.groupby(groupby+['D'])
 
     density_variation = dgb['density_variation'].mean()
-    nobs = data.groupby(groupby)['n'].mean()/25
+    nobs = data.groupby(groupby)['observations'].mean()/25
     symmetric = False
     try:
         diffusion_mean_x = dgb['meanDx'].mean()
@@ -52,22 +52,21 @@ def parse_data(data, groupby=None):
     for g, d in dgb['y_err_sq']:
         y_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-    if symmetric:
-        z_mean = {}
-        for g, d in dgb['meanZsq']:
-            z_mean[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+    z_mean_x = {}
+    for g, d in dgb['meanZsq_x']:
+        z_mean_x[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-        z_std = {}
-        for g, d in dgb['stdZsq']:
-            z_std[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
-    else:
-        z_mean = {}
-        for g, d in dgb['meanZsq_x']:
-            z_mean[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+    z_std_x = {}
+    for g, d in dgb['stdZsq_x']:
+        z_std_x[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-        z_std = {}
-        for g, d in dgb['stdZsq_x']:
-            z_std[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+    z_mean_y = {}
+    for g, d in dgb['meanZsq_y']:
+        z_mean_y[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+
+    z_std_y = {}
+    for g, d in dgb['stdZsq_y']:
+        z_std_y[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
     if symmetric:
         return {"density_variation": density_variation, "nobs":nobs,
@@ -76,7 +75,7 @@ def parse_data(data, groupby=None):
                 "x_err_abs": pd.DataFrame(x_err_abs).T, "y_err_abs": pd.DataFrame(y_err_abs).T,
                 "x_err_sq": pd.DataFrame(x_err_sq).T, "y_err_sq": pd.DataFrame(y_err_sq).T,
                 "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
-                "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
+                "z_mean": pd.DataFrame(z_mean_x).T, "z_std":pd.DataFrame(z_std_x).T,
                 }
     else:
         return {"density_variation": density_variation, "nobs":nobs,
@@ -87,16 +86,18 @@ def parse_data(data, groupby=None):
                 "x_err_abs": pd.DataFrame(x_err_abs).T, "y_err_abs": pd.DataFrame(y_err_abs).T,
                 "x_err_sq": pd.DataFrame(x_err_sq).T, "y_err_sq": pd.DataFrame(y_err_sq).T,
                 "tmrca_mean":tmrca_mean, "tmrca_std":tmrca_std,
-                "z_mean": pd.DataFrame(z_mean).T, "z_std":pd.DataFrame(z_std).T,
+                "z_mean_x": pd.DataFrame(z_mean_x).T, "z_std_x":pd.DataFrame(z_std_x).T,
+                "z_mean_y": pd.DataFrame(z_mean_y).T, "z_std_y":pd.DataFrame(z_std_y).T
                 }
 
 
-def make_figure(func, params, Lx=3, Ly=1, time_points=10, fname=None):
+def make_figure(func, params, Lx=3, Ly=1, time_points=5, fname=None):
     fig, axs = plt.subplots(1,time_points, sharex=True, sharey=True, figsize=(15,2))
     f = func(1, Lx, Ly, **params)
     for i, ax in enumerate(axs.flatten()):
         grid = np.meshgrid(np.linspace(0,Lx,30*Lx), np.linspace(0,Ly,30))
-        ax.matshow(f(grid[0], grid[1], i))
+        vals = f(grid[0], grid[1], i)
+        ax.matshow(vals/np.max(vals), vmax=1, vmin=0)
         ax.set_axis_off()
     plt.tight_layout()
     if fname:

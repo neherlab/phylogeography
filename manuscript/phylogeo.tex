@@ -100,10 +100,13 @@ The population distribution is patchy with large uninhabited areas.
 This heterogeneity increases substantially for even lower $D$, when the population is essentially a cloud of width $\sqrt{4DT_c}\ll L$.
 Fig.~\ref{fig:heterogeneity}B quantifies this heterogeneity as the standard deviation of population density in two-dimensional bins of different size  relative to the expectation in the case of a spatially well-mixed population.
 
-\begin{figure*}[tb]
-    \includegraphics*[width=\textwidth]{figures/heterogeneity_free_diffusion.pdf}
-    \caption[short]{\label{fig:heterogeneity}{\bf Population density variation in free diffusion models.}
-    When spatial motion is independent of population density and coalesce is sufficiently rapid, the realized population density fluctuates strongly across the habitat. The left panel shows the population density for the case $D = 0.1 L^2/N$ in linear bins of size $L/20$. The right panel shows the standard deviation of the population density for different bin sizes as a function of the diffusion coefficient. For $D>L^2/N$, the heterogeneity approaches the expected value in the well mixed limit. }
+
+\begin{figure*}
+    \includegraphics[width=0.48\textwidth]{figures/heterogeneity_free_diffusion}
+    \includegraphics[width=0.48\textwidth]{figures/stable_density}
+    \caption{\label{fig:density_reg}  {\bf Population density variation in free diffusion models.}
+    When spatial motion is independent of population density and coalesce is sufficiently rapid, the realized population density fluctuates strongly across the habitat. The left panel shows the population density for the case $D = 0.1 L^2/N$ in linear bins of size $L/20$. The right panel shows the standard deviation of the population density for different bin sizes as a function of the diffusion coefficient. For $D>L^2/N$, the heterogeneity approaches the expected value in the well mixed limit.
+    {\bf Density regulation reduces fluctuations in density regulation, but results in population fragmentation at low diffusion constants.} The left panel shows population heterogeneity measured using bins of linear dimension $L/5$ for $\alpha =0.05$ for different values of the interaction radius $r$. For $r\ll L$, density fluctuations are strongly suppressed. At the same time, the time to the most recent common ancestor increases dramatically, indicating that the population fragments in subpopulations that don't interact.}
 \end{figure*}
 
 Biological populations spread into areas that support them and will quickly populate fertile areas that are below their carrying capacity.
@@ -125,54 +128,80 @@ We calculate the population density using a Gaussian kernel with interaction rad
 where the sum is over all individuals $i$ in the population of size $N$.
 
 As soon as the interaction radius $r$ is much smaller than the habitat size, this density regulation leads to a more homogeneous population density, see Fig.~\ref{fig:density_reg}.
-Diffusion constants estimated from the population using Eq.~\ref{eq:dispersal} remain accurate with moderate overestimation of small diffusion constants.
+Despite the substantial reduction in density fluctuations, the estimates of dispersal rates using Eq.~\ref{eq:disperal_parameters} are not substantially affected, at least when boundary conditions are periodic.
 If instead of periodic boundary conditions reflective boundary conditions are used, diffusion constants are underestimated once $\sqrt{2DT_c}$ becomes comparable to the habitat size.
 This underestimation will then result in over-confident inference of ancestral locations, in particular for recent ancestral nodes.
 
 But with decreasing diffusion, the population fragments into smaller than smaller subpopulations that don't interact or coalesce.
 This manifests in an increasing time to the MRCA, see Fig.~\ref{fig:density_reg}.
 Spatial location and the coalescence process are thus strongly coupled, though this coupling manifests itself in population structure rather than estimates of the diffusion coefficients.
-In such a spatially structured population, estimates of historical populations sizes (e.g.~skyline estimates) will be strongly affected.
+Hence both at high and at low diffusion constants, assumptions of phylogeographic inference can be problematic: if diffusion constants are much smaller than then $L^2/T_{mrca}$, the population is fragmented into effective subpopulations that violate the typical tree-priors, if $D\geq L^/T_{mrca}$, the boundaries of the domain restrict free diffusion.
 
-\begin{figure*}
-    \includegraphics[width=0.48\textwidth]{figures/density_reg_heterogeneity.pdf}
-    \includegraphics[width=0.48\textwidth]{figures/density_reg_tmrca.pdf}
-    \caption{\label{fig:density_reg} {\bf Density regulation reduces fluctuations in density regulation, but results in population fragmentation at low diffusion constants.} The left panel shows population heterogeneity measured using bins of linear dimension $L/5$ for $\alpha =0.05$ for different values of the interaction radius $r$. For $r\ll L$, density fluctuations are strongly suppressed. At the same time, the time to the most recent common ancestor increases dramatically, indicating that the population fragments in subpopulations that don't interact.}
-\end{figure*}
-
-As discussed above, a static carrying capacity in an equilibrium population has limited effects on estimates of ancestral locations and diffusion coefficients.
+\section*{How do changing habitats affect phylogeographic inferences?}
+As discussed above, a static carrying capacity in an equilibrium population has limited effects on estimates of ancestral locations and diffusion coefficients beyond boundary effects.
 In reality, carrying capacities vary through time.
 Such variation happens on all time scales, ranging from environmental changes over millennia to seasonal fluctuations.
 The circulation of seasonal influenza viruses, for example, varies by many orders of magnitude between summer and winter in temperate climates.
 Fluctuations in carrying capacity mean that populations not just spread because individuals move, but also because populations grow in regions where the population density is below the carrying capacity.
 In such situations, the accuracy and interpretation of phylogeographic inferences are unclear.
 
-A simple model of the interplay between growth and spatial spread is again given by the Fisher-KPP equation (Eq.~\ref{eq:FKPP}) above.
+In Fig.~\ref{fig:seasaw} we consider a case where the region with highest carrying capacity shifts from the left to the right in a periodic manner.
+The carrying capacity is illustrated in Fig.~\ref{fig:seasaw}A for 5 time points covering half a period.
+To avoid extinction at low dispersal rates, selection is soft meaning that the overall population size is kept approximately constant.
+If the dispersal rate is sufficiently high, the population follows the shifting carrying capacity and lineage in the tree undergo directed motion.
+When the population sampled at a time when the population has just contracted to the left (see Fig.~\ref{fig:seasaw}B), the position of older nodes is not estimated correctly.
+Their true positions are to the right of the current population, but the inferred positions are central in the shifted population.
+
+This bias depends on the period at which the carrying capacity oscillates and the dispersal rate, which determines how quickly the population can follow the shifting carrying capacity.
+Fig.~\ref{fig:seasaw}C shows the estimated diffusion constant (using Eq.~\ref{eq:disperal_parameters}) in $x$ and $y$ direction relative to the true value used in the simulations.
+At very high diffusion constants, both $D_x$ and $D_y$ are underestimated due to spatial constraint of carrying capacity.
+With decreasing $D_x$, it starts to be overestimated until at some point the population no longer follows the shifting carrying capacity.
+The panel Fig.~\ref{fig:seasaw}D shows $z_x^2 = \langle (\hat{x} - x)^2/\sigma_x^2 \rangle$ and $z_y^2=\langle (\hat{y} - y)^2/\sigma_y^2\rangle$ for the oldest 20\% of internal nodes.
+For free diffusion, $z_x^2$ should be 1, but for $x$ it is substantially larger, indicating that inferences are over-confident.
+Conversely, $z_y^2$ is smaller than 1 since positions are constrained by the habitat.
+
+\begin{figure*}
+    \includegraphics[width=\textwidth]{figures/seasaw_illustration}
+    \includegraphics[width=\textwidth]{figures/seasaw_example}
+    \includegraphics[width=\textwidth]{figures/seasaw}
+    \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} Panel A shows an illustration of the simulated set-up: The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back. The habitat size is $L_x=3$, $L_y=1$.
+    Panel B shows a tree from a simulation under these conditions with $D=0.0004$ and $N=500$. The panel on the right shows the inferred (triangles) and true positions (circles) of internal nodes, highlight the root with large markers. Blue and green colors correspond to older nodes.
+    Panels C show estimates of diffusion coefficients if $x$ (solid lines) and $y$ (dashed lines) relative to their true values as a function of the $D$. The right panel shows the average $z_x^2$ and $z_y^2$ for the oldest 20\% of internal nodes.}
+\end{figure*}
+
+The above example and summaries show that behavior of a population in shifting habitats and the interpretation of phylogeographic inferences depends strongly one whether dispersal is fast enough that the population can follow the shifting carrying capacity.
+If the population can not follow the situation is similar to the static case often leading to fragmented populations.
+Once the population starts following, inferred ancestral locations of deep nodes become unreliable.
+The dispersal rates necessary to keep up with the shifting carrying capacity can be estimated from Fisher-KPP equation (Eq.~\ref{eq:FKPP}) above.
 This equation admits solutions with a traveling front, that the population ``invades'' the empty territory with velocity $v_{FKPP} = 2\sqrt{D \alpha}$ \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}.
 Note that the model itself does not have an explicit parameter that has dimensions of a velocity.
 The speed at which the population invades space is given as compound of diffusion and accelerated growth in regions of low density and only grows like the square root of diffusion constant.
 
-To explore such the result of such changing habitats on phylogeographic inferences, we simulated a habitat with a Gaussian carrying capacity that moves at a constant velocity $v$ along the $x$-axis (Fig.~\ref{fig:traveling_wave}) with periodic boundary conditions.
-When varying the microscopic dispersal parameter $D$ and the velocity $v$ of the carrying capacity profile, I observe diverse behavior with often dramatically overestimated $\hat{D}$. These behaviors are explained comparing the speed $v_{FKPP}$ at which the population can invade new territory with the external speed $v$, the ratio of which is used to plot the simulation data in Fig.~\ref{fig:traveling_wave}.
+To explore such the result of such changing habitats on phylogeographic inferences, I simulated a habitat with a Gaussian carrying capacity that moves at a constant velocity $v$ along the $x$-axis (Fig.~\ref{fig:traveling_wave}) with periodic boundary conditions.
+Unsurprisingly, estimates of $\hat{D}$ using Eq.~\ref{eq:dispersal_parameters} are often dramatically overestimated (by up to factors of 1000).
+In contrast to the above examples with no persistent directionality, in this example there is a sense in which a velocity estimate might be meaningful.
+Fig.~\ref{fig:traveling_wave}C shows estimates of $v$ using Eq.~\ref{eq:dispersal_parameters} relative to the true velocity.
+This ratio is monotonically increasing agrees with the diffusion coefficient and shows a range where it close to 1, i.e.~where the estimated velocity of lineages agrees with the external velocity.
+
+These behaviors are explained comparing the speed $v_{FKPP}$ at which the population can invade new territory with the external speed $v$, the ratio of which is used to plot the simulation data in Fig.~\ref{fig:traveling_wave}.
 For $v_{FKPP} \ll v$, the population cannot keep up with the moving carrying capacity and is saved from extinction only because selection is soft.
 In this regime, the estimated velocity of lineages is below $v$ and both the estimated $v$ and $D$ increase with $v_{FKPP}$.
 Once $v\sim v_{FKPP}$, the estimated lineage velocity coincides with $v_{FKPP}$, while the estimated $D$ peaks at values orders of magnitude above the true value.
 For larger $v_{FKPP}$, the estimated velocity is stable for some time, before increasing again with $v_{FKKP}$ is a sampling dependent manner.
-At larger $v_{FKPP}$, $D$ is eventually underestimates.
+At larger $v_{FKPP}$, $D$ is eventually underestimated since the Gaussian population profile hinders dispersal.
 
-In this extreme example of a population dragged along by a moving carrying capacity, estimates of dispersal rates are meaningless, and estimates of velocities are only compatible with the speed of the shifting habitat in a narrow range when the habitat speed matches the FKPP velocity.
-Similarly, estimates of ancestral locations are biased to the current position of the habitat.
-
-Less extreme spatio-temporal dynamics of the habitat results in less extreme biases, but still illustrate that caution is required when interpreting phylogeographic inferences in environment that might change between the present and the $T_{MRCA}$ of the population.
-I simulated two additional scenarios: one habitat that expands and contracts to a core region periodically, and one that oscillates back and forth between two regions with a homogeneous intermediate state.
 
 \begin{figure}
-    \includegraphics[width=0.48\textwidth]{figures/traveling_wave}
+    \includegraphics[width=0.3\textwidth]{figures/traveling_wave}
     \includegraphics[width=0.48\textwidth]{figures/waves_D}
     \includegraphics[width=0.48\textwidth]{figures/waves_v}
     \caption{\label{fig:traveling_wave} {\bf Phylogeographic estimates in rapidly changing environments.} Panel A shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
     Panels B\&C show estimates of diffusion coefficients and velocities, relative to their true values, as a function of the ratio of the FKPP velocity to the external velocity $v$. }
 \end{figure}
+
+
+\section*{Discussion}
+
 
 \begin{itemize}
     \item periodic seasaws and other patters
@@ -180,8 +209,6 @@ I simulated two additional scenarios: one habitat that expands and contracts to 
     \item can we say something general? coalescence time versus diffusion time across the habitat, habitat changes vs fkpp speed
     \item typical FKPP speed: $D=km^2/day$, $\alpha = 0.2/day$. $v_{FKPP} = 2\sqrt{D\alpha} = km/day$.
 \end{itemize}
-
-\section*{Discussion}
 
 
 \bibliography{bib}

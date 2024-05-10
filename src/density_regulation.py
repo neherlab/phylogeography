@@ -177,7 +177,8 @@ def evolve(terminals, t, Lx=1, Ly=1, D=0.1, target_density = 100.0, density_reg 
         target_density_vals = target_density
 
     # calculate fitness of each extant individual
-    fitness = np.maximum(0.1,1 + density_reg*(1-dens_array/target_density_vals))
+    scale_factor = np.mean(target_density_vals)/np.mean(dens_array)
+    fitness = np.maximum(0.1,1 + density_reg*(1-scale_factor*dens_array/target_density_vals))
     #print(fitness.mean(), dens_array.mean(), target_density, len(terminals))
     if global_pop_reg: # add global density regulation (set average fitness to one, add density independent term)
         fitness += (1 - fitness.mean()) + 0.1*(1-len(terminals)/total_population)

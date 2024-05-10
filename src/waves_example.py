@@ -4,7 +4,7 @@ from density_regulation import make_node, evolve, subsample_tree, dict_to_phylo_
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions
 import matplotlib.pyplot as plt
 from Bio import Phylo
-from matplotlib.cm import viridis_r 
+from matplotlib.cm import viridis_r
 
 
 if __name__=="__main__":
@@ -27,10 +27,10 @@ if __name__=="__main__":
     D = args.D
     interaction_radius, density_reg = args.interaction_radius, args.density_reg
     #target_density = waves(N, Lx, Ly, **{'velocity':args.velocity, "width":width})
-    # period = 500
-    # target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
     period = 500
-    target_density = breathing(N, Lx, Ly, **{'period':period, 'width':0.5})
+    target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
+    # period = 1000
+    #target_density = breathing(N, Lx, Ly, **{'period':period, 'width':0.5})
 
     v_FKPP = 2*np.sqrt(args.velocity*D)
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
@@ -41,7 +41,7 @@ if __name__=="__main__":
     terminal_nodes = tree['children']
 
     t = 0
-    for tmax in [5*N + i*period/6.0 for i in range(7)]:
+    for tmax in [5*N + i*period/8.0 for i in range(9)]:
         while t<tmax:
             terminal_nodes = evolve(terminal_nodes, t, Lx=Lx, Ly=Ly, interaction_radius=interaction_radius,
                                 density_reg=density_reg, D=D, target_density=target_density, total_population=N, periodic=False)
@@ -49,29 +49,44 @@ if __name__=="__main__":
 
         subsample_tree(terminal_nodes, tree, p=1.0, subtree_attr='clades')
         D_res = estimate_diffusion(tree)
-        estimate_ancestral_positions(tree, D)
-        phylo_tree = dict_to_phylo_tree(tree['clades'][0], child_attr='clades')
+        estimate_ancestral_positions(tree, D_res['Dxy_total'])
+        phylo_tree = dict_to_phylo_tree(tree['clades'][0] if len(tree['clades'])==1 else tree,
+                                        child_attr='clades')
 
-        fig, axs = plt.subplots(1,2, figsize=(12,8))
+        fig, axs = plt.subplots(1,2, figsize=(12,3))
         Phylo.draw(phylo_tree, axes=axs[0], label_func=lambda x: '')
+        print(f"N={len(terminal_nodes)}")
 
-        for n in phylo_tree.get_nonterminals():
-            axs[1].plot([n.pos['x'], n.inferred_pos['x']['mean']], [n.pos['y'], n.inferred_pos['y']['mean']], c='k', lw=0.5, alpha=0.5)
-            for c in n.clades:
-                axs[1].plot([n.pos['x'], c.pos['x']], [n.pos['y'], c.pos['y']], c='k', lw=0.5, alpha=0.5)
+        # axs[1].errorbar([n.inferred_pos['x']['mean'] for n in phylo_tree.get_nonterminals()],
+        #                 [n.inferred_pos['y']['mean'] for n in phylo_tree.get_nonterminals()],
+        #                 [n.inferred_pos['x']['var']**0.5 for n in phylo_tree.get_nonterminals()],
+        #                 [n.inferred_pos['y']['var']**0.5 for n in phylo_tree.get_nonterminals()] ,
+        #                 c='k', alpha=0.1, marker='d', ls='')
+        axs[1].scatter([n.pos['x'] for n in phylo_tree.get_nonterminals()],
+                       [n.pos['y'] for n in phylo_tree.get_nonterminals()],
+                        c=[n.t for n in phylo_tree.get_nonterminals()], s=30)
 
-        axs[1].errorbar([n.inferred_pos['x']['mean'] for n in phylo_tree.find_clades()], [n.inferred_pos['y']['mean'] for n in phylo_tree.find_clades()],
-                        [n.inferred_pos['x']['var']**0.5 for n in phylo_tree.find_clades()], [n.inferred_pos['y']['var']**0.5 for n in phylo_tree.find_clades()] ,
-                c='k', alpha=0.1, marker='d', ls=None)
-        axs[1].scatter([n.pos['x'] for n in phylo_tree.find_clades()], [n.pos['y'] for n in phylo_tree.find_clades()], 
-                c=[n.t for n in phylo_tree.find_clades()], s=30)
+        axs[1].scatter([n.inferred_pos['x']['mean'] for n in phylo_tree.get_nonterminals()],
+                       [n.inferred_pos['y']['mean'] for n in phylo_tree.get_nonterminals()],
+                        c=[n.t for n in phylo_tree.get_nonterminals()], s=20, marker='^')
 
+        n = phylo_tree.root
+        axs[1].scatter([n.pos['x']], [n.pos['y']], c='r', s=100)
+        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='g', s=100, marker='^')
 #                c=[n.t for n in phylo_tree.find_clades()], s=30, marker='d', ls=None)
-
-        x = np.linspace(*axs[1].get_xlim(),101)
-        axs[1].plot(x, target_density(x, 0, t)/N, label='target density')
+        z = [(n.inferred_pos['x']['mean'] - n.pos['x'])/n.inferred_pos['x']['var']**0.5 for n in phylo_tree.get_nonterminals()]
+        tps = [n.t for n in phylo_tree.get_nonterminals()]
+        # axs[2].scatter(tps, z, c='k', s=30)
+        x = np.linspace(0, Lx,101)
+        dens = target_density(x, 0, t)
+        axs[1].plot(x, dens/np.max(dens), label='target density')
         axs[1].set_xlim(0,Lx)
+        for n in phylo_tree.get_nonterminals():
+            axs[1].arrow(n.pos['x'], n.pos['y'], n.inferred_pos['x']['mean'] - n.pos['x'],
+                         n.inferred_pos['y']['mean'] - n.pos['y'], lw=0.5, alpha=0.5)
+        plt.tight_layout()
 
-    plt.figure()
-    plt.plot(x, target_density(x, 0, t)/100, label='target density')
-    plt.hist([n.pos['x'] for n in phylo_tree.find_clades()], bins=20, density=True, alpha=0.5)
+    # plt.figure()
+    # dens = target_density(x, 0, t)
+    # plt.plot(x, dens/np.mean(dens), label='target density')
+    # plt.hist([n.pos['x'] for n in phylo_tree.find_clades()], bins=20, density=True, alpha=0.5)

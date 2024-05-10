@@ -22,7 +22,8 @@ def breathing(N, Lx, Ly, period, width):
 
 def seasaw(N, Lx, Ly, period, amplitude=0.9):
     def f(x,y,t):
-        return N*np.maximum(0.01,np.minimum(1,0.5*(0.1+amplitude*np.cos(2*np.pi*t/period)*np.cos(np.pi*x/Lx)**1)))
+        v = np.maximum(0.03,np.minimum(1,0.5*(0.1+amplitude*np.cos(2*np.pi*t/period)*np.cos(np.pi*x/Lx)**1)))
+        return N*v
     return f
 
 def test_density(Lx, Ly, tmax, gtd=None, habitat_params=None):

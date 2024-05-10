@@ -21,7 +21,7 @@ if __name__=="__main__":
     ntips = 1000
     D_array = np.logspace(-2,2,101)
 
-    fig, axs = plt.subplots(1,2, figsize=(12,6))
+    fig, axs = plt.subplots(2,1, figsize=(6,9))
 
     g, H = get_granularity(ntips, 0.1, bins=20)
     axs[0].matshow(H)
