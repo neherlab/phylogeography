@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from heterogeneity import get_granularity
 from itertools import product
-from parse_and_plot import parse_data
+from parse_and_plot import parse_data, add_panel_label
 
 def free_diffusion(D_array, N, linear_bins=5):
     n_iter = 100
@@ -36,7 +36,7 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
     # figure
-    fig, axs = plt.subplots(4, 1, figsize=(6, 9), sharex=True)
+    fig, axs = plt.subplots(3, 1, figsize=(6, 9), sharex=True)
 
     # Plot the heterogeneity
     ls = ['-', '-.', "--", ":"] #[:len(density_reg_to_plot)]
@@ -53,8 +53,10 @@ if __name__=="__main__":
     ax.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     ax.set_xscale('log')
 #    ax.set_xlabel('diffusion constant $[L^2/N]$')
-    ax.set_ylabel('heterogeneity (relative to well-mixed case)')
+    ax.set_ylabel('rel. heterogeneity')
     ax.legend()
+    ax.set_xlim(0)
+    add_panel_label(ax, 'C')
     #ax.text(f'N={N}, alpha={dr}, periodic boundary conditions')
 
 
@@ -75,6 +77,7 @@ if __name__=="__main__":
     ax.set_ylabel('fold-error in D estimate')
     # plt.yscale('log')
     ax.set_xscale('log')
+    add_panel_label(ax, 'D')
 
     # # plot the z-scores, i.e. the degree to which the estimates cover the true value
     # for ti in range(1,5):
@@ -105,27 +108,28 @@ if __name__=="__main__":
                      label=label, c=f"C{i%10}")
 
     ax.plot(N*D_array, np.ones_like(D_array), c='k')
-    # ax.set_xlabel('diffusion constant $[L^2/N]$')
+    ax.set_xlabel('diffusion constant $[L^2/N]$')
     ax.set_ylabel('$T_mrca/2N$')
     ax.set_xscale('log')
+    add_panel_label(ax, 'E')
     # plt.yscale('log')
     #plt.legend()
 
-    # Figure showing the TMRCA of the population
-    ax=axs[3]
-    for i, ir in enumerate(interaction_radius[2:3]):
-        D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
-        label = f'r={ir}' if N==N_vals[1] else ''
-        for ti in range(4):
-            ax.plot(D_array*N, [np.sqrt(res["x_err_sq"].loc[ir, dr, N, Dval][ti]) for Dval in D_array], ls='-',
-                    label=label, c=f"C{ti%10}")
-            ax.plot(D_array*N, [np.sqrt(resPBC["x_err_sq"].loc[ir, dr, N, Dval][ti]) for Dval in D_array], ls='--',
-                    label=label, c=f"C{ti%10}")
+    # # Figure showing the TMRCA of the population
+    # ax=axs[3]
+    # for i, ir in enumerate(interaction_radius[2:3]):
+    #     D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
+    #     label = f'r={ir}' if N==N_vals[1] else ''
+    #     for ti in range(4):
+    #         ax.plot(D_array*N, [np.sqrt(res["x_err_sq"].loc[ir, dr, N, Dval][ti]) for Dval in D_array], ls='-',
+    #                 label=label, c=f"C{ti%10}")
+    #         ax.plot(D_array*N, [np.sqrt(resPBC["x_err_sq"].loc[ir, dr, N, Dval][ti]) for Dval in D_array], ls='--',
+    #                 label=label, c=f"C{ti%10}")
 
-    ax.set_xlabel('diffusion constant $[L^2/N]$')
-    ax.set_ylabel('Error')
-    # ax.set_yscale('log')
-    ax.set_xscale('log')
+    # ax.set_xlabel('diffusion constant $[L^2/N]$')
+    # ax.set_ylabel('Error')
+    # # ax.set_yscale('log')
+    # ax.set_xscale('log')
 
     plt.tight_layout()
     plt.savefig('figures/stable_density.pdf')

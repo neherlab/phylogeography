@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from heterogeneity import get_granularity
 from itertools import product
-from parse_and_plot import parse_data, make_figure
+from parse_and_plot import parse_data, make_figure, add_panel_label
 from habitat_shifts import seasaw
 
 def free_diffusion(D_array, N, linear_bins=5):
@@ -59,7 +59,7 @@ if __name__=="__main__":
     #ax.colorbar()
     ax.legend()
     ax.plot(ax.get_xlim(), [1,1], ls='-', c='k', lw=3, alpha=0.3)
-
+    add_panel_label(ax, 'A')
 
     ## Diffusion constant estimates
     ax=axs[1]
@@ -83,5 +83,7 @@ if __name__=="__main__":
     #ax.colorbar()
     # ax.legend()
     ax.plot(ax.get_xlim(), [1,1], ls='-', c='k', lw=3, alpha=0.3)
+    add_panel_label(ax, 'A')
+
     plt.tight_layout()
     plt.savefig("figures/seasaw.pdf")

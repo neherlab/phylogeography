@@ -7,6 +7,12 @@ plt.rcParams.update({
     "font.family": "Helvetica"
 })
 
+
+# function that adds an single letter panel label to an ax object
+def add_panel_label(ax, label, x=-0.1, y=1.1, fontsize=12):
+    ax.text(x, y, label, transform=ax.transAxes, fontsize=fontsize, fontweight='bold', va='top', ha='right')
+
+
 def parse_data(data, groupby=None):
     dgb = data.groupby(groupby+['D'])
 
