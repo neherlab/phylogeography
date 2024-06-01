@@ -18,27 +18,28 @@
 \date{\today}
 \begin{abstract}
 Phylogeographic inference in continuous space is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process.
-While the underlying probabilistic models can be complex and computationally demanding to infer, they typically ignore that replication and population growth are tightly coupled to spatial location.
+While the underlying probabilistic models can be complex and computationally demanding to infer, they typically ignore that replication and population growth are tightly coupled to spatial location: populations expand into fertile uninhabited areas and contract in regions with limited resources.
 Such coupling, in particular when habitats change over time, can result in biased and overconfident estimates of ancestral locations and dispersal parameters.
-These distortions depend in complicated ways the past dynamics of habitats and underlying population dynamics and dispersal processes such that validity of phylogeographic inferences is hard to assess.
+These distortions depend in complicated ways on the past dynamics of habitats and underlying population dynamics and dispersal processes such that validity of phylogeographic inferences is hard to assess.
 \end{abstract}
 
 \maketitle
 As organisms replicate, they also disperse in space, potentially exploring new habitats.
 The reconstruction of ancestral locations and past migrations from sampling locations of extant individuals, typically in combination with genome sequence information to infer the phylogeny, is known as phylogeography.
-Phylogeographic methods are implemented in popular evolutionary analysis software such as BEAST \citep{pybus_unifying_2012}.
+Phylogeographic methods are implemented in popular evolutionary analysis software such as BEAST \citep{pybus_unifying_2012,lemey_phylogeography_2010}.
 The underlying model of dispersal is typically assumed to be diffusive, that is the probability of sampling a descendant at position $\rvec_c$ after time $t$ when the parent was at position $\rvec_p$ is given by
 \begin{equation}
     P(\rvec_c| \rvec_p, t) = \frac{1}{4\pi D t}e^{\frac{|r_c - r_p|^2}{4Dt}}
 \end{equation}
-where $D$ is a diffusion constant with dimensions $\mathrm{length}^2/\mathrm{time}$, and we have assumed a two-dimensional space.
+where $D$ is a diffusion constant with dimensions $\mathrm{length}^2/\mathrm{time}$, and we have assumed a two-dimensional space and ignored anisotropic dispersal.
 Such a diffusive process is the simplest and most natural choice in absence of directed motion or long range migration.
 It is also mathematically convenient as unknown ancestral locations can be integrated in closed form and the marginal distribution of each position can be calculated exactly for a fixed tree along with the likelihood.
 The total likelihood of the configuration is then assumed to be the product of the spatial likelihood and the phylogenetic likelihood, i.e. tree topology and branching rates of the tree are assumed to be independent of the spatial process.
 
 However, population dynamics is often tightly coupled to spatial location, for example when a population expands into an uninhabited fertile habitat or a disease spreads in a susceptible population, and the independence assumption of spatial and phylogenetic processes is not justified.
-The extent to which violations of this assumption affect phylogeographic inferences is not well understood.
-To accommodate variation not captured by the simple diffusion model, ``relaxed random walk'' models allow the diffusion constant $D$ to vary across the tree (the diffusion constant is integrated over a prior distribution) \citep{dellicour_relax_2021}.
+Such coupling can be accommodated in structured coalescent models where the population is divided into discrete subpopulations that exchange migrants at a rate $m$ \citep{vaughan_efficient_2014}.
+But the extent to which violations of the independence assumption affect continuous phylogeographic inferences is not well understood.
+To accommodate variation not captured by the simple diffusion model, ``relaxed random walk'' models allow the diffusion constant $D$ to vary across the tree (the diffusion constant is integrated over a prior distribution) \citep{dellicour_relax_2021,lemey_phylogeography_2010}.
 
 \begin{figure*}[tb]
     \includegraphics*[width=0.7\textwidth]{figures/illustration_tree.pdf}
@@ -60,9 +61,9 @@ where $B$ is the set of all branches of the tree.
 Effectively $D_w$ divides the sum of all observed squared displacements by the total time elapsed on the tree to obtain and estimate of $D$.
 It is known as the `weighted' estimate of the diffusion constant.
 The weighted dispersal velocity estimate compares the sum of absolute values of observed displacements to the total time, which has dimensions of a velocity.
-Alternative formulations use the mean of fractions $D_b = |B|^{-1} \sum_{i\in B}d_i^2/4t_i$ or $v_b = |B|^{-1} \sum_{i\in B}d_i/t_i$ instead of the ratio of sums. \
+Alternative formulations use the mean of fractions $D_b = |B|^{-1} \sum_{i\in B}d_i^2/4t_i$ or $v_b = |B|^{-1} \sum_{i\in B}d_i/t_i$ instead of the ratio of sums.
 We refer to these here as `by branch' estimates.
-The latter tend to be dominated by short branches and thus noisier.
+The latter tend to be dominated by short branches and thus noisier \citep{trovao_bayesian_2015}.
 
 
 The purpose of this note is to explore how sensitive phylogeographic inferences are to model assumptions and what quantities can be robustly estimated.
@@ -91,6 +92,11 @@ But estimates for $v_w$ and $v_b$ are not consistent with each other.
 In either case, estimates of $v_w$ or $v_b$ are not meaningful.
 The underlying model is diffusive and has no parameters that individually or combined would have dimensions of a velocity.
 There is no ground truth to compare the estimates to and $v_w$ and $v_b$ are just descriptive summaries of spatial spread that can not be compared between datasets.
+
+In cases where a population invades a novel habitat, e.g.~the invasion of North America by the West-Nile virus \citep{pybus_unified_2010}, the moving front of the population defines a bona-fide velocity.
+However, as discussed below, this velocity is determined by the interplay of dispersal and population growth at the front.
+The velocity is better determined by modeling the position of the front, rather than by tracking individual lineages along the tree.
+
 
 \section*{How does density regulation affect estimates phylogeographic estimates?}
 Phylogeographic inference typically assumes that the spatial diffusion process is independent of the branching pattern of the tree and ignores coupling between the two.
@@ -224,7 +230,6 @@ For larger $v_{FKPP}$, the estimated velocity is stable for some time, before in
 In this latter regime, diffusive motions dominates over directed motion and the estimates of $v$ suffer from the problems shown in Fig.~\ref{fig:D_and_v}.
 
 
-
 \section*{Discussion}
 Phylogeography aims to reconstruct location and migration of ancestors from the spatial distribution of extant individuals and their genome sequences.
 The latter allow the reconstruction of the phylogenetic tree which encodes how closely different individuals are related to each other.
@@ -252,10 +257,12 @@ The parameter range where both ancestral locations and dispersal parameters are 
 
 Inference using phylogeographic methods should thus be interpreted with caution.
 In many cases the habitat of a population has undergone dramatic and recurrent changes since the $MRCA$ and such changes will affect inferences in ways that are not captured by the models.
+In addition, uneven sampling, or complete lack of samples from some regions, can undermine phylogeographic estimates \citep{kalkauskas_sampling_2021}.
 The ability to infer ancestral locations is further limited by long-range dispersal \citep{hallatschek_acceleration_2014}.
 To capture such deviations from simple diffusive motions, many inference models assume a ``relaxed random walk'', where diffusion constant can vary across the tree according to a broad prior distribution \citep{dellicour_relax_2021}.
 However, while such models will often generate a better fit, they don't capture complex interactions between spatial location and population dynamics.
 
+In absence of a good understanding of the dispersal properties and how population dynamics varies and time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models \citep{layan_impact_2023}.
 
 \bibliography{bib}
 
