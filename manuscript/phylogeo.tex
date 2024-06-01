@@ -13,11 +13,14 @@
 
 
 \begin{document}
-\title{When to trust phylogeographic inferences?}
-\author{Richard Neher}
+\title{On the robustness of phylogeographic inference to model assumptions}
+\author{Richard A.~Neher}
 \date{\today}
 \begin{abstract}
-    Sometimes.
+Phylogeographic inference in continuous space is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process.
+While the underlying probabilistic models can be complex and computationally demanding to infer, they typically ignore that replication and population growth are tightly coupled to spatial location.
+Such coupling, in particular when habitats change over time, can result in biased and overconfident estimates of ancestral locations and dispersal parameters.
+These distortions depend in complicated ways the past dynamics of habitats and underlying population dynamics and dispersal processes such that validity of phylogeographic inferences is hard to assess.
 \end{abstract}
 
 \maketitle
@@ -36,6 +39,14 @@ The total likelihood of the configuration is then assumed to be the product of t
 However, population dynamics is often tightly coupled to spatial location, for example when a population expands into an uninhabited fertile habitat or a disease spreads in a susceptible population, and the independence assumption of spatial and phylogenetic processes is not justified.
 The extent to which violations of this assumption affect phylogeographic inferences is not well understood.
 To accommodate variation not captured by the simple diffusion model, ``relaxed random walk'' models allow the diffusion constant $D$ to vary across the tree (the diffusion constant is integrated over a prior distribution) \citep{dellicour_relax_2021}.
+
+\begin{figure*}[tb]
+    \includegraphics*[width=0.7\textwidth]{figures/illustration_tree.pdf}
+    \caption{\label{fig:illustration_tree}{\bf Illustration Yule and Kingman trees and the spatial location of the tips.}
+    The total tree length of Yule trees is proportional to the number of tips $n$ and the time to the MRCA is $\log(n)$.
+    Kingman trees have a total tree length that is proportional to $\log(n)$ and are characterized by rapid merging close to the present. }
+\end{figure*}
+
 
 In a typically Bayesian phylogeographic inference problem as discussed in \citet{pybus_unifying_2012}, the input data are typically viral genome sequences as well as their sampling times and sampling locations.
 Software like BEAST will then sample the posterior distribution of the phylogenetic tree topology, the sampling times and locations of ancestral nodes in the tree, and model parameters like the diffusion constant $D$ and the evolutionary rate $\mu$.
@@ -59,12 +70,13 @@ My focus here is only on the ability and robustness to estimate dispersal parame
 So no tree-sampling will be necessary.
 To explore qualitatively different behaviors, I will consider Kingman and Yule tree ensembles. Kingman trees are the classical neutral model of a constant size population, while Yule trees capture features of growing populations (see Fig.~\ref{fig:illustration_tree}).
 
-\begin{figure*}[tb]
-    \includegraphics*[width=0.7\textwidth]{figures/illustration_tree.pdf}
-    \caption{\label{fig:illustration_tree}{\bf Illustration Yule and Kingman trees and the spatial location of the tips.}
-    The total tree length of Yule trees is proportional to the number of tips $n$ and the time to the MRCA is $\log(n)$.
-    Kingman trees have a total tree length that is proportional to $\log(n)$ and are characterized by rapid merging close to the present. }
-\end{figure*}
+
+
+\begin{figure}[tb]
+    \includegraphics*[width=0.48\textwidth]{figures/kingman_dispersal.pdf}
+    \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
+    While diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. Their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $\sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
+\end{figure}
 
 
 Fig.~\ref{fig:D_and_v} shows empirical estimates of diffusion constants and velocity as defined in Eq.~\ref{eq:disperal_parameters} from simulated data using freely diffusing locations along Kingman trees.
@@ -79,13 +91,6 @@ But estimates for $v_w$ and $v_b$ are not consistent with each other.
 In either case, estimates of $v_w$ or $v_b$ are not meaningful.
 The underlying model is diffusive and has no parameters that individually or combined would have dimensions of a velocity.
 There is no ground truth to compare the estimates to and $v_w$ and $v_b$ are just descriptive summaries of spatial spread that can not be compared between datasets.
-
-
-\begin{figure}[tb]
-    \includegraphics*[width=0.48\textwidth]{figures/kingman_dispersal.pdf}
-    \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
-    While diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. Their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $\sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
-\end{figure}
 
 \section*{How does density regulation affect estimates phylogeographic estimates?}
 Phylogeographic inference typically assumes that the spatial diffusion process is independent of the branching pattern of the tree and ignores coupling between the two.
@@ -137,6 +142,17 @@ This manifests in an increasing time to the MRCA, see Fig.~\ref{fig:density_reg}
 Spatial location and the coalescence process are thus strongly coupled, though this coupling manifests itself in population structure rather than biased estimates of the diffusion coefficients.
 Hence both at high and at low diffusion constants, assumptions of phylogeographic inference can be problematic: if diffusion constants are much smaller than then $L^2/T_{mrca}$, the population is fragmented into effective subpopulations that violate the typical tree-priors, if $D\geq L^/T_{mrca}$, the boundaries of the domain restrict free diffusion.
 
+
+
+\begin{figure*}
+    \includegraphics[width=\textwidth]{figures/seasaw_illustration}
+    \includegraphics[width=\textwidth]{figures/seasaw_example}
+    \includegraphics[width=\textwidth]{figures/seasaw}
+    \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} Panel A shows an illustration of the simulated set-up: The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back. The habitat size is $L_x=3$, $L_y=1$.
+    Panel B shows a tree from a simulation under these conditions with $D=0.0008$ and $N=500$, while panel C right shows the inferred (triangles) and true positions (circles) of internal nodes, highlight the root with large markers. Blue and green colors correspond to older nodes, yellow to recent nodes.
+    Panels D show estimates of diffusion coefficients in directions $x$ (solid lines) and $y$ (dashed lines) relative to their true values as a function of the true value of $D$. Panel E shows the average $z_x^2$ and $z_y^2$ for the oldest 20\% of internal nodes. Inference of the x-coordinate of ancestral nodes is drastically overconfident for some values of $D$. }
+\end{figure*}
+
 \section*{How do changing habitats affect phylogeographic inferences?}
 As discussed above, a static carrying capacity in an equilibrium population has limited effects on estimates of ancestral locations and diffusion coefficients beyond boundary effects.
 In reality, carrying capacities vary through time.
@@ -170,14 +186,6 @@ At high dispersal rates, the average $z_x^2$ and $z_y$ are both smaller than one
 With decreasing $D$, $z_x^2$ increases largely because the expected uncertainty decreases, before peaking when the population can no longer follow the shifting carrying capacity.
 A peak value of 10-20 indicates that the typical ancestral location of the deep nodes is 2-4 standard deviations away from the true location, an example of which is shown in Fig.~\ref{fig:seasaw}C.
 
-\begin{figure*}
-    \includegraphics[width=\textwidth]{figures/seasaw_illustration}
-    \includegraphics[width=\textwidth]{figures/seasaw_example}
-    \includegraphics[width=\textwidth]{figures/seasaw}
-    \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} Panel A shows an illustration of the simulated set-up: The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back. The habitat size is $L_x=3$, $L_y=1$.
-    Panel B shows a tree from a simulation under these conditions with $D=0.0008$ and $N=500$, while panel C right shows the inferred (triangles) and true positions (circles) of internal nodes, highlight the root with large markers. Blue and green colors correspond to older nodes, yellow to recent nodes.
-    Panels D show estimates of diffusion coefficients in directions $x$ (solid lines) and $y$ (dashed lines) relative to their true values as a function of the true value of $D$. Panel E shows the average $z_x^2$ and $z_y^2$ for the oldest 20\% of internal nodes. Inference of the x-coordinate of ancestral nodes is drastically overconfident for some values of $D$. }
-\end{figure*}
 
 The above results show that behavior of a population in shifting habitats and the interpretation of phylogeographic inferences depend strongly on the rate of environmental change and the dispersal rate.
 If the population can not follow shifting habitat, the situation is similar to the static case often leads to fragmented populations.
