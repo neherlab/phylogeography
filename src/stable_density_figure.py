@@ -36,7 +36,7 @@ if __name__=="__main__":
     N_vals = data.N.unique()
 
     # figure
-    fig, axs = plt.subplots(3, 1, figsize=(6, 9), sharex=True)
+    fig, axs = plt.subplots(3, 1, figsize=(5, 7.5), sharex=True)
 
     # Plot the heterogeneity
     ls = ['-', '-.', "--", ":"] #[:len(density_reg_to_plot)]
@@ -48,36 +48,39 @@ if __name__=="__main__":
         label = f'r={ir}' if N==N_vals[1] else ''
         ax.plot(D_array*N/Lx/Ly, resPBC["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
                 label=label, ls='-', c=f"C{i%10}")
+        # ax.plot(D_array*N/Lx/Ly, resPBC["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
+        #         label=label, ls='--', c=f"C{i%10}")
     free_diffusion_heterogeneity = free_diffusion(D_array*N/Lx/Ly, N, linear_bins=linear_bins)
-    ax.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='free diffusion', c='k')
+    ax.plot(D_array*N/Lx/Ly, free_diffusion_heterogeneity/np.sqrt(nbins/N), label='free diffusion', c='k', lw=3)
     ax.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     ax.set_xscale('log')
 #    ax.set_xlabel('diffusion constant $[L^2/N]$')
     ax.set_ylabel('rel. heterogeneity')
-    ax.legend()
+    ax.legend(fontsize=8)
     ax.set_xlim(0)
-    add_panel_label(ax, 'C')
+    add_panel_label(ax, 'A')
     #ax.text(f'N={N}, alpha={dr}, periodic boundary conditions')
 
 
     ## Plot the diffusion estiamtes
-    ax=axs[1]
+    ax=axs[2]
     for i, ir in enumerate(interaction_radius[1:]):
-        D_array = np.array(res["diffusion_mean"][ir, dr, N, :].index)
+        D_array = np.array(resPBC["diffusion_mean"][ir, dr, N, :].index)
         label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
         ax.errorbar(D_array*N/Lx/Ly, res["diffusion_mean"][ir, dr, N, :]/D_array,
-                                res["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]), marker='o', ls='-',
+                                res["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]), marker='o', ls='--',
                 label=label, c=f"C{i%10}")
         ax.errorbar(D_array*N/Lx/Ly, resPBC["diffusion_mean"][ir, dr, N, :]/D_array,
-                                resPBC["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]), marker='v', ls='--',
+                                resPBC["diffusion_std"][ir, dr, N, :]/D_array/np.sqrt(res["nobs"][ir, dr, N]), marker='v', ls='-',
                 label=label,  c=f"C{i%10}")
 
     ax.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
 #    ax.set_xlabel('true $ND/L^2$')
-    ax.set_ylabel('fold-error in D estimate')
+    ax.set_xlabel(r'diffusion constant $[L^2/N]$')
+    ax.set_ylabel(r'fold-error in $D$ estimate')
     # plt.yscale('log')
     ax.set_xscale('log')
-    add_panel_label(ax, 'D')
+    add_panel_label(ax, 'C')
 
     # # plot the z-scores, i.e. the degree to which the estimates cover the true value
     # for ti in range(1,5):
@@ -99,19 +102,18 @@ if __name__=="__main__":
     # plt.legend()
 
     # Figure showing the TMRCA of the population
-    ax=axs[2]
+    ax=axs[1]
     for i, ir in enumerate(interaction_radius[1:]):
         D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
         label = f'r={ir}' if N==N_vals[1] else ''
-        ax.errorbar(D_array*N, res["tmrca_mean"][ir, dr, N, :]/N/2,
+        ax.errorbar(D_array*N, resPBC["tmrca_mean"][ir, dr, N, :]/N/2,
                     res["tmrca_std"][ir, dr, N, :]/N/2/np.sqrt(res["nobs"][ir, dr, N]),
                      label=label, c=f"C{i%10}")
 
     ax.plot(N*D_array, np.ones_like(D_array), c='k')
-    ax.set_xlabel('diffusion constant $[L^2/N]$')
-    ax.set_ylabel('$T_mrca/2N$')
+    ax.set_ylabel(r'$T_{mrca}/2N$')
     ax.set_xscale('log')
-    add_panel_label(ax, 'E')
+    add_panel_label(ax, 'B')
     # plt.yscale('log')
     #plt.legend()
 

@@ -23,7 +23,7 @@ if __name__=="__main__":
     data = pd.read_csv(args.data)
     Lx, Ly = 3, 1
 
-    make_figure(seasaw, {'period':8, 'amplitude':1.1}, fname="figures/seasaw_illustration.pdf")
+    make_figure(seasaw, {'period':8, 'amplitude':1.1}, fname="figures/seasaw_illustration.pdf", panel_label='A')
 
     res = parse_data(data, groupby=['interaction_radius', 'density_reg', 'N', 'period', 'subsampling'])
     interaction_radius = data.interaction_radius.unique()
@@ -59,7 +59,7 @@ if __name__=="__main__":
     #ax.colorbar()
     ax.legend()
     ax.plot(ax.get_xlim(), [1,1], ls='-', c='k', lw=3, alpha=0.3)
-    add_panel_label(ax, 'A')
+    add_panel_label(ax, 'D')
 
     ## Diffusion constant estimates
     ax=axs[1]
@@ -83,7 +83,7 @@ if __name__=="__main__":
     #ax.colorbar()
     # ax.legend()
     ax.plot(ax.get_xlim(), [1,1], ls='-', c='k', lw=3, alpha=0.3)
-    add_panel_label(ax, 'A')
+    add_panel_label(ax, 'E')
 
     plt.tight_layout()
     plt.savefig("figures/seasaw.pdf")

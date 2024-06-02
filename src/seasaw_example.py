@@ -31,7 +31,7 @@ if __name__=="__main__":
     period = 500
     target_density = seasaw(N, Lx, Ly, **{'period':period, 'amplitude':1.1})
 
-    v_FKPP = 2*np.sqrt(args.velocity*D)
+    v_FKPP = 2*np.sqrt(args.density_reg*D)
     print(f"{interaction_radius=:1.3f}, {density_reg=:1.3f}")
 
     tree = make_node(Lx/2,Ly/2,-2, None)
@@ -52,9 +52,12 @@ if __name__=="__main__":
         estimate_ancestral_positions(tree, D_res['Dxy_total'])
         phylo_tree = dict_to_phylo_tree(tree['clades'][0] if len(tree['clades'])==1 else tree,
                                         child_attr='clades')
+        phylo_tree.ladderize()
 
         fig, axs = plt.subplots(1,2, figsize=(12,3))
         Phylo.draw(phylo_tree, axes=axs[0], label_func=lambda x: '')
+        add_panel_label(axs[0], 'B', x=-0.05, y=1.1)
+        axs[0].set_axis_off()
         print(f"N={len(terminal_nodes)}")
 
         # plot true and inferred positions of nodes
@@ -68,8 +71,8 @@ if __name__=="__main__":
 
         # highlight true and inferred root positions
         n = phylo_tree.root
-        axs[1].scatter([n.pos['x']], [n.pos['y']], c='r', s=100)
-        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='g', s=100, marker='^')
+        axs[1].scatter([n.pos['x']], [n.pos['y']], c='g', s=100, label='True root')
+        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='r', s=100, marker='^', label='Inferred root')
 #                c=[n.t for n in phylo_tree.find_clades()], s=30, marker='d', ls=None)
         # z = [(n.inferred_pos['x']['mean'] - n.pos['x'])/n.inferred_pos['x']['var']**0.5 for n in phylo_tree.get_nonterminals()]
         # tps = [n.t for n in phylo_tree.get_nonterminals()]
@@ -83,8 +86,12 @@ if __name__=="__main__":
         # indicate density
         x = np.linspace(0, Lx,101)
         dens = target_density(x, 0, t)
-        axs[1].plot(x, dens/np.max(dens), label='target density')
+        axs[1].plot(x, dens/np.max(dens), label='Carrying capacity')
+        axs[1].legend()
         axs[1].set_xlim(0,Lx)
+        axs[1].set_xlabel(r'habitat $x$ coordinate')
+        axs[1].set_ylabel(r'habitat $y$ coordinate')
+        add_panel_label(axs[1], 'C', x=-0.05, y=1.1)
 
         plt.tight_layout()
 

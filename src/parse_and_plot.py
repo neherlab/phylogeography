@@ -42,21 +42,29 @@ def parse_data(data, groupby=None):
     for g, d in dgb['y_err']:
         y_err[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-    x_err_abs = {}
-    for g, d in dgb['x_err_abs']:
-        x_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+    try:
+        x_err_abs = {}
+        for g, d in dgb['x_err_abs']:
+            x_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-    y_err_abs = {}
-    for g, d in dgb['y_err_abs']:
-        y_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+        y_err_abs = {}
+        for g, d in dgb['y_err_abs']:
+            y_err_abs[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-    x_err_sq = {}
-    for g, d in dgb['x_err_sq']:
-        x_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+        x_err_sq = {}
+        for g, d in dgb['x_err_sq']:
+            x_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
 
-    y_err_sq = {}
-    for g, d in dgb['y_err_sq']:
-        y_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+        y_err_sq = {}
+        for g, d in dgb['y_err_sq']:
+            y_err_sq[g] = np.mean(d.apply(lambda x:np.array([float(y) for y in x[1:-1].split()])), axis=0)
+    except:
+        print("failed to parse error information")
+        x_err_abs = pd.DataFrame()
+        y_err_abs = pd.DataFrame()
+        x_err_sq = pd.DataFrame()
+        y_err_sq = pd.DataFrame()
+
 
     z_mean_x = {}
     for g, d in dgb['meanZsq_x']:
@@ -97,7 +105,7 @@ def parse_data(data, groupby=None):
                 }
 
 
-def make_figure(func, params, Lx=3, Ly=1, time_points=5, fname=None):
+def make_figure(func, params, Lx=3, Ly=1, time_points=5, fname=None, panel_label=None):
     fig, axs = plt.subplots(1,time_points, sharex=True, sharey=True, figsize=(15,2))
     f = func(1, Lx, Ly, **params)
     for i, ax in enumerate(axs.flatten()):
@@ -105,6 +113,8 @@ def make_figure(func, params, Lx=3, Ly=1, time_points=5, fname=None):
         vals = f(grid[0], grid[1], i)
         ax.matshow(vals/np.max(vals), vmax=1, vmin=0)
         ax.set_axis_off()
+        if panel_label and i==0:
+            add_panel_label(ax, panel_label, x=-0.1, y=1.1)
     plt.tight_layout()
     if fname:
         plt.savefig(fname)
