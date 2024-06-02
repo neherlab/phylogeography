@@ -17,8 +17,8 @@
 \author{Richard A.~Neher}
 \date{\today}
 \begin{abstract}
-Phylogeographic inference in continuous space is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process.
-While the underlying probabilistic models can be complex and computationally demanding to infer, they typically ignore that replication and population growth are tightly coupled to spatial location: populations expand into fertile uninhabited areas and contract in regions with limited resources.
+Continuous phylogeographic inference is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process.
+While the underlying probabilistic models can be complex and their parameters are often computationally demanding to infer, these models typically ignore that replication and population growth are tightly coupled to spatial location: populations expand into fertile uninhabited areas and contract in regions with limited resources.
 Such coupling, in particular when habitats change over time, can result in biased and overconfident estimates of ancestral locations and dispersal parameters.
 These distortions depend in complicated ways on the past dynamics of habitats and underlying population dynamics and dispersal processes such that validity of phylogeographic inferences is hard to assess.
 \end{abstract}
@@ -262,9 +262,22 @@ Depending on parameters, dispersal rates $D$ can be overestimated or underestima
 Simulations reveal that this behavior depends on the relative magnitude of the rate at which the habitat shifts and the FKPP velocity which depends on the diffusion constant $D$ and the growth rate in empty regions $\alpha$, as well as curtailed dispersal by the boundaries of the habitat.
 The parameter range where both ancestral locations and dispersal parameters are inferred correctly is narrow.
 
-Inference using phylogeographic methods should thus be interpreted with caution.
+Phylogeographic methods are often studied using West Nile virus and Rabies virus.
+West-Nile virus was first detected on the east coast of the US in 1999 and reached the West Coast five years later in 2004 \citep{pybus_unifying_2012}, translating to a wave front velocity of about 1000 km/year.
+\citet{pybus_unifying_2012} estimated a diffusion coefficient of between 200 and 5000 km$^2$/day, where the latter refers to branches with particularly high diffusion constant.
+Using $v_{FKPP} = 2\sqrt{D\alpha}$ and equating it to 1000 km/year $\approx$ 3km/day, we obtain ranges of $\alpha=\frac{9 km^2}{4 D day^2} = 0.012/day \ldots 0.00045/day$ or between $0.003$ and $0.08$/week.
+A pathogen that produces seasonal outbreaks with many orders of magnitude in prevalence between peak and troughs typically requires a growth rate of 1/week, considerably more than what the estimates of $D$ and the FKPP equation imply.
+Alternatively, if we assume $\alpha = 0.1/day$, we would expect $D = \frac{10 km^2}{0.4 day} = 25 km^2/day$, implying a daily exploration radius of about 5 km.
+This picture is also consistent with the apparent ``slowing down'' of lineages after the initial expansion across North America \citep{dellicour_epidemiological_2020}: Once the habitat was fully explored, directed invasion with $v_{FKPP}$ ceases.
+Furthermore, rare long range dispersal could have strongly influenced the spread of the virus in ways not captured by Brownian or relaxed random walks \citep{hallatschek_acceleration_2014}.
+
+Dispersal rates of rabies virus are typically estimated to be between 500 and 1500 km$^2$/year \citep{dellicour_using_2017}.
+The most recent common ancestor of various populations is between 30 and 100 years in the past.
+This would translate into rather limited spread of 150 to 500km of individual clades from their common ancestor, suggesting that these populations are highly structured (isolated by distance) and that their long range dispersal is dominated by rare introductions of the virus into new populations.
+
+The results presented here and the discussion of the examples above suggested that phylogeographic methods should be used and interpreted with caution.
 In many cases the habitat of a population has undergone dramatic and recurrent changes since the $MRCA$ and such changes will affect inferences in ways that are not captured by the models.
-In addition, uneven sampling, or complete lack of samples from some regions, can undermine phylogeographic estimates \citep{kalkauskas_sampling_2021}.
+In addition, uneven sampling, or complete lack of samples from some regions, can undermine phylogeographic estimates \citep{kalkauskas_sampling_2021,layan_impact_2023}.
 The ability to infer ancestral locations is further limited by long-range dispersal \citep{hallatschek_acceleration_2014}.
 To capture such deviations from simple diffusive motions, many inference models assume a ``relaxed random walk'', where diffusion constant can vary across the tree according to a broad prior distribution \citep{dellicour_relax_2021}.
 However, while such models will often generate a better fit, they don't capture complex interactions between spatial location and population dynamics.
@@ -273,8 +286,7 @@ Why does phylogeography then often generate sensible results?
 On short time scales, a diffusive model will mostly reduce to a parsimonious reconstruction of ancestral locations which is robust to details of the model.
 It is longer time scales, that is deeper nodes in the phylogeny, for which ancestral inferences can get problematic as the chance that the environment has changed and shifted, or that the ancestral locations are in poorly sampled regions, increases.
 Inferences, and in particular confidence statements, can be highly unreliable and misleading.
-In absence of a good understanding of the dispersal properties and how population dynamics varies and time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models \citep{layan_impact_2023}.
-
+In absence of a good understanding of the dispersal properties and how population dynamics varies and time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models.
 
 
 \bibliography{bib}
