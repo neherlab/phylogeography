@@ -132,7 +132,7 @@ This heterogeneity increases substantially for even lower $D$, when the populati
 \begin{figure}
     \includegraphics[width=0.53\textwidth]{figures/stable_density}
     \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
-    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat. Panel A shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals where independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii. For $r\ll L$, density fluctuations are strongly suppressed.
+    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat. Panel A shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii. For $r\ll L$, density fluctuations are strongly suppressed.
     At the same time, the time to the most recent common ancestor increases dramatically (panel B), indicating that the population fragments in subpopulations that don't interact.
     Panel C shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (solid lines, like panels A\&B) and reflecting boundaries (dashed lines).
     }
@@ -175,10 +175,9 @@ If boundary conditions are periodic, that is the habitat has the topology of a t
 If instead of periodic boundary conditions reflective boundary conditions are used, diffusion constants are underestimated once $\sqrt{2DT_c}$ becomes comparable to the habitat size.
 This underestimation of diffusion constants will then result in over-confident inference of ancestral locations, in particular for recent ancestral nodes.
 
-These simulations reveal that both at high and at low diffusion constants, assumptions of phylogeographic inference can be problematic: if diffusion constants are much smaller than then $L^2/T_{mrca}$, the population is fragmented into effective subpopulations and this fragmentation violates the assumptions of phylodynamic models.
+These simulations reveal that both at high and at low diffusion constants, assumptions of phylogeographic inference can be problematic: if diffusion constants are much smaller than $L^2/T_{mrca}$, the population is fragmented into effective subpopulations and this fragmentation violates the assumptions of phylodynamic models.
 A structured model would be more appropriate in this case.
 If $D\gg L^2/T_{mrca}$, the boundaries of the habitat restrict free diffusion, resulting in underestimated dispersal parameters, while estimates of deeper ancestral locations have uncertainties comparable to the habitat size.
-
 
 \begin{figure*}
     \includegraphics[width=\textwidth]{figures/seasaw_illustration}
@@ -190,47 +189,48 @@ If $D\gg L^2/T_{mrca}$, the boundaries of the habitat restrict free diffusion, r
 \end{figure*}
 
 \section*{How do changing habitats affect phylogeographic inferences?}
-As discussed above, even a static carrying capacity in an equilibrium population can strongly effect population structure, though this structure has limited effects on estimates of ancestral locations and diffusion coefficients beyond boundary effects.
+As discussed above, even a static carrying capacity in an equilibrium population can strongly affect population structure, though this structure has limited effects on estimates of ancestral locations and diffusion coefficients beyond boundary effects.
 In reality, carrying capacities vary through time.
 Such variation happens on all time scales, ranging from geological timescales over millions of years, environmental changes over millennia to seasonal fluctuations.
 The circulation of seasonal influenza viruses, for example, varies by many orders of magnitude between summer and winter in temperate climates.
-Fluctuations in carrying capacity mean that populations not just spread because individuals move, but also because populations grow in regions where the population density is below the carrying capacity.
+Fluctuations in carrying capacity mean that populations not only spread because individuals move, but also because populations grow in regions where the population density is below the carrying capacity.
 In such situations, the accuracy and interpretation of phylogeographic inferences are unclear.
 
 In Fig.~\ref{fig:seasaw} we consider a case where the region with highest carrying capacity shifts from the left to the right in a periodic manner.
 The carrying capacity is illustrated in Fig.~\ref{fig:seasaw}A for 5 time points covering half a period.
-In between the two extreme left/right concentration of the carrying capacity, carrying capacity is uniform.
+In between the two extreme left/right concentration of the carrying capacity, the carrying capacity is uniform.
 To avoid extinction at low dispersal rates, selection is soft, meaning that the overall population size is kept approximately constant even if the entire population is stuck in the unfavorable region.
 If the dispersal rate is sufficiently high, however, the population follows the shifting carrying capacity and lineages in the tree undergo directed back-and-forth motion.
 Inference of ancestral locations in such situations can be misleading as illustrated in Fig.~\ref{fig:seasaw}B.
 The population was sampled at a time when it had just contracted to the left and the positions of older nodes are not estimated correctly.
-Their true locations are to the right of the current population, but the inferred location are central in the shifted population.
-This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential to mislead.
+Their true locations are to the right of the current population, but the inferred locations are central in the shifted population.
+This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential of misleading inference, in particular when extrapolating far into the past.
 
 The severity of such biases depends on the period at which the carrying capacity oscillates and on the dispersal rate, see  Fig.~\ref{fig:seasaw}C.
 Fig.~\ref{fig:seasaw}D shows the estimated diffusion constant (using Eq.~\ref{eq:dispersal_parameters}) in $x$ (solid lines) and $y$ (dashed) direction relative to the true value used in the simulations.
-At very high diffusion constants, both $D_x$ and $D_y$ are underestimated due to spatial constraint of carrying capacity as also discussed above (see Fig.~\ref{fig:density_reg}).
+At very high diffusion constants, both $D_x$ and $D_y$ are underestimated due to the spatial constraints of carrying capacity as also discussed above (see Fig.~\ref{fig:density_reg}).
 With decreasing $D$, $D_x$ starts to be overestimated and peaks at a value that depends on the period $T$, before decreasing to (noisy) estimates that are broadly compatible with the true value.
-In this range of dispersal rates, the population can no longer follow the shifting carrying capacity.
+In this range of dispersal rates, the population can no longer follow the shifting carrying capacity and the $T_{mrca}$ increases sharply (not shown).
 This decoupling happens at lower values of $D$ for longer periods of environmental change.
-With the parameters used in the simulation, the estimates of $D_x$ deviate by a factor of 2 from its true value, which is not dramatic compared to the variation of dispersal rates in nature.
+With the parameters used in the simulation, the estimates of $D_x$ deviate by a factor of 2 from its true value, which is not dramatic compared to the variation of dispersal rates in nature, but clearly shows that spatial inference can be substantially affected if the habitat changes on time scales comparable to the $T_{mrca}$.
 
-However, along with problematic inference of diffusion coefficients, estimates of ancestral locations are over-confident.
+Along with problematic inference of diffusion coefficients, estimates of ancestral locations are over-confident.
 Panel Fig.~\ref{fig:seasaw}E shows $z_x^2 = \langle (\hat{x} - x)^2/\sigma_x^2 \rangle$ and $z_y^2=\langle (\hat{y} - y)^2/\sigma_y^2\rangle$ for the oldest 20\% of internal nodes, where $\hat{x}$ and $\sigma_x$ are the mean and standard deviation of the posterior of $x$, respectively (and analogously for $y$).
 If the model estimated ancestral locations consistently, $z_x^2$ should be 1 on average.
 Instead, it is as high as 20 for the simulations shown and these over-confident and biased estimates depend in non-monotonic ways on the true diffusion constant and the period of environmental change.
-With decreasing $D$, $z_x^2$ increases largely because the expected uncertainty decreases, before peaking when the population can no longer follow the shifting carrying capacity.
-A peak value of 10-20 indicates that the typical ancestral location of the deep nodes is 2-4 standard deviations away from the true location, an example of which is shown in Fig.~\ref{fig:seasaw}C.
-Conversely, at high dispersal rates, the average $z_x^2$ and $z_y$ are both smaller than one since the estimated uncertainty is larger than the true uncertainty since the diffusion is constrained by the boundaries of the habitat.
+With decreasing $D$, $z_x^2$ increases largely because the expected uncertainty decreases, before peaking before the population can no longer follow the shifting carrying capacity.
+A peak value of $z_x^2\approx 10-20$ indicates that the typical ancestral location of the deep nodes is 3-5 standard deviations away from the true location, an example of which is shown in Fig.~\ref{fig:seasaw}C.
+Conversely, at high dispersal rates, the average $z_x^2$ and $z_y^2$ are both smaller than one, i.e.~the inference is not confident enough.
+In this range, the estimated uncertainty is larger than the true uncertainty since the diffusion is constrained by the boundaries of the habitat.
 
 
-The above results show that behavior of a population in shifting habitats and the interpretation of phylogeographic inferences depend strongly on the rate of environmental change and the dispersal rate.
+The above results show that behavior of a population in shifting habitats and the interpretation of phylogeographic inferences can depend strongly on the rate of environmental change and how it compares to the dispersal rate.
 If the population can not follow shifting habitat, the situation is similar to the static case often leads to fragmented populations.
 Once the population starts following, inferred ancestral locations of deep nodes become unreliable, while at high dispersal rates expected uncertainties are larger than the habitat size and there is little information on deep ancestral locations.
 
 To study the interplay of moving habitats and phylogeographic inference more systematically, I will now consider a situation where the population is constrained to a stripe with a Gaussian profile that moves at a constant velocity $v$ along the $x$-axis (Fig.~\ref{fig:traveling_wave}).
 The dispersal rates necessary to keep up with the shifting carrying capacity can be estimated from the Fisher-KPP equation (Eq.~\ref{eq:FKPP}) above.
-This equation admits solutions with a traveling front, that the population ``invades'' the empty territory with velocity $v_{FKPP} = 2\sqrt{D \alpha}$ \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}.
+This equation admits solutions with a traveling front, i.e.~the population ``invades'' the empty territory with velocity $v_{FKPP} = 2\sqrt{D \alpha}$ \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}.
 Note that the model itself does not have an explicit parameter that has dimensions of a velocity.
 The speed at which the population invades space is given as compound of diffusion and accelerated growth in regions of low density and only grows like the square root of diffusion constant.
 
@@ -239,7 +239,8 @@ The speed at which the population invades space is given as compound of diffusio
     \includegraphics[width=0.3\textwidth]{figures/traveling_wave}
     \includegraphics[width=0.48\textwidth]{figures/waves}
     % \includegraphics[width=0.48\textwidth]{figures/waves_v}
-    \caption{\label{fig:traveling_wave} Panel A shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
+    \caption{\label{fig:traveling_wave}{\bf Phylogeographic inference in a moving habitat.}
+    Panel A shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
     Panels B\&C show estimates of diffusion coefficients and velocities, relative to their true values, as a function of the ratio of the FKPP velocity to the external velocity $v$. }
 \end{figure}
 
@@ -250,20 +251,21 @@ They peak right around when the external velocity matches the FKPP velocity, cor
 If the external velocity was lower, undirected dispersal contributes more and more to the displacement of lineages, while the population would be unable to follow the moving carrying capacity if the external velocity was higher.
 
 Fig.~\ref{fig:traveling_wave}C shows estimates of $v$ using Eq.~\ref{eq:dispersal_parameters} relative to the true velocity.
-This ratio is monotonically increasing with the diffusion coefficient and shows a range where it close to 1, i.e.~where the estimated velocity of lineages agrees with the external velocity.
+This ratio is monotonically increasing with the diffusion coefficient and shows a range where it is close to 1, i.e.~where the estimated velocity of lineages agrees with the external velocity.
+This range coincides with the location of the peak of $D_w$.
 
 These behaviors are explained comparing the speed $v_{FKPP}$ at which the population can invade new territory with the external speed $v$, the ratio of which is used as the $x$-axis in Fig.~\ref{fig:traveling_wave} B\&C.
 For $v_{FKPP} \ll v$, the population cannot keep up with the moving carrying capacity and is saved from extinction only because selection is soft.
 In this regime, the estimated velocity of lineages is below $v$ and both the estimated $v$ and $D$ increase with $v_{FKPP}$.
 Once $v\sim v_{FKPP}$, the estimated lineage velocity coincides with $v_{FKPP}$, while the estimated $D$ peaks at values orders of magnitude above the true value.
-For larger $v_{FKPP}$, the estimated velocity is stable for some time, before increasing again with $v_{FKKP}$.
+For values of $v_{FKPP}$ that are comparable the external velocity $v$, the estimated velocity is stable for some time and broadly agrees with $v$, before increasing again with $v_{FKKP}$.
 In this latter regime, diffusive motions dominates over directed motion and the estimates of $v$ suffer from the problems shown in Fig.~\ref{fig:D_and_v}.
 
 
 \section*{Discussion}
 Phylogeography aims to reconstruct location and migration of ancestors from the spatial distribution of extant individuals and their genome sequences.
 The latter allow the reconstruction of the phylogenetic tree which encodes how closely different individuals are related to each other.
-Together with the spatial location of the samples -- the leafs of the tree -- one can reconstruct the likely locations of ancestors and estimate parameters of dispersal.
+Together with the spatial location of the samples -- the leaves of the tree -- one can reconstruct the likely locations of ancestors and estimate parameters of dispersal.
 Popular tools for such inference, however, make strong assumptions about the dispersal process, including assuming that dispersal of individuals is diffusive (i.e.~characterized by small displacements in random directions) and that spatial location is independent of the replication process.
 In this note, I have explored the robustness of such inference to violations of the latter assumption while keeping microscopic dispersal strictly diffusive, that is without any long-range migration.
 
