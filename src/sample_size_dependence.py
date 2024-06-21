@@ -23,25 +23,31 @@ if __name__=="__main__":
 
     import matplotlib.pyplot as plt
 
-    for coal in ['yule', 'kingman']:
+    fs=12
+    fig, axs = plt.subplots(1,2,figsize=(10,4), sharey=True, sharex=True)
+    for ax, coal in zip(axs, ['yule', 'kingman']):
+        ax.text(10,100, "Kingman coalescent" if coal=='kingman' else "Yule tree", fontsize=fs)
         res = results[coal]
-        plt.figure()
         offset = 1.0/1.02
         for suffix, suffix_label in [('_total', 'weighted'), ('_branch', 'by branch')]:
             for p, quantity in [('Dxy', 'diffusion'), ('vxy', 'velocity')]:
                 q = f"{p}{suffix}"
                 label = f"{quantity}, {suffix_label}"
-                plt.errorbar([n*offset for n in res], [res[n][q] for n in res], [res[n][q+"_std"] for n in res], ls = '-', marker='o',
-                            label=label)
+                ax.errorbar([n*offset for n in res], [res[n][q] for n in res],
+                             [res[n][q+"_std"] for n in res],
+                             ls = '-', marker='o', label=label)
                 offset *= 1.02**2
-        plt.plot([10, 3000], [1,1], ls='--', color='k')
-        plt.plot([10, 3000], [10,10*300**0.5], ls='-.', color='k')
+        ax.plot([10, 3000], [1,1], ls='--', color='k')
+        ax.set_xlabel('number of samples', fontsize=fs)
+        if coal=='kingman':
+            ax.plot([10, 3000], [10,10*300**0.5], ls='-.', color='k')
+        if coal=='yule':
+            ax.set_ylabel('estimate', fontsize=fs)
+            ax.legend()
+        ax.set_ylim(0.5, 200)
+        ax.set_xlim(7, 3600)
+        ax.set_yscale('log')
+        ax.set_xscale('log')
+    plt.tight_layout()
 
-        plt.xlabel('Number of leaves')
-        plt.ylabel('estimate')
-        plt.legend()
-        plt.yscale('log')
-        plt.xscale('log')
-        plt.ylim(0.5, 200)
-        plt.xlim(7, 3600)
-        plt.savefig(f'figures/{coal}_dispersal.pdf')
+    plt.savefig(f'figures/dispersal_stats.pdf')

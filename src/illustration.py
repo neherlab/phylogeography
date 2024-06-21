@@ -3,12 +3,12 @@ from free_diffusion import *
 from density_regulation import dict_to_phylo_tree
 import matplotlib.pyplot as plt
 from Bio import Phylo
-from matplotlib.cm import viridis_r 
+from matplotlib.cm import viridis_r
 
 if __name__=="__main__":
     n_leaves = 100
 
-    fig, axs = plt.subplots(2,2, figsize=(12,8))
+    fig, axs = plt.subplots(2,2, figsize=(6,8))
     for row, yule in [(0,True), (1,False)]:
         scale = np.log(n_leaves) if yule else 2
         tree = random_tree(n_leaves, yule=yule)
@@ -24,10 +24,11 @@ if __name__=="__main__":
             for c in n.clades:
                 axs[row,1].plot([n.pos['x'], c.pos['x']], [n.pos['y'], c.pos['y']], c='k', lw=0.5, alpha=0.5)
 
-        axs[row,1].scatter([n.pos['x'] for n in phylo_tree.find_clades()], [n.pos['y'] for n in phylo_tree.find_clades()], 
+        axs[row,1].scatter([n.pos['x'] for n in phylo_tree.find_clades()], [n.pos['y'] for n in phylo_tree.find_clades()],
                 c=[n.t for n in phylo_tree.find_clades()], s=30)
         axs[row,1].axis('equal')
         axs[row,1].scatter([0], [0], c='r', s=100)
-    
+        axs[row,1].set_axis_off()
+
+    plt.tight_layout()
     plt.savefig('figures/illustration_tree.pdf')
-    
