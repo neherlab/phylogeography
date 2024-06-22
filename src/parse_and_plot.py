@@ -111,7 +111,8 @@ def make_figure(func, params, Lx=3, Ly=1, time_points=5, fname=None, panel_label
     for i, ax in enumerate(axs.flatten()):
         grid = np.meshgrid(np.linspace(0,Lx,30*Lx), np.linspace(0,Ly,30))
         vals = f(grid[0], grid[1], i)
-        ax.matshow(vals/np.max(vals), vmax=1, vmin=0)
+        norm = np.sum(vals)/30/Lx/15
+        ax.matshow(vals/norm, vmax=1, vmin=0)
         ax.set_axis_off()
         if panel_label and i==0:
             add_panel_label(ax, panel_label, x=-0.1, y=1.1)

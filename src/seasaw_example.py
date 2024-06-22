@@ -60,38 +60,52 @@ if __name__=="__main__":
         axs[0].set_axis_off()
         print(f"N={len(terminal_nodes)}")
 
-        # plot true and inferred positions of nodes
-        axs[1].scatter([n.pos['x'] for n in phylo_tree.get_nonterminals()],
-                       [n.pos['y'] for n in phylo_tree.get_nonterminals()],
-                        c=[n.t for n in phylo_tree.get_nonterminals()], s=30)
-
-        axs[1].scatter([n.inferred_pos['x']['mean'] for n in phylo_tree.get_nonterminals()],
-                       [n.inferred_pos['y']['mean'] for n in phylo_tree.get_nonterminals()],
-                        c=[n.t for n in phylo_tree.get_nonterminals()], s=20, marker='^')
-
-        # highlight true and inferred root positions
-        n = phylo_tree.root
-        axs[1].scatter([n.pos['x']], [n.pos['y']], c='g', s=100, label='True root')
-        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='r', s=100, marker='^', label='Inferred root')
-#                c=[n.t for n in phylo_tree.find_clades()], s=30, marker='d', ls=None)
-        # z = [(n.inferred_pos['x']['mean'] - n.pos['x'])/n.inferred_pos['x']['var']**0.5 for n in phylo_tree.get_nonterminals()]
-        # tps = [n.t for n in phylo_tree.get_nonterminals()]
-        # axs[2].scatter(tps, z, c='k', s=30)
-
-        # add arrows indicating the link between true and inferred positions
-        for n in phylo_tree.get_nonterminals():
-            axs[1].arrow(n.pos['x'], n.pos['y'], n.inferred_pos['x']['mean'] - n.pos['x'],
-                         n.inferred_pos['y']['mean'] - n.pos['y'], lw=0.5, alpha=0.5)
-
         # indicate density
         x = np.linspace(0, Lx,101)
         dens = target_density(x, 0, t)
-        axs[1].plot(x, dens/np.max(dens), label='Carrying capacity')
-        axs[1].legend()
+        axs[1].plot(x, dens/np.max(dens), label='Carrying capacity', lw=3)
         axs[1].set_xlim(0,Lx)
         axs[1].set_xlabel(r'habitat $x$ coordinate')
         axs[1].set_ylabel(r'habitat $y$ coordinate')
+
+
+        # plot true and inferred positions of nodes
+        sorted_nodes = sorted([n for n in phylo_tree.get_nonterminals()], key=lambda x:x.t)
+        axs[1].scatter([n.pos['x'] for n in sorted_nodes[10:]],
+                       [n.pos['y'] for n in sorted_nodes[10:]],
+                        c="C3", alpha=0.4, s=30)
+                        # c=[n.t for n in sorted_nodes], s=30)
+
+        axs[1].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[10:]],
+                       [n.inferred_pos['y']['mean'] for n in sorted_nodes[10:]],
+                        c="C2", alpha=0.4, s=30, marker='^')
+                        # c=[n.t for n in sorted_nodes], s=20, marker='^')
+
+        axs[1].scatter([n.pos['x'] for n in sorted_nodes[:10]],
+                       [n.pos['y'] for n in sorted_nodes[:10]],
+                        c="C3", alpha=0.8, s=40)
+                        # c=[n.t for n in sorted_nodes], s=30)
+
+        axs[1].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[:10]],
+                       [n.inferred_pos['y']['mean'] for n in sorted_nodes[:10]],
+                        c="C2", alpha=0.8, s=20, marker='^')
+
+        # highlight true and inferred root positions
+        n = phylo_tree.root
+        axs[1].scatter([n.pos['x']], [n.pos['y']], c='C3', s=100, label='True root')
+        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='black', s=100, marker='^', label='Inferred root')
+#                c=[n.t for n in phylo_tree.find_clades()], s=30, marker='d', ls=None)
+        # z = [(n.inferred_pos['x']['mean'] - n.pos['x'])/n.inferred_pos['x']['var']**0.5 for n in sorted_nodes]
+        # tps = [n.t for n in sorted_nodes]
+        # axs[2].scatter(tps, z, c='k', s=30)
+
+        # add arrows indicating the link between true and inferred positions
+        for n in sorted_nodes:
+            axs[1].arrow(n.pos['x'], n.pos['y'], n.inferred_pos['x']['mean'] - n.pos['x'],
+                         n.inferred_pos['y']['mean'] - n.pos['y'], lw=0.5, alpha=0.5)
+
         add_panel_label(axs[1], 'C', x=-0.05, y=1.1)
+        axs[1].legend()
 
         plt.tight_layout()
 
