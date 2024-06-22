@@ -10,17 +10,21 @@
 \newcommand{\Richard}[1]{{\color{red}Richard: #1}}
 \newcommand{\LH}{\mathcal{L}}
 \newcommand{\rvec}{\mathbf{r}}
-
+\newcommand{\vfkpp}{v_f}
 
 \begin{document}
-\title{On the robustness and consistency of phylogeographic inference}
+\title{On the robustness and consistency of continuous phylogeographic inference}
 \author{Richard A.~Neher}
+\affiliation{Swiss Institute of Bioinformatics, and Biozentrum, University of Basel, Switzerland \looseness=-5}
+
 \date{\today}
 \begin{abstract}
 Continuous phylogeographic inference is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process.
 While the underlying probabilistic models can be complex and their parameters are often computationally demanding to infer, these models typically ignore that replication and population growth are tightly coupled to spatial location: populations expand into fertile uninhabited areas and contract in regions with limited resources.
-Such coupling, in particular when habitats change over time, can result in biased and overconfident estimates of ancestral locations and dispersal parameters.
-These distortions depend in complicated ways on the past dynamics of habitats and underlying population dynamics and dispersal processes such that validity of phylogeographic inferences is hard to assess.
+Here, I first investigate the sampling consistency of popular summary statistics of dispersal and show that estimators of ``lineage velocities'' are ill-defined.
+I then use simulations to investigate how local density regulation or shifting habitats perturb phylogeographic inference and show that these can result in biased and overconfident estimates of ancestral locations and dispersal parameters.
+These, sometimes dramatic, distortions depend in complicated ways on the past dynamics of habitats and underlying population dynamics and dispersal processes.
+Confidence statements that depend on the tails of posterior distributions or likelihood surfaces are particularly sensitive to model mispecification and the validity of phylogeographic inferences is therefore hard to assess.
 \end{abstract}
 
 \maketitle
@@ -63,8 +67,9 @@ Software like BEAST will then sample the posterior distribution of the phylogene
 The inferred quantities of interest could be estimates of the ancestral location of a particular groups of samples, or summary statistics of the dispersal process.
 Here, I explore what dispersal quantities can be robustly estimated and how sensitive inferences are to the fact that coupling between population dynamics and spatial location is ignored.
 My focus here is only on the ability and robustness to estimate dispersal parameters and ancestral locations and I will use simulations with perfect knowledge of the tree and the sampling locations.
-So no tree-sampling will be necessary.
-This simplification is justified since the tree tends to depend much more strongly on sequence information and spatial information and will allow stronger conclusions.
+So no tree reconstruction will be necessary and sampling is uniform across the population.
+This simplification is justified since the tree tends to depend much more strongly on sequence information and spatial information and will allow clearer conclusions.
+In practice, tree reconstruction and sampling biases can create additional uncertainty and biases.
 Furthermore, I will assume strictly diffusive dispersal without any long-range migrations.
 
 
@@ -130,11 +135,12 @@ This heterogeneity increases substantially for even lower $D$, when the populati
 
 
 \begin{figure}
-    \includegraphics[width=0.53\textwidth]{figures/stable_density}
+    \includegraphics[width=0.48\textwidth]{figures/stable_density}
     \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
-    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat. Panel A shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii. For $r\ll L$, density fluctuations are strongly suppressed.
-    At the same time, the time to the most recent common ancestor increases dramatically (panel B), indicating that the population fragments in subpopulations that don't interact.
-    Panel C shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (solid lines, like panels A\&B) and reflecting boundaries (dashed lines).
+    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
+    {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii. For $r\ll L$, density fluctuations are strongly suppressed.
+    At the same time, the time to the most recent common ancestor increases dramatically ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
+    {\bf Panel C} shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (triangles, solid lines, like panels A\&B) and reflecting boundaries (circles, dashed lines).
     }
 \end{figure}
 
@@ -183,9 +189,10 @@ If $D\gg L^2/T_{mrca}$, the boundaries of the habitat restrict free diffusion, r
     \includegraphics[width=\textwidth]{figures/seasaw_illustration}
     \includegraphics[width=\textwidth]{figures/seasaw_example}
     \includegraphics[width=\textwidth]{figures/seasaw}
-    \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} Panel A shows an illustration of the simulated set-up: The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back. The habitat size is $L_x=3$, $L_y=1$.
-    Panel B shows a tree from a simulation under these conditions with $D=0.0008$ and $N=500$, while panel C right shows the inferred (triangles) and true positions (circles) of internal nodes, highlight the root with large markers. Blue and green colors correspond to older nodes, yellow to recent nodes.
-    Panels D show estimates of diffusion coefficients in directions $x$ (solid lines) and $y$ (dashed lines) relative to their true values as a function of the true value of $D$. Panel E shows the average $z_x^2$ and $z_y^2$ for the oldest 20\% of internal nodes. Inference of the x-coordinate of ancestral nodes is drastically overconfident for some values of $D$. }
+    \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} {\bf Panel A} shows an illustration of the simulated set-up: The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back. The habitat size is $L_x=3$, $L_y=1$.
+    {\bf Panel B} shows a tree from a simulation under these conditions with $D=0.0008$ and $N=500$, while {\bf panel C} on the right shows the inferred (triangles, green) and true positions (circles, red) of internal nodes, highlight the root with large markers.
+    The population is sampled at a time when the carrying capacity is flat after having moved the left, that is the population is about to spread to the right.
+    {\bf Panels D} show estimates of diffusion coefficients in directions $x$ (solid lines) and $y$ (dashed lines) relative to their true values as a function of the true value of $D$. {\bf Panel E} shows the average $z_x^2$ and $z_y^2$ for the oldest 20\% of internal nodes. Inference of the x-coordinate of ancestral nodes is drastically overconfident for some values of $D$. }
 \end{figure*}
 
 \section*{How do changing habitats affect phylogeographic inferences?}
@@ -202,7 +209,7 @@ In between the two extreme left/right concentration of the carrying capacity, th
 To avoid extinction at low dispersal rates, selection is soft, meaning that the overall population size is kept approximately constant even if the entire population is stuck in the unfavorable region.
 If the dispersal rate is sufficiently high, however, the population follows the shifting carrying capacity and lineages in the tree undergo directed back-and-forth motion.
 Inference of ancestral locations in such situations can be misleading as illustrated in Fig.~\ref{fig:seasaw}B.
-The population was sampled at a time when it had just contracted to the left and the positions of older nodes are not estimated correctly.
+The population was sampled at a time when the carrying capacity is flat after having contracted to the left and the positions of older nodes are not estimated correctly.
 Their true locations are to the right of the current population, but the inferred locations are central in the shifted population.
 This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential of misleading inference, in particular when extrapolating far into the past.
 
@@ -230,7 +237,7 @@ Once the population starts following, inferred ancestral locations of deep nodes
 
 To study the interplay of moving habitats and phylogeographic inference more systematically, I will now consider a situation where the population is constrained to a stripe with a Gaussian profile that moves at a constant velocity $v$ along the $x$-axis (Fig.~\ref{fig:traveling_wave}).
 The dispersal rates necessary to keep up with the shifting carrying capacity can be estimated from the Fisher-KPP equation (Eq.~\ref{eq:FKPP}) above.
-This equation admits solutions with a traveling front, i.e.~the population ``invades'' the empty territory with velocity $v_{FKPP} = 2\sqrt{D \alpha}$ \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}.
+This equation admits solutions with a traveling front, i.e.~the population ``invades'' the empty territory with velocity $\vfkpp = 2\sqrt{D \alpha}$ \citep{fisher_wave_1937,KPP1937,hallatschek_life_2010}.
 Note that the model itself does not have an explicit parameter that has dimensions of a velocity.
 The speed at which the population invades space is given as compound of diffusion and accelerated growth in regions of low density and only grows like the square root of diffusion constant.
 
@@ -240,33 +247,33 @@ The speed at which the population invades space is given as compound of diffusio
     \includegraphics[width=0.48\textwidth]{figures/waves}
     % \includegraphics[width=0.48\textwidth]{figures/waves_v}
     \caption{\label{fig:traveling_wave}{\bf Phylogeographic inference in a moving habitat.}
-    Panel A shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
-    Panels B\&C show estimates of diffusion coefficients and velocities, relative to their true values, as a function of the ratio of the FKPP velocity to the external velocity $v$. }
+    {\bf Panel A} shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
+    {\bf Panels B\&C} show estimates of diffusion coefficients and velocities, relative to their true values, as a function of the ratio of the FKPP velocity to the external velocity $v$. }
 \end{figure}
 
 
-Fig \ref{fig:traveling_wave}B\&C show simulation results for this traveling habitat. In Panel B, estimates of $D_x$ using Eq.~\ref{eq:dispersal_parameters} are shown as a function of the ratio of the FKPP velocity to the external velocity $v$.
+Fig \ref{fig:traveling_wave}B\&C show simulation results for this traveling habitat. In Panel B, estimates of $D_x$ using Eq.~\ref{eq:dispersal_parameters} are shown as a function of the ratio of the FKPP velocity $v_f$ to the external velocity $v$.
 As expected, estimates of $\hat{D}_x$ are often dramatically too high (by up to factors of 1000).
-They peak right around when the external velocity matches the FKPP velocity, corresponding to the situation where the population dynamics is maximally affected by the moving carrying capacity.
+They peak right around when the external velocity matches the FKPP velocity $\vfkpp$, corresponding to the situation where the population dynamics is maximally affected by the moving carrying capacity.
 If the external velocity was lower, undirected dispersal contributes more and more to the displacement of lineages, while the population would be unable to follow the moving carrying capacity if the external velocity was higher.
 
 Fig.~\ref{fig:traveling_wave}C shows estimates of $v$ using Eq.~\ref{eq:dispersal_parameters} relative to the true velocity.
 This ratio is monotonically increasing with the diffusion coefficient and shows a range where it is close to 1, i.e.~where the estimated velocity of lineages agrees with the external velocity.
 This range coincides with the location of the peak of $D_w$.
 
-These behaviors are explained comparing the speed $v_{FKPP}$ at which the population can invade new territory with the external speed $v$, the ratio of which is used as the $x$-axis in Fig.~\ref{fig:traveling_wave} B\&C.
-For $v_{FKPP} \ll v$, the population cannot keep up with the moving carrying capacity and is saved from extinction only because selection is soft.
-In this regime, the estimated velocity of lineages is below $v$ and both the estimated $v$ and $D$ increase with $v_{FKPP}$.
-Once $v\sim v_{FKPP}$, the estimated lineage velocity coincides with $v_{FKPP}$, while the estimated $D$ peaks at values orders of magnitude above the true value.
-For values of $v_{FKPP}$ that are comparable the external velocity $v$, the estimated velocity is stable for some time and broadly agrees with $v$, before increasing again with $v_{FKKP}$.
+These behaviors are explained comparing the speed $\vfkpp$ at which the population can invade new territory with the external speed $v$, the ratio of which is used as the $x$-axis in Fig.~\ref{fig:traveling_wave} B\&C.
+For $\vfkpp \ll v$, the population cannot keep up with the moving carrying capacity and is saved from extinction only because selection is soft.
+In this regime, the estimated velocity of lineages is below $v$ and both the estimated $v$ and $D$ increase with $\vfkpp$.
+Once $v\sim \vfkpp$, the estimated lineage velocity coincides with $\vfkpp$, while the estimated $D$ peaks at values orders of magnitude above the true value.
+For values of $\vfkpp$ that are comparable the external velocity $v$, the estimated velocity is stable for some time and broadly agrees with $v$, before increasing again with $v_{FKKP}$.
 In this latter regime, diffusive motions dominates over directed motion and the estimates of $v$ suffer from the problems shown in Fig.~\ref{fig:D_and_v}.
 
 
 \section*{Discussion}
-Phylogeography aims to reconstruct location and migration of ancestors from the spatial distribution of extant individuals and their genome sequences.
+Phylogeography aims to reconstruct locations and migrations of ancestors from the spatial distribution of sampled individuals and their genome sequences.
 The latter allow the reconstruction of the phylogenetic tree which encodes how closely different individuals are related to each other.
 Together with the spatial location of the samples -- the leaves of the tree -- one can reconstruct the likely locations of ancestors and estimate parameters of dispersal.
-Popular tools for such inference, however, make strong assumptions about the dispersal process, including assuming that dispersal of individuals is diffusive (i.e.~characterized by small displacements in random directions) and that spatial location is independent of the replication process.
+Popular tools for such inference, however, make strong assumptions about the dispersal process, including assuming that dispersal of individuals is diffusive (i.e.~characterized by small displacements in random directions) and that the replication process is independent of spatial location.
 In this note, I have explored the robustness of such inference to violations of the latter assumption while keeping microscopic dispersal strictly diffusive, that is without any long-range migration.
 
 The common practice to estimate dispersal ``velocities'' using displacements of lineages along the tree \citep{dellicour_relax_2021} is problematic.
@@ -278,30 +285,33 @@ The velocity is better determined by modeling the position of the front, rather 
 
 
 A more complex set of questions concerns how coupling between growth rate of the population and spatial density affects phylogeographic inferences and how robust these inferences are to shifting habitats.
-As has long been known, ignoring the coupling between population growth and spatial location can lead to unrealistic population densities \citep{felsenstein_pain_1975}.
-Density regulation leads to homogeneous population densities.
-However, the population dynamics strongly depends on whether dispersal is fast enough to explore the entire habitat during the coalescence time $T_c$ of the population in absence of spatial structure.
+As has long been known, ignoring the coupling between population growth and spatial location can lead to unrealistic population densities \citep{felsenstein_pain_1975} and that density regulation is necessary.
+However, once density regulation is in place, the population dynamics depends strongly on whether dispersal is fast enough to explore the entire habitat during the coalescence time $T_c$ of the population in absence of spatial structure.
 If $D\ll L^2/T_c$, the population fragments into subpopulations and the time to the most recent common ancestor increases dramatically.
 The resulting strong coupling between spatial location and coalescence process violates typical tree priors used in such inference.
-In the other case of $D\gg L^2/T_c$, dispersal is rapid enough that ancestral locations of deep nodes are very uncertain compared to the size of the habitat.
+In the other case of $D\gg L^2/T_c$, dispersal is rapid enough that uncertainties of ancestral locations of deep nodes are large compared to the size of the habitat and such inferences thus uninformative.
+We only considered spatially constant and static carrying capacities, but carrying capacities that vary strongly in space lead to unexpected effective lineage dynamics corresponding to sources at where population densities are high and sinks where they are low \citep{wilkins_coalescent_2002}.
 
-Interpretation of such inference becomes even more challenging when habitats shift in time.
+Interpretation of phylogeographic inference becomes even more challenging when habitats shift in time.
 Depending on parameters, dispersal rates $D$ can be overestimated or underestimated, sometimes by large factors, and estimates of ancestral locations can be overconfident or too uncertain.
-Simulations reveal that this behavior depends on the relative magnitude of the rate at which the habitat shifts and the FKPP velocity which depends on the diffusion constant $D$ and the growth rate in empty regions $\alpha$, as well as curtailed dispersal by the boundaries of the habitat.
+Simulations reveal that this behavior depends on the relative magnitude of the rate at which the habitat shifts and the FKPP velocity which depends on the diffusion constant $D$ and the growth rate in empty regions $\alpha$.
 The parameter range where both ancestral locations and dispersal parameters are inferred correctly is narrow.
 
-Phylogeographic methods are often studied using West Nile virus and Rabies virus.
-West-Nile virus was first detected on the east coast of the US in 1999 and reached the West Coast five years later in 2004 \citep{pybus_unifying_2012}, translating to a wave front velocity of about 1000 km/year.
+Phylogeographic methods are often studied using the spread of West Nile virus in North America and Rabies virus.
+West-Nile virus was first detected on the East Coast of the US in 1999 and reached the West Coast five years later in 2004 \citep{pybus_unifying_2012}, translating to a wave front velocity of about 1000 km/year.
 \citet{pybus_unifying_2012} estimated a diffusion coefficient of between 200 and 5000 km$^2$/day, where the latter refers to branches with particularly high diffusion constant.
-Using $v_{FKPP} = 2\sqrt{D\alpha}$ and equating it to 1000 km/year $\approx$ 3km/day, we obtain ranges of $\alpha=\frac{9 km^2}{4 D day^2} = 0.012/day \ldots 0.00045/day$ or between $0.003$ and $0.08$/week.
-A pathogen that produces seasonal outbreaks with many orders of magnitude in prevalence between peak and troughs typically requires a growth rate of 1/week, considerably more than what the estimates of $D$ and the FKPP equation imply.
-Alternatively, if we assume $\alpha = 0.1/day$, we would expect $D = \frac{10 km^2}{0.4 day} = 25 km^2/day$, implying a daily exploration radius of about 5 km.
-This picture is also consistent with the apparent ``slowing down'' of lineages after the initial expansion across North America \citep{dellicour_epidemiological_2020}: Once the habitat was fully explored, directed invasion with $v_{FKPP}$ ceases.
+These extremely high estimates of diffusive dispersal are implausible.
+Alternatively, one can interpret the spread from east to west as a range expansion.
+To this end, we need an estimate of the growth rate of the population at low density, which we can roughly obtain from the fact that the virus is seasonal: over the course of a few months, its prevalence increases by orders of magnitude, which typically requires a doubling time of about a week or a growth rate of $\alpha=0.1/$day.
+Using $\vfkpp = 2\sqrt{D\alpha}$ and equating it to 1000 km/year $\approx$ 3km/day, we obtain estimates of $D$ of $D=\frac{9 \mathrm{km}^2}{4 \alpha \mathrm{day}^2} \approx 22\mathrm{km}^2/\mathrm{day}$ -- around 10 to 200 times smaller than estimates from phylogeography.
+This lower estimate of $D$ implies a daily exploration radius of about 5 km.
+This picture is also consistent with the apparent ``slowing down'' of lineages after the initial expansion across North America \citep{dellicour_epidemiological_2020}: Once the habitat was fully explored, directed range expansion with $\vfkpp$ ceases.
 Furthermore, rare long range dispersal could have strongly influenced the spread of the virus in ways not captured by Brownian or relaxed random walks \citep{hallatschek_acceleration_2014}.
 
 Dispersal rates of rabies virus are typically estimated to be between 500 and 1500 km$^2$/year \citep{dellicour_using_2017}.
 The most recent common ancestor of various populations is between 30 and 100 years in the past.
-This would translate into rather limited spread of 150 to 500km of individual clades from their common ancestor, suggesting that these populations are highly structured (isolated by distance) and that their long range dispersal is dominated by rare introductions of the virus into new populations.
+This would translate into rather limited spread of 150 to 500km of individual clades from their common ancestor, suggesting that these populations are highly structured (isolated by distance) and that their long range dispersal is dominated by rare introductions of the virus into new populations \citep{brunker_elucidating_2015}.
+
 
 The results presented here and the discussion of the examples above suggested that phylogeographic methods should be used and interpreted with caution.
 In many cases the habitat of a population has undergone dramatic and recurrent changes since the $MRCA$ and such changes will affect inferences in ways that are not captured by the models.
@@ -312,10 +322,14 @@ However, while such models will often generate a better fit, they don't capture 
 
 Why does phylogeography then often generate sensible results?
 On short time scales, a diffusive model will mostly reduce to a parsimonious reconstruction of ancestral locations which is robust to details of the model.
-It is longer time scales, that is deeper nodes in the phylogeny, for which ancestral inferences can get problematic as the chance that the environment has changed and shifted, or that the ancestral locations are in poorly sampled regions, increases.
-Inferences, and in particular confidence statements, can be highly unreliable and misleading.
-In absence of a good understanding of the dispersal properties and how population dynamics varies and time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models.
+Sampling at multiple time points further constrains ancestral locations sufficiently strong that there is limited uncertainty, at least within the period for which samples are available.
+It is longer time scales, that is deeper nodes in the phylogeny before the earliest samples, for which ancestral inferences can get problematic as the chance that the environment has changed and shifted, or that the ancestral locations are in poorly sampled regions, increases.
+And while phylogeographic inferences will still often yield plausible results by virtue of their tendency to produce parsimonious solutions that aggregate available spatial locations, they can also be highly unreliable and misleading.
+In particular confidence statements should be treated with extreme caution, because the tails of the inferred distributions are very sensitive to past environmental shifts and biased sampling.
+In absence of a good understanding of the dispersal properties and how population dynamics varied over time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models.
 
+\section*{Materials and methods}
+All simulation were performed in Python and the associated code is available in the github repository \href{https://github.com/neherlab/phylogeography}{github.com/neherlab/phylogeography}.
 
 \bibliography{bib}
 
