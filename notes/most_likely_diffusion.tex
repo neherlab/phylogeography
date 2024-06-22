@@ -39,7 +39,7 @@ This can be done recursively, where the likelihood of a subtree $n$ given the po
         & = \prod_{c\in n}\frac{\sqrt{d_c}}{\sqrt{a_c + d_c}} e^{- d_c\left(1 - \frac{d_c}{a_c+d_c}\right) r_n^2 +  2\frac{b_c d_c}{d_c+a_c} r_n  - c_c + \frac{b_c^2}{d_c + a_c}} \\
     \end{split}
 \end{equation}
-This allows calculation of the parameters $a_n$, $b_n$, and $c_n$ of node $n$ from the children its children, though the contributions are different for terminal and non-terminal children. 
+This allows calculation of the parameters $a_n$, $b_n$, and $c_n$ of node $n$ from the children its children, though the contributions are different for terminal and non-terminal children.
 For each internal child $c$, we add
 \begin{equation}
     a_n += d_c \left(1-\frac{d_c}{a_c+d_c}\right) = \frac{d_c a_c}{a_c+d_c}
@@ -90,5 +90,18 @@ and the variance ($() = 1/2\sigma^2$)
     \sigma^2_n = \frac{1}{2(a_n + a'_n d_n/(d_n + a'_n))} = \frac{(d_n + a'_n)}{2(a_n(d_n + a'_n) + a'_n d_n)}
 \end{equation}
 
+\section{common examples}
+
+\subsection{WNV}
+West-Nile virus was first detected on the east coast of the US in 1999 and reached the West Coast 5 years later in 2004. This translates to a wave front velocity of about 1000 km/year. Previous analysis estimated a diffusion coefficient of between 200 and 10000 km^2/day (Pybus et al). Using $v_{FKPP} = \sqrt{2D\alpha}$ and equating it to 1000 km/year = 3km/day, we obtain ranges of $\alpha=\frac{10 km^2}{2D day^2} = 0.025/day \ldots 0.0005/day$ or between $0.0035$ and $0.14$/week.
+A pathogen that produces seasonal outbreaks with many orders of magnitude in prevalence between peak and troughs typically requires a growth rate of 1/week, considerably more than what the estimates of $D$ and the FKPP equation imply.
+Alternatively, if we assume $\alpha = 0.1/day$, we would expect $D = \frac{10 km^2}{0.2 day} = 50 km^2/day$, implying a daily exploration radius of about 10km.
+This picture is also consistent with the apparent ``slowing down" if lineages after the initial expansion across North America: Once the habitat was fully explored, directed invasion with $v_{FKPP}$ ceases.
+
+\subsection{rabies}
+Dispersal rates of rabies are typically estimated to be between 500 and 1500 km^2/year.
+The most recent common ancestor of various populations is between 50 and 100 years in the past.
+This would translate into rather limited spread of 200 to 500km of individual clades from their common ancestor, suggesting that these populations are highly fragmented and their long range dispersal is dominated by rare introductions of the virus into new populations.
+Within each population, phylogeographic reconstruction will often give plausible results, but it is hard to extrapolate to longer time and distance scales.
 
 \end{document}

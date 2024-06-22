@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,graphicx}
 \usepackage{color}
+\usepackage{hyperref}
 %\usepackage{cite}
 
 \newcommand{\Richard}[1]{{\color{red}Richard: #1}}
@@ -101,7 +102,7 @@ Examples for each ensemble are shown in Fig.~\ref{fig:illustration_tree}.
     \includegraphics*[width=0.99\textwidth]{figures/dispersal_stats.pdf}
     % \includegraphics*[width=0.48\textwidth]{figures/yule_dispersal.pdf}
     \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
-    While diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. Their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $\sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
+    While the diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. For Kingman coalescent tree their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $v_w \sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
 \end{figure*}
 
 
@@ -161,14 +162,15 @@ Instead of the coalescent trees used above, I now used an individual based simul
 The first term determines the fitness due to the local population density and has the tendency to stabilize this density at $\phi_0$, the second term $(1-N/N_0)$ keeps the overall population close to the target population size $N_0$.
 The population density is calculated using a Gaussian kernel with interaction radius $r$
 \begin{equation}
-    \ref{eq:density_estimator}
+    \label{eq:density_estimator}
     \hat{\phi}(\rvec, t) = \sum_{i\in N} \frac{e^{-|\rvec_i - \rvec|^2/2r^2}}{\sqrt{2\pi r^2}}
 \end{equation}
 where the sum is over all individuals $i$ in the population of size $N$ and $\rvec_i$ is location of individual $i$ at time $t$.
 The spatial locations of the offspring are chosen from a 2-D Gaussian centered on the parent with a variance to match the diffusion constant.
 The simulation records the tree of population, including their ancestral location and times.
 In addition to the true location of ancestral nodes, I also infer their locations from the locations of the extant samples.
-Since the model is purely diffusive, the marginal distributions of ancestral locations and their mean and variance can be calculated exactly using recursion relations.
+For this inference, I make the common assumption of continuous phylogeography that growth and location are uncoupled and that dispersal is diffusive.
+In this case, the marginal distributions of ancestral locations and their mean and variance can be calculated exactly using recursion relations.
 
 The radius $r$ of the density estimate $\hat{\phi}(\rvec, t)$ in Eq.~\ref{eq:density_estimator} determines the distance over which different individuals compete for resources.
 As soon as $r$ is much smaller than the habitat size, this density regulation leads to a more homogeneous population density, see Fig.~\ref{fig:density_reg}A.
@@ -330,6 +332,9 @@ In absence of a good understanding of the dispersal properties and how populatio
 
 \section*{Materials and methods}
 All simulation were performed in Python and the associated code is available in the github repository \href{https://github.com/neherlab/phylogeography}{github.com/neherlab/phylogeography}.
+
+\section*{Acknowledgements}
+I am grateful to Louis de Plessis and Oskar Hallatscheck for stimulating discussions and useful feedback on earlier versions of this manuscript.
 
 \bibliography{bib}
 
