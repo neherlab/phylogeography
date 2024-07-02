@@ -7,7 +7,6 @@ from habitat_shifts import cycling_patches
 
 plt.rcParams.update({
     "text.usetex": True,
-    "font.family": "Helvetica"
 })
 
 def make_figure(fname=None):

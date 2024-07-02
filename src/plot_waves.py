@@ -19,7 +19,7 @@ if __name__=="__main__":
 
     # make an illustration of the carrying capacity at different times
     make_figure(func=waves, params={'width':0.5, 'velocity':1}, fname = args.illustration, panel_label='A')
-
+    fs=12
 
     # read and organize data
     data = pd.read_csv(args.data)
@@ -56,7 +56,7 @@ if __name__=="__main__":
                     except:
                         pass
 
-            ax.set_ylabel(r'$\hat{D}_x / D$')
+            ax.set_ylabel(r'$\hat{D}_x / D$', fontsize=12)
             # ax.set_xlabel(r'$\frac{2\sqrt{\alpha D}}{v} = \frac{v_{FKPP}}{v}$')
             ax.set_yscale('log')
             ax.set_xscale('log')
@@ -82,10 +82,10 @@ if __name__=="__main__":
                     except:
                         pass
 
-            ax.set_xlabel(r'$\frac{2\sqrt{\alpha D}}{v} = \frac{v_{FKPP}}{v}$')
-            ax.set_ylabel(r'$\hat{v}_x / v$')
-            ax.set_yscale('log')
-            ax.set_xscale('log')
+        ax.set_xlabel(r'$\frac{2\sqrt{\alpha D}}{v} = \frac{v_{FKPP}}{v}$', fontsize=14)
+        ax.set_ylabel(r'$\hat{v}_x / v$', fontsize=12)
+        ax.set_yscale('log')
+        ax.set_xscale('log')
             #ax.legend()
         #plt.colorbar()
         #plt.legend()
@@ -93,7 +93,7 @@ if __name__=="__main__":
 
     add_panel_label(ax, 'C')
     plt.tight_layout()
-
+    plt.savefig('figures/waves.pdf')
     ## ADDITIONAL FIGURES
 
     for v in velocity:

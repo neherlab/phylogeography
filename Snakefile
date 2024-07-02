@@ -12,7 +12,7 @@ rule stable_density_one:
 
 
 N_array = [1000, 500, 250]
-interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 3.25, 3.5, 3.75, 0.4, 0.5]
 density_reg_array = [0.02, 0.05, 0.1, 0.2]
 rule stable_density_all:
     input:
@@ -37,7 +37,7 @@ rule stable_density_one_periodic:
 
 
 N_array = [1000, 500, 250]
-interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+interaction_radius_array = [0.05, 0.1, 0.2, 0.3, 3.25, 3.5, 3.75, 0.4, 0.5]
 density_reg_array = [0.02, 0.05, 0.1, 0.2]
 rule stable_density_all_BC:
     input:

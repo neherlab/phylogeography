@@ -5,7 +5,7 @@ from density_regulation import make_node, evolve, subsample_tree, dict_to_phylo_
 from estimate_diffusion_from_tree import estimate_diffusion, estimate_ancestral_positions
 import matplotlib.pyplot as plt
 from Bio import Phylo
-from matplotlib.cm import viridis_r
+from matplotlib.cm import viridis_r,plasma
 
 
 if __name__=="__main__":
@@ -54,46 +54,55 @@ if __name__=="__main__":
                                         child_attr='clades')
         phylo_tree.ladderize()
 
-        fig, axs = plt.subplots(1,2, figsize=(12,3))
-        Phylo.draw(phylo_tree, axes=axs[0], label_func=lambda x: '')
-        add_panel_label(axs[0], 'B', x=-0.05, y=1.1)
-        axs[0].set_axis_off()
+        fig, axs = plt.subplots(1,3, figsize=(12,3))
+        Phylo.draw(phylo_tree, axes=axs[1], label_func=lambda x: '')
+        add_panel_label(axs[1], 'B', x=-0.05, y=1.1)
+        axs[1].set_axis_off()
         print(f"N={len(terminal_nodes)}")
 
-        # indicate density
+        add_panel_label(axs[0], 'A', x=-0.05, y=1.1)
         x = np.linspace(0, Lx,101)
-        dens = target_density(x, 0, t)
-        axs[1].plot(x, dens/np.max(dens), label='Carrying capacity', lw=3)
-        axs[1].set_xlim(0,Lx)
-        axs[1].set_xlabel(r'habitat $x$ coordinate')
-        axs[1].set_ylabel(r'habitat $y$ coordinate')
+        for t_illustrate in np.linspace(0,period/2,21):
+            dens = target_density(x, 0, t_illustrate)
+            axs[0].plot(x, dens/np.sum(dens)*30, label='Carrying capacity', lw=2, c=plasma(t_illustrate/period*2))
+
+        axs[0].set_xlim(0,Lx)
+        axs[0].set_xlabel(r'habitat $x$ coordinate')
+        axs[0].set_ylabel(r'carrying capacity')
+
+        # indicate density
+        # dens = target_density(x, 0, t)
+        # axs[2].plot(x, dens/np.max(dens), label='Carrying capacity', lw=3)
+        axs[2].set_xlim(0,Lx)
+        axs[2].set_xlabel(r'habitat $x$ coordinate')
+        axs[2].set_ylabel(r'habitat $y$ coordinate')
 
 
         # plot true and inferred positions of nodes
         sorted_nodes = sorted([n for n in phylo_tree.get_nonterminals()], key=lambda x:x.t)
-        axs[1].scatter([n.pos['x'] for n in sorted_nodes[10:]],
+        axs[2].scatter([n.pos['x'] for n in sorted_nodes[10:]],
                        [n.pos['y'] for n in sorted_nodes[10:]],
-                        c="C3", alpha=0.4, s=30)
+                        c="C0", alpha=0.4, s=20)
                         # c=[n.t for n in sorted_nodes], s=30)
 
-        axs[1].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[10:]],
+        axs[2].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[10:]],
                        [n.inferred_pos['y']['mean'] for n in sorted_nodes[10:]],
-                        c="C2", alpha=0.4, s=30, marker='^')
+                        c="C1", alpha=0.4, s=20, marker='^')
                         # c=[n.t for n in sorted_nodes], s=20, marker='^')
 
-        axs[1].scatter([n.pos['x'] for n in sorted_nodes[:10]],
+        axs[2].scatter([n.pos['x'] for n in sorted_nodes[:10]],
                        [n.pos['y'] for n in sorted_nodes[:10]],
-                        c="C3", alpha=0.8, s=40)
+                        c="C0", alpha=0.8, s=40, label='True location')
                         # c=[n.t for n in sorted_nodes], s=30)
 
-        axs[1].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[:10]],
+        axs[2].scatter([n.inferred_pos['x']['mean'] for n in sorted_nodes[:10]],
                        [n.inferred_pos['y']['mean'] for n in sorted_nodes[:10]],
-                        c="C2", alpha=0.8, s=20, marker='^')
+                        c="C1", alpha=0.8, s=40, marker='^', label='Inferred location')
 
         # highlight true and inferred root positions
         n = phylo_tree.root
-        axs[1].scatter([n.pos['x']], [n.pos['y']], c='C3', s=100, label='True root')
-        axs[1].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='black', s=100, marker='^', label='Inferred root')
+        axs[2].scatter([n.pos['x']], [n.pos['y']], c='C0', s=100, edgecolor='C3', lw=2)
+        axs[2].scatter([n.inferred_pos['x']['mean']], [n.inferred_pos['y']['mean']], c='C1', s=100, marker='^', edgecolor='C3', lw=2)
 #                c=[n.t for n in phylo_tree.find_clades()], s=30, marker='d', ls=None)
         # z = [(n.inferred_pos['x']['mean'] - n.pos['x'])/n.inferred_pos['x']['var']**0.5 for n in sorted_nodes]
         # tps = [n.t for n in sorted_nodes]
@@ -101,11 +110,11 @@ if __name__=="__main__":
 
         # add arrows indicating the link between true and inferred positions
         for n in sorted_nodes:
-            axs[1].arrow(n.pos['x'], n.pos['y'], n.inferred_pos['x']['mean'] - n.pos['x'],
+            axs[2].arrow(n.pos['x'], n.pos['y'], n.inferred_pos['x']['mean'] - n.pos['x'],
                          n.inferred_pos['y']['mean'] - n.pos['y'], lw=0.5, alpha=0.5)
 
-        add_panel_label(axs[1], 'C', x=-0.05, y=1.1)
-        axs[1].legend()
+        add_panel_label(axs[2], 'C', x=-0.05, y=1.1)
+        axs[2].legend(loc=1)
 
         plt.tight_layout()
 
