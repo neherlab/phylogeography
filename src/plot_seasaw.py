@@ -52,7 +52,7 @@ if __name__=="__main__":
                                 label=f'', ls='--', c=f"C{ti%10}")
                                 #label=f'D_y; N={N}, T={T}', ls='--', c=f"C{ti%10}")
 
-    ax.set_xlabel(r'diffusion constant $[L_y^2/N]$', fontsize=fs)
+    ax.set_xlabel(r'diffusion constant $[L_y^2/T_c]$', fontsize=fs)
     ax.set_ylabel(r'$\hat{D} / D$', fontsize=fs)
     #ax.set_yscale('log')
     ax.set_ylim(0,2)
@@ -77,7 +77,7 @@ if __name__=="__main__":
                 #label=f'N={N}, T={T}', ls='--', c=f"C{ti%10}", marker=m)
 
     ax.set_ylabel(r'$(x - \hat{x})^2/2\sigma^2$', fontsize=fs)
-    ax.set_xlabel(r'diffusion constant $[L_y^2/N]$', fontsize=fs)
+    ax.set_xlabel(r'diffusion constant $[L_y^2/T_c]$', fontsize=fs)
     #ax.set_yscale('log')
     ax.set_ylim(0)
     ax.set_xscale('log')

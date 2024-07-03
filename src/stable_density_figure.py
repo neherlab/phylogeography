@@ -34,18 +34,19 @@ if __name__=="__main__":
     interaction_radius = data.interaction_radius.unique()
     density_reg = data.density_reg.unique()
     N_vals = data.N.unique()
+    interaction_radius = [0.1, 0.2, 0.3, 0.4, 0.5]
 
     # figure
     fig, axs = plt.subplots(3, 1, figsize=(5, 7.5), sharex=True)
 
     # Plot the heterogeneity
     ls = ['-', '-.', "--", ":"] #[:len(density_reg_to_plot)]
-    N=500
+    N=1000
     dr = density_reg[1]
     ax=axs[0]
-    for i, ir in enumerate(interaction_radius[1:]):
+    for i, ir in enumerate(interaction_radius):
         D_array = np.array(resPBC["density_variation"][ir, dr, N, :].index)
-        label = f'r={ir}' if N==N_vals[1] else ''
+        label = f'r={ir}'
         ax.plot(D_array*N/Lx/Ly, resPBC["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
                 label=label, ls='-', c=f"C{i%10}")
         # ax.plot(D_array*N/Lx/Ly, resPBC["density_variation"][ir, dr, N, :]/np.sqrt(nbins/N),
@@ -64,7 +65,7 @@ if __name__=="__main__":
 
     ## Plot the diffusion estiamtes
     ax=axs[2]
-    for i, ir in enumerate(interaction_radius[1:]):
+    for i, ir in enumerate(interaction_radius):
         D_array = np.array(resPBC["diffusion_mean"][ir, dr, N, :].index)
         label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
         ax.errorbar(D_array*N/Lx/Ly, res["diffusion_mean"][ir, dr, N, :]/D_array,
@@ -76,7 +77,7 @@ if __name__=="__main__":
 
     ax.plot(N*D_array/Lx/Ly, np.ones_like(D_array), c='k')
 #    ax.set_xlabel('true $ND/L^2$')
-    ax.set_xlabel(r'diffusion constant $[L^2/N]$')
+    ax.set_xlabel(r'diffusion constant $[L^2/T_c]$')
     ax.set_ylabel(r'fold-error in $D$ estimate')
     # plt.yscale('log')
     ax.set_xscale('log')
@@ -103,7 +104,7 @@ if __name__=="__main__":
 
     # Figure showing the TMRCA of the population
     ax=axs[1]
-    for i, ir in enumerate(interaction_radius[1:]):
+    for i, ir in enumerate(interaction_radius):
         D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
         label = f'r={ir}' if N==N_vals[1] else ''
         ax.errorbar(D_array*N, resPBC["tmrca_mean"][ir, dr, N, :]/N/2,
@@ -111,7 +112,7 @@ if __name__=="__main__":
                      label=label, c=f"C{i%10}")
 
     ax.plot(N*D_array, np.ones_like(D_array), c='k')
-    ax.set_ylabel(r'$T_{mrca}/2N$')
+    ax.set_ylabel(r'$T_{mrca}/2T_c$')
     ax.set_xscale('log')
     add_panel_label(ax, 'B')
     # plt.yscale('log')
