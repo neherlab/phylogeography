@@ -43,7 +43,7 @@ Here, we consider migration in continuous space, where the underlying model is t
 where $D$ is a diffusivity with dimensions $\mathrm{length}^2/\mathrm{time}$, we have assumed a two-dimensional space, and we have assumed dispersal is isotropic.
 Such a diffusive process is the simplest and most natural choice in absence of directed motion or long range migration.
 It is also mathematically convenient as unknown ancestral locations can be integrated in closed form and the marginal distribution of each position can be calculated exactly for a fixed tree along with the spatial likelihood.
-But this model assumes dispersal of one lineage is independent of other lineages, and that dispersal properties are homogeneous across the habitat, and that the habitat does not change over time.
+But this model assumes dispersal of one lineage is independent of other lineages, that dispersal properties are homogeneous across the habitat, and that the habitat does not change over time.
 Furthermore, it assumes that the tree topology and the branching rates of the tree are independent of the spatial location.
 This independence assumption is for example manifest in coalescent models assuming ``exchangeability'' of individuals, or birth-death models assuming identical rates on contemporary branches of the tree.
 
@@ -170,7 +170,7 @@ The first term determines the fitness due to the local population density and ha
 The population density is calculated using a Gaussian kernel with interaction radius $r$
 \begin{equation}
     \label{eq:density_estimator}
-    \hat{\phi}(\rvec, t) = \sum_{i\in N} \frac{e^{-|\rvec_i - \rvec|^2/2r^2}}{\sqrt{2\pi r^2}}
+    \hat{\phi}(\rvec, t) = \sum_{i\in N} \frac{e^{-|\rvec_i - \rvec|^2/2r^2}}{\sqrt{4\pi r^2}}
 \end{equation}
 where the sum is over all individuals $i$ in the population of size $N$ and $\rvec_i$ is location of individual $i$ at time $t$.
 The spatial locations of the offspring are chosen from a 2-D Gaussian centered on the parent with a variance to match the diffusion constant.
