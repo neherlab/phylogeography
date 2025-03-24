@@ -1,0 +1,210 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ...
+\usepackage{color}
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex
+
+\usepackage{hyperref}
+
+\newcommand{\nt}[1]{\texttt{#1}}
+\newcommand{\mut}[2]{\nt{#1}$\to$\nt{#2}}
+\usepackage{amssymb}
+\newcommand{\comment}[1]{{\bf Comment:} #1}
+\newcommand{\response}[1]{{\color{black}{\bf Response:} #1}}
+
+
+\title{Response to reviews of ``Lost in the woods: shifting habitats can lead phylogeography astray'' for \textit{Virus Evolution}}
+\author{
+Richard A. Neher
+}
+
+\begin{document}
+%\raggedright
+\maketitle
+
+\emph{Below, the original comments {\color{blue} are in blue}, and our responses are in black.}
+
+\color{blue}
+
+\response{
+Thank you for the opportunity to revise our manuscript and for the thoughtful comments from the reviewers.
+I particularly appreciate the detailed constructive feedback from Simon Dellicour.
+I hope I have addressed all points in a satisfactory manner and that this manuscript will be a valuable contribution to the discussions of the value and pitfalls of phylogeographic inference.
+
+Below are point-by-point responses to each reviewer.
+}
+
+\section*{Reviewer 1 comments}
+
+{\bf Comments for the Authors.}
+n this study, the author rigorously critiques continuous phylogeographic models and shows how their posterior inferences are unreliable due to shifts/changes in the habitats or environmental conditions, particularly in poorly sampled areas. I enjoyed reading this well-written paper and analyses, and I might agree with many points raised by the author. However, I have also issues with his illustration summarized in the following points:
+
+\response{Thank you very much for this assessment and for highlighting where the manuscript falls short. I address these points individually below.}
+
+
+{\bf Major concerns:}
+
+1. He is basing his conclusions on simulated data, not actual examples of real sequences for specific species. In fact, I think the author needs to illustrate his points using sequence data from different species.
+
+\response{The purpose of this manuscript is to show that the assumptions of continuous phylogeographic methods can be problematic in several ways. To show that, I need scenarios where the ground truth is known and this is not the case for observational data.
+Furthermore, we are not proposing an alternative method to analyze data.
+I discuss the expansion of West Nile virus in the US as an example where the assumptions of continuous phylogeographic models are likely violated and show how a different set of assumptions leads to dramatically different conclusions.}
+
+2. Also, it is very important to note that most of the published results from phylogeographic models do exhibit acceptable epidemiological plausibility to biology and the distribution of species in space and time.
+
+\response{I discuss this towards the end of the manuscript. Phylogeographic methods tend to produce a parsimonious reconstruction of past migrations which is often plausible (and will often also cover the actual history). However, these inferences depend on certain assumptions about the past and extrapolations into the past are dangerous. }
+
+3. Also, the journal is specialized in virus evolution, so it is important to shift the scope of the paper to the implications of such quantitative findings to the biology and genomics of viruses or similar rapidly evolving pathogens.
+
+\response{The methods that discussed in this paper are widely used in the analysis of viral sequences. I discuss examples of Rabius virus and West Nile virus. }
+
+
+\section*{Reviewer 1 comments}
+- general comment: given the popularity of phylogeographic approaches, especially in the field of molecular epidemiology to infer the dispersal history of viral lineages, the limitations addressed and explored in this study are of importance for the community of users of those approaches. In addition to a series of more minor comments and suggestions listed below, I would have a comment about a potential ambiguity on the possibility to apply an alternative approach based on a structured coalescent model that would allow to circumvent the coupling issue illustrated in the present study focusing on the continuous phylogeographic approach (see the next two comments). The focus of this study is indeed on the continuous diffusion model, and I think that this is important to underline that the author did not demonstrate that in practice the use of such a alternative approach would allow avoiding this issue (even if I'm not saying that he should, see my related comment just below). While a criticism of these limitations inherent to the current implementation of the continuous diffusion model implemented in BEAST are totally relevant, the other phylogeographic approaches/models are also associated with a number of assumptions and limitations (for instance, any outcome of phylogeographic inference will be impacted by sampling bias).
+
+\response{I agree -- see response to the next points.}
+
+- p1, related to the above comment, "though in practice can struggle to represent the population in sufficient detail or suffer from identifiability problems (Layan et al., 2023)": indeed, while structured coalescent models appear in theory like an interesting alternative to accommodate the coupling between the replication process and local environmental conditions, I however cannot think of a practical example. Coalescent models are based on demes (or "population"/"subpopulation", depending on the terminology used) within which panmixia is hypothesised, and the broader the deme is on the map, the more this assumption will be difficult to meet in practice. Furthermore, to allow such a relevant coupling, the study area should be divided into an important number of distinct (adjacent) demes of small sizes, close to a fine-scale grid setting. As the use of structured coalescent models becomes computationally demanding when increasing the number of considered demes, my impression here is that we are far from being able to apply this alternative. Of course, I don't pretend having an exhaustive view on past studies applying those models, but it seemed to be that most of the time a relatively restricted number of demes are considered with today genomic datasets (made of, e.g., hundreds of viral genomes). Overall, my comment here is that in practice, and at least at the moment, structured coalescent models do not offer an alternative to the continuous diffusion model to circumvent the coupling issue. As the present study aims to address this issue, I think that inherent limitations associated with structured coalescent models, here presented as an alternative, should be more explicitly developed in the Introduction (or Discussion), even if the focus of the study is on the continuous diffusion model. Otherwise, and of course again in my opinion, it could sound like a recommendation of not using that particular phylogeographic approach because of the coupling issue while other approach could handle it, which is as far as I know not the case in practice.
+
+\response{I fully agree with the reviewer that structured coalescent models are typically not a practical alternative. They are difficult to parameterize, suffer from identifiability problems, and any simple model structure will likely suffer from similar issues as pointed out here for the continuous diffusion model.
+I merely meant to point out than in principle they could accommodate the coupling between population dynamics and spatial structure.
+
+In the manuscript, I have now emphasized that structured models can be considered an alternative in principle, but that in practice don't capture the real world complexities.
+}
+
+
+- p3, also related to the above comment, "These simulations reveal that both at high and at low diffusion constants, assumptions of phylogeographic inference can be problematic: if diffusion constants are much smaller than L2/Tc, the population is fragmented into effective subpopulations and this fragmentation violates the assumptions of phylodynamic models. A structured model would be more appropriate in this case": in theory yes, but in practice is it even something that could be considered at the moment? In other words, could someone use the exact same simulations and reproduce the assessments presented in Figure 3 but with a structured coalescent model? Without any additional development, the above statement suggests that it could be the case... In my view, it should either be demonstrated in the present study, or such a statement clearly be nuanced due to practical limitations.
+
+\response{I have rephrased this to make clear that a structured model can in principle accommodate the coalescence dynamics and provide a better tree prior, but since the demes are unknown, this is not a practical alternative.}
+
+
+- Abstract, "Continuous phylogeographic inference is a popular method to reconstruct the spatial distribution of ancestral populations and estimate parameters of the dispersal process": I wouldn't talk about "spatial distribution of ancestral populations" as I think that it could be read as the spatial distribution of the population of the target organism at some points in the past; while phylogeographic inference will only aim at inferring the past position of the ancestors of the sampled individuals. I'm of course not saying that's what the author meant, just a minor comment on the terminology used. For instance, the definition/description given in the first paragraph of the Introduction or in the first sentence of the Discussion section seems more accurate to me.
+
+\response{Thank you for pointing out this imprecise phrasing. I have reworded this sentence to ``\emph{... reconstruct the spatial location of ancestors of extant populations...}''}
+
+- Abstract: in it, the author never mentioned that his investigations solely focused on the continuous phylogeographic inference. Imo, without this precision (that is explicitly stated in the first sentence of the second paragraph of the Introduction section), it could sound that most popular phylogeographic models/approaches were assess in regard to those limitations.
+
+
+\response{I agree that it is important to make this point clear. The first word of the abstract already read `Continuous`, but I have added additional qualifiers to clarify that the focus is on continuous phylogeographic inference.}
+
+- p1, Introduction section: some developments associated with or related to the continuous diffusion model are not mentioned or addressed in that section. For instance: Fitzjohn et al. (2009, doi: 10.1093/sysbio/syp067), Guindon et al. (2016, doi: 10.1016/j.tpb.2016.05.002), Gill et al. (2017, doi: 10.1093/sysbio/syw093).
+
+\response{thank you for pointing out these references. However, I could not see the relevance of 10.1093/sysbio/syp067 to the present study. Fitzjohn et al study estimation of speciation rates in incompletely resolved phylogenies. I have added the reference Guidon et al when discussing challenges of defining consistent spatial models for inference. Gill et al seem mostly relevant in the context of directional random walks models. I have added a reference to this work when discussing range expansions.}
+
+- p1, "But this model assumes dispersal of one lineage is independent of other lineages, that dispersal properties are homogeneous across the habitat, and that the habitat does not change over time": not completely true for the RRW model allowing branch dispersal velocity to vary across branches (which could potentially lead to its heterogeneity across the habitat).
+
+\response{This statement refers to the simplest model in the equation just above -- but point taken. My understanding is that RRW models assume a distribution of dispersal rates that can vary along the tree, but that this distribution is the same everywhere. This can indeed result in different inferred dispersal properties in different parts of the habitat. I added a clarifying statement. }
+
+
+- p2, "Popular summaries of the dispersal process are empirical estimates of the diffusion constant Dw (Pybus et al., 2012; Trovao et al., 2015) and a so called dispersal velocity vw (Dellicour et al., 2017; Lemey et al., 2010)": the Dellicour et al. (2017) reference is irrelevant here as this paper is not introducing this metric (nor using it for the comparison of dispersal capacities). In Dellicour et al. (2017), the authors used two diffusion coefficients, and not a lineage dispersal metric, to measure and compare the dispersal capacities of RABV lineages in various settings. In addition to Lemey et al. (2010), the author could e.g. cite Raghwani et al. (2011, PLoS Path., PMID: 21655108), which is, in my knowledge, one of the first (or the first?) study using a lineage dispersal velocity metric in practice.
+
+\response{Thank you for pointing out the inaccuracies in the referencing and suggesting additional references. I have removed Dellicour 2017 and added Raghwani et al. 2011.}
+
+
+- p2, "While the estimator Dw directly estimates a parameter of the model and its behavior has been studied in simulations (Pybus et al., 2012)": Pybus et al. didn't use any simulation in their study. Except if the author aimed to refer to a different study, in my knowledge, an analysis of the diffusion coefficient(s) behaviour based on simulations was also lacking (until recent related works mentioned above and the present study).
+
+\response{Thank you for pointing out this error. I had confused myself. Pybus et al discuss how this estimator uses fundamental properties of diffusion -- with a reference to Einstein!. I reworded this sentence.}
+
+
+- p3, "While the estimator Dw as defined in Eq. 2 is well behaved when the model is exactly diffusive, long range dispersal can affect Dw dramatically. If the probability of long jumps with distance $x < d < x+dx$ decays more slowly than $\sim dx/x^3$, the expectation value of the Dw diverges": as it could be of interest for future works involving the estimation of $D_w$, I was wondering if the author could further develop the later statement to explain why this is actually expected. It is maybe obvious, but at least not for me, so, if relevant, a more detailed development could be inserted (?). Also, and my apologies if I missed something here, but how do you define a "long jump"?
+
+\response{
+The estimator $D_w$ is an empirical average over the squared displacement along different branches, scaled by the inverse elapsed time.
+However, RRW models sample jumps from a Cauchy distribution which does not have a mean nor a variance. The central limit theorem does not apply for sums of many such variables and estimators based on such sums will be dominated by the largest jumps. Estimates of $D_w$ will therefore be very noisy and often dominated by largest jumps possible in the systems.
+I think the broad distribution are fine as fairly uninformative priors for inference, the estimate $D_w$ of a forward process with long jumps is not well defined.
+}
+
+- Figure 3: I had a hard time understanding it. I would for instance suggest to be explicit with what you mean by "rel. heterogeneity" on the y-axis of panel A (which is "the standard deviation of population density in two dimensional bins of size L/5"), or at least to re-state it in the figure's legend. Also, I would re-define, within the figure's legend, to what "r" refers to (and its unit?). Finally, in panel C, this is difficult to distinguish the curves and their associated symbols (symbols that could also be re-defined in a colour legend included within the box of the graph).
+\response{TODO}
+
+- p3, "For $D < L2/2Tc$, diffusion is too slow to explore the entire habitat during the time since the MRCA, leading to clustering of individuals": maybe mark it with a vertical mark (/dashed line) in Figure 3?
+
+\response{TODO}
+
+- p3, "Phylogeographic inference typically assumes that the spatial diffusion process is independent of the branching pattern of the tree" (and in other parts of the text): maybe better to explicitly refer to continuous phylogeographic inference here?
+
+\response{Done.}
+
+- p3, regarding the definition of Tc ("the coalescent timescale of the population"): do we agree that you meant the coalescent timescale of the population as we consider a panmictic one (which makes it different from the TMRCA that can be larger if, e.g., the population is rather spatially structured)?
+
+\response{Yes, I have added `panmictic'.}
+
+- p5, "For this inference, I make the common assumption of continuous phylogeography that growth and location are uncoupled and that dispersal is diffusive": the RRW is far more common that the strict BM in phylogeographic analyses (personally, I cannot think of a single application of the strict Brownian motion model).
+
+\response{I would argue as stated, these assumptions are true for both the BM and RRW model. The latter allows the diffusion coefficient to vary which allows to accommodate a lot of scenarios in inference, but it does make the tree prior in anyway depend on location. }.
+
+
+- Figure 4: a colour scale is missing in panel A, which I didn't find intuitive. Also, in the legend: "moved [to?] the left"?
+
+\response{Thank you for pointing out the missing word. I didn't think that adding a color scale would help much, but I have added sentence to the caption detailing how yellow and purple correspond to the most extreme habitats.}
+
+
+- p5, "This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential of misleading inference, in particular when extrapolating far into the past": (i) do you get the same trend while considering a RRW model? (ii) Is the process only sample at the end? (What happens if we have dated samples?) (iii) Without a complex time varying environment, a RRW model with drift (Gill et al. 2017) might potentially achieve the same kind of result where the root does not lie in between the samples.
+
+\response{This statements refers explicitly to 'extrapolation' into the past and the inference in this case was made form data gathered at one time point. If there were samples from the time of the $T_{mrca}$ to the present, the task would be interpolation rather than extrapolation and I would expect the biases to disappear. Integrating over a distribution of diffusion constants will likely broaden the confidence intervals and thus make the estimates more consistent with reality, but I don't expect the bias to go away.}
+
+
+- similar questions related to the results presented in Figure 5: (i) What would be the outcome if a RRW model was used? (ii) What about the "RRW with drift" (Gill et al. 2017), which appears particularly suited here? (iii) How is the process sampled in time? (All at the end or dynamically?)
+
+\response{Note that the dispersal model used to generate these data is purely diffusive with no drift. The only part that is time varying is the habitat. The point of this analysis is to illustrate the importance of coupling between location and growth. It would probably be possible to capture this in a model with drift, but one would again estimate an effective parameter that does not describe the dispersal process. Instead, these data should be analysed using a wavefront model. As before, this analysis is focussed on snapshots from a single time point. I have added a statement to the legend to make this clear.}
+
+
+- p6, "This equation admits solutions with a traveling front, i.e. ...": not clear to me to which equation this is referring to (?).
+
+\response{I have made the equation reference explicit.}
+
+- p7, "The common practice to estimate dispersal “velocities” using displacements of lineages along the tree (Dellicour et al., 2021) is problematic": the cited paper (Dellicour et al., 2021) is a "protocol" dedicated to the use of the RRW model, not a paper on dispersal metrics (they are neither described or used in it). I therefore don't think that it is an appropriate reference for the above statement. Furthermore, and personally, while I do acknowledge having reported and compared lineage dispersal velocity metrics in previous works (frequently along estimates and comparison of diffusion coefficient), I'm not sure it is correct to refer to this as a "common" practice. (In addition to the non-appropriate reference, I would suggest dropping the "common").
+
+\response{As a protocol paper that gives an overview of methods and has a paragraph listing these statistics (albeit in a section on related methods), I felt this was an ok reference. Dellicour et al, MBE, 2021 refers to range of other papers by Dellicour in this context. (Dellicour 2017 seems to be mislabeling diffusion coefficients as accelerations). But I am happy to drop that reference and reword. }
+
+
+- p7, "Firstly, the numerical value of such estimates depends strongly on the sample size and tree ensemble. Secondly, the underlying model is diffusive and has no parameters that have dimensions of a velocity and even if the quantity could be estimated robustly, there is no interpretation of the quantity within the model". These two points have also been treated extensively in our recent study (Dellicour et al. 2024, PLoS Biol., in press; preprint available here: https://www.biorxiv.org/content/10.1101/2024.04.10.588821v2). While I think it might be relevant to cite this work here, I would of course be in some sort of conflict of interest if 'insisting' on this. Moreover, I am aware that both works were conducted at the same time and while mutually sharing ideas and feedback.
+
+\response{I am aware of these works, and I am happy to include a reference. But for context, I think it is important to note that I pointed out these problems to the authors in the summer of 2023, including figures that illustrate the problem and an interpretation why that is. They invited me to be a co-author on a study into which their analysis of the problem was integrated, but I ultimately didn't feel comfortable with some of the other content of the work and declined to be a co-author. I gave them the go-ahead to publish this, and as I see now I am acknowledged in this work for giving 'useful feedback'. I decided to write up my thoughts on this problem myself, resulting in this work that has been on biorxiv since July last year.
+
+I have now included a reference and a note.}
+
+
+- p8. "Furthermore, rare long range dispersal could have strongly influenced the spread of the virus in ways not captured by Brownian or relaxed random walks": a RRW model can, in principle, capture long-range dispersal events.
+
+\response{It can accommodate such jumps, but the inferred parameters still won't be meaningful. }
+
+- p8, "This picture is also consistent with the apparent “slowing down” of lineages after the initial expansion across North America (Dellicour et al., 2020): Once the habitat was fully explored, directed range expansion with vf ceases": agree, and purely FYI this is somehow something already mentioned in that study ("which could reflect a consequence of increased bird immunity through time slowing down spatial dispersal").
+
+\response{Thanks for highlighting.}
+
+
+
+\section*{Reviewer 3 comments}
+
+Phylogeography aims to embed phylogenetic trees in geographic space to infer past locations and movements. This manuscript critically examines the assumptions underlying the most influential phylogeographic inference methods and assesses their robustness. Neher demonstrates that a widely used summary statistic, “lineage speed,” derived from diffusion-based models, is fundamentally flawed as it depends on sample size. More critically, under realistic demographic scenarios—such as expanding populations or those not strictly governed by local density regulation—lineages exhibit strong backward-in-time biases, despite unbiased forward-time movements. This discrepancy can result in biased and overconfident phylogeographic inferences, which often assume unbiased lineage movement backward in time. Based on these findings, Neher concludes that the validity of phylogeographic inference methods is difficult to assess and should not be trusted without additional information, such as detailed time-series data.
+
+This paper offers an important and long-overdue critique of phylogeographic methods, which have gained significant popularity due to their visual appeal—a popularity that, in light of this critique, appears questionable. The manuscript is exceptionally well-written and pedagogical, making the limitations of diffusion-based methods strikingly clear. The discussion is both illuminating and practical, with helpful examples.
+
+
+\response{I thank the reviewer for this positive assessment.}
+
+1.  ``This model assumes that the dispersal of one lineage is independent of other lineages, that dispersal properties are homogeneous across the habitat, and that the habitat does not change over time. Furthermore, it assumes that the tree topology and branching rates are independent of spatial location.'' I agree with these points, but it would be helpful to explain why these assumptions are implied by the seemingly innocuous Eq. 1. Users of diffusion-based phylogeographic inference methods may not be aware that these assumptions are inherent.
+
+\response{Thank you for this suggestion. I have expanded this section.}
+
+2. The section on density regulation seems to assume global or habitat-wide density regulation. However, it is plausible that many species are density-regulated over a characteristic length scale, such as their dispersal distance during their lifetime (or from birth to reproductive age). In that case, wouldn’t the parameter  L  (habitat size) be replaced with the scale over which density is regulated? If so, this should be mentioned. A static, homogeneous, and locally density-regulated population should then approximately follow Eq. 1.
+
+\response{TODO}
+
+
+3. ``which cab lead to unexpected effective lineage dynamics corresponding to sources where population densities are high and sinks where they are low'': Replace ``cab'' with ``can''. Additionally, in this context, beyond Wilkins and Wakeley, it may be worthwhile to cite the Appendix B of Hallatschek, O., & Nelson, D. R. (2008). Gene surfing in expanding populations. Theoretical population biology, 73(1), 158-170.
+
+\response{Done.}
+
+
+4. It might be helpful to provide guidance on whether users can make quantitative estimates or perform tests to assess the reliability of their phylogeographic inferences. For example, how dense does a time series need to be to sufficiently constrain the spatiotemporal embedding? Alternatively, this manuscript could call for studies that address this issue. Following this work, the onus is on the phylogeographic community to develop best practices for these methods.
+
+\response{TODO}
+
+
+
+
+\end{document}
