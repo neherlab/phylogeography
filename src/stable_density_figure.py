@@ -44,6 +44,7 @@ if __name__=="__main__":
     N=1000
     dr = density_reg[1]
     ax=axs[0]
+    ax.axvline(0.5, c='k', ls='--')
     for i, ir in enumerate(interaction_radius):
         D_array = np.array(resPBC["density_variation"][ir, dr, N, :].index)
         label = f'r={ir}'
@@ -56,7 +57,7 @@ if __name__=="__main__":
     ax.plot(D_array*N/Lx/Ly, np.ones_like(D_array), c='k', ls='--')
     ax.set_xscale('log')
 #    ax.set_xlabel('diffusion constant $[L^2/N]$')
-    ax.set_ylabel('rel. heterogeneity')
+    ax.set_ylabel('density fluctuations')
     ax.legend(fontsize=8)
     ax.set_xlim(0)
     add_panel_label(ax, 'A')
@@ -65,6 +66,7 @@ if __name__=="__main__":
 
     ## Plot the diffusion estiamtes
     ax=axs[2]
+    ax.axvline(0.5, c='k', ls='--')
     for i, ir in enumerate(interaction_radius):
         D_array = np.array(resPBC["diffusion_mean"][ir, dr, N, :].index)
         label = f'r={ir}, a={dr}' if N==N_vals[0] else ''
@@ -104,6 +106,7 @@ if __name__=="__main__":
 
     # Figure showing the TMRCA of the population
     ax=axs[1]
+    ax.axvline(0.5, c='k', ls='--')
     for i, ir in enumerate(interaction_radius):
         D_array = np.array(res["tmrca_mean"][ir, dr, N, :].index)
         label = f'r={ir}' if N==N_vals[1] else ''

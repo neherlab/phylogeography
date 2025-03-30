@@ -129,21 +129,25 @@ But as for the Kingman case, the estimates for $v_w$ and $v_b$ are not consisten
 In either case, estimates of $v_w$ or $v_b$ are not meaningful.
 The underlying model is diffusive and has no parameters that individually or combined would have dimensions of a velocity.
 There is no ground truth to compare the estimates to and $v_w$ and $v_b$ are just descriptive summaries of spatial spread that can not be compared between datasets.
-Similar observations have recently been reported by \citet{dellicour_how_2024}\footnote{I had alerted \citet{dellicour_how_2024} in May 2023 to the problems with the velocity estimators and illustrated the behavior using figures qualitatively similar to Fig.~\ref{fig:D_and_v}}.
+Similar observations have recently been reported by \citet{dellicour_how_2024}\footnote{I had alerted \citet{dellicour_how_2024} in May 2023 to the problems with the velocity estimators and illustrated the sample size dependence using figures qualitatively similar to Fig.~\ref{fig:D_and_v}}.
 
 While the estimator $D_w$ as defined in Eq.~\ref{eq:dispersal_parameters} is well-behaved when the model is exactly diffusive, long range dispersal can affect $D_w$ dramatically.
 If the probability of long jumps with distance $x<d<x+dx$ decays more slowly than $\sim dx/x^3$, the expectation value of the $D_w$ diverges.
-In this case, the values of the above estimators for a dataset with long range dispersal are dominated by the longest displacements and a single number like $D_w$ is no longer a useful summary of the typical dispersal process.
-Estimators like $D_w$ might also become problematic under the assumptions of relaxed random walk models with long-tailed prior distributions for $D$.
+When jumps are drawn from a Cauchy distribution, as for example used in \citet{dellicour_how_2024}, the estimator $D_w$ will be dominated by the longest jumps (or the size of the system)\footnote{The largest jump in a sample of $n$ jumps is typically on the order of $2\gamma n/\pi$, where $\gamma$ is the scale of the Cauchy distribution. The second largest jump is typically half, the third largest a third, etc.~of the largest value. The estimator $D_w$ sums their squares, which in many cases will be dominated by a few very largest values. }.
+In this case, $D_w$ is no longer a useful summary of the typical dispersal process as it is determined by the most extreme events that are will fluctuate widely between different realizations of the process or even different samples from the same realization.
 
 
 \section*{Effects of density regulation on population structure and dispersal}
 Continuous phylogeographic inference typically assumes that the spatial diffusion process is independent of the branching pattern of the tree and ignores coupling between the two.
 Such a coupling, however, is expected since organisms compete for resources and growth rates naturally depend on local population density.
-It has been known for a long time that ignoring such coupling leads to unrealistically heterogeneous population densities \citep{felsenstein_pain_1975}, as is evident in the example of the Kingman tree in Fig.~\ref{fig:illustration_tree}.
+It has been known for a long time that ignoring such coupling leads to unrealistically heterogeneous population densities \citep{felsenstein_pain_1975}, as is evident in the example of the Kingman tree in Fig.~\ref{fig:illustration_tree}:
+The clades defined by long branches in the tree correspond to tight clusters of individuals in space.
+A more realistic population would spread out more evenly across the habitat.
+
 If one simulates a diffusive spatial process in a square of length $L$ with periodic boundary conditions, the population density shows strong fluctuations whenever the diffusion constant $D\ll L^2/T_c$, where $T_c$ is the coalescent timescale of a panmictic population ($T_c=N$ in the case of a neutral model with a population of size $N$).
-Fig.~\ref{fig:density_reg}A (black line) quantifies this heterogeneity as the standard deviation of population density in two-dimensional bins of size $L/5$ relative to the expectation in the case of a spatially well-mixed population when each individual picks its location at random.
-For $D< L^2/2T_c$, diffusion is too slow to explore the entire habitat during the time since the MRCA, leading to clustering of individuals.
+I quantified this heterogeneity using by binning individuals into two-dimensional bins with linear dimension $L/5$ (25 bins in total) and calculated the standard deviation of the number of individuals in these bins, normalized by the expectation variation in a well-mixed population when each individual picks its location at random.
+The black line in Fig.~\ref{fig:density_reg}A shows this heterogeneity measured as this standard deviation for a purely diffusive model as a function of the diffusion constant.
+For $D < L^2/2T_c$, diffusion is too slow to explore the entire habitat during the time since the MRCA, leading to clustering of individuals and high heterogeneity.
 This heterogeneity increases substantially for even lower $D$, when the population is essentially a cloud of width $\sqrt{4DT_c}\ll L$.
 The comparison of $D$ to the ratio $L^2/T_c$ will continue to be important below, and I therefore use diffusion constants in units of $L^2/T_c$.
 
@@ -152,10 +156,10 @@ The comparison of $D$ to the ratio $L^2/T_c$ will continue to be important below
     \includegraphics[width=0.48\textwidth]{figures/stable_density}
     \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
     When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
-    {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii. For $r\ll L$, density fluctuations are strongly suppressed.
+    {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines density regulation with different interaction radii $r$. For $r\ll L$, density fluctuations are strongly suppressed.
     At the same time, the time to the most recent common ancestor increases dramatically to values several fold higher than the neutral coalescence timescale $T_c=N=1000$ ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
     {\bf Panel C} shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (triangles, solid lines, like panels A\&B) and reflecting boundaries (circles, dashed lines).
-    }
+    The dashed vertical line indicates $D=L^2/2T_c$.}
 \end{figure}
 
 Biological populations spread into areas that support them and will quickly populate fertile areas that are below their carrying capacity.
@@ -319,17 +323,20 @@ The parameter range where both ancestral locations and dispersal parameters are 
 Phylogeographic methods are often studied using the spread of West Nile virus in North America and Rabies virus.
 West-Nile virus was first detected on the East Coast of the US in 1999 and reached the West Coast five years later in 2004 \citep{pybus_unifying_2012}, translating to a wave front velocity of about 1000 km/year.
 \citet{pybus_unifying_2012} estimated a diffusion coefficient between 200 and 5000 km$^2$/day, where the latter refers to branches with particularly high diffusion constant.
+\citet{dellicour_how_2024} estimated a diffusion constant of 310$km^2$/day for the expansion phase of the virus in North America and 2-3-fold lower rate after the initial expansion.
 These extremely high estimates of diffusive dispersal are implausible.
 Alternatively, one can interpret the spread from east to west as a range expansion.
 To this end, we need an estimate of the growth rate $\alpha$ of the population at low density, which we can roughly obtain from the fact that the virus is seasonal: over the course of a few months, its prevalence increases by orders of magnitude, which typically requires a doubling time of about a week or a growth rate of $\alpha=0.1/$day.
 Using $\vfkpp = 2\sqrt{D\alpha}$ and equating it to 1000 km/year ($\approx$ 3km/day), we obtain estimates of $D$ of $D\approx \frac{9 \mathrm{km}^2}{4 \alpha \mathrm{day}^2} \approx 22\mathrm{km}^2/\mathrm{day}$ -- around 10 to 200 times smaller than estimates from phylogeography.
 This lower estimate of $D$ implies a daily exploration radius of about 5 km.
-This picture is also consistent with the apparent ``slowing down'' of lineages after the initial expansion across North America \citep{dellicour_epidemiological_2020}: Once the habitat was fully explored, directed range expansion with $\vfkpp$ ceases.
+This picture is also consistent with the apparent ``slowing down'' of lineages after the initial expansion across North America \citep{dellicour_epidemiological_2020, dellicour_how_2024}: Once the habitat was fully explored, directed range expansion with $\vfkpp$ ceases.
 Furthermore, rare long range dispersal could have strongly influenced the spread of the virus in ways not captured by Brownian or relaxed random walks \citep{hallatschek_acceleration_2014}.
+West Nile virus might for example by carried by migratory birds, but their directed migration should not be described by a diffusion constant.
 
 Diffusion constants of rabies virus are typically estimated to be between 500 and 1500 km$^2$/year \citep{dellicour_using_2017}.
 The most recent common ancestor of various populations is between 30 and 100 years in the past.
 This would translate into rather limited spread of 150 to 500km of individual clades from their common ancestor, suggesting that these populations are highly structured (isolated by distance) and that their long range dispersal is dominated by rare introductions of the virus into new populations \citep{brunker_elucidating_2015}.
+
 
 
 The results presented here and the discussion of the examples above suggested that phylogeographic methods should be used and interpreted with caution.
@@ -342,10 +349,14 @@ However, while such models will often generate a better fit, they don't capture 
 Why does phylogeography then often generate sensible results?
 On short time scales, a diffusive model will mostly reduce to a parsimonious reconstruction of ancestral locations which is robust to details of the model.
 Sampling at multiple time points further constrains ancestral locations sufficiently strongly that there is limited uncertainty, at least within the period for which samples are available.
-But inferences for deeper nodes in the phylogeny before the earliest samples can be problematic as the chance that the environment has changed and shifted, or that the ancestral locations are in poorly sampled regions, increases.
+In these cases, phylogeographic reconstruction effectively interpolates been sampled locations along the relationship structure encoded in the tree and the results tend to be both plausible and well constrained by the data.
+But inferences for deeper nodes in the phylogeny long before the earliest samples can be problematic as the chance that the environment has changed and shifted, or that the true ancestral locations are in poorly sampled regions, increases.
 And while phylogeographic inferences will still often yield plausible results by virtue of their tendency to produce parsimonious solutions that aggregate available spatial information, they can also be highly unreliable and misleading.
 In particular confidence statements should be treated with extreme caution, because the tails of the inferred distributions are determined by properties of the model and the underlying assumptions typically do not reflect the wide spectrum of possible environmental histories.
+This concern also applies to scenarios where the spatial component of the likelihood strongly influences the posterior of phylogenetic or phylodynamic parameters. In such cases, chances are that model misspecification such as missing interaction between spatial location and population dynamics will lead to biased inferences. Integrating over broad distributions of diffusion constants will make the model more permissive to absorb such misspecifications, but does not address the underlying problem.
+
 In absence of a good understanding of the dispersal properties and how population dynamics varied over time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models that nevertheless fail to faithfully infer history or essential parameters.
+
 
 \section*{Materials and methods}
 All simulation were performed in Python and the associated code is available in the github repository \href{https://github.com/neherlab/phylogeography}{github.com/neherlab/phylogeography}.
