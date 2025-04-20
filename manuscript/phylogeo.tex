@@ -85,14 +85,6 @@ Furthermore, I will assume strictly diffusive dispersal without any long-range m
 In practice, long-range migrations, errors in tree reconstruction, and sampling biases will add to the problems investigated here.
 
 
-\begin{figure*}[tb]
-    \includegraphics*[width=0.99\textwidth]{figures/dispersal_stats.pdf}
-    % \includegraphics*[width=0.48\textwidth]{figures/yule_dispersal.pdf}
-    \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
-    While the diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. For Kingman coalescent tree their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $v_w \sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
-\end{figure*}
-
-
 \section*{Consistency of summary statistics of dispersal parameters.}
 Before investigating the more complex issues of coupling between spatial locations and reproduction, I will first explore the properties of summary statistics in simple models where spatial location and population dynamics are independent.
 Popular summaries of the dispersal process are empirical estimates of the diffusion constant $D_w$ \citep{pybus_unifying_2012,trovao_bayesian_2015} and a so-called \emph{dispersal velocity} $v_w$ \citep{lemey_phylogeography_2010,raghwani_endemic_2011}.
@@ -119,6 +111,12 @@ Yule trees capture features of exponentially growing populations and tend to hav
 Examples for each ensemble are shown in Fig.~\ref{fig:illustration_tree}.
 
 
+\begin{figure*}[tb]
+    \includegraphics*[width=0.99\textwidth]{figures/dispersal_stats.pdf}
+    \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
+    While the diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. For Kingman coalescent tree their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $v_w \sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
+\end{figure*}
+
 Fig.~\ref{fig:D_and_v} shows empirical estimates of diffusion constants and velocity as defined in Eq.~\ref{eq:dispersal_parameters} from simulated data using freely diffusing locations along Yule and Kingman trees.
 The diffusion constant $D$ can be estimated robustly from these data and the estimates are compatible with the diffusion constant $D=1$ used to simulate the data.
 Values of $v_w$ and $v_b$ estimated from Kingman trees, however, depend strongly on the sample size and are incompatible with each other.
@@ -143,18 +141,6 @@ When expectation of $D_w$ diverges, the empirical value of $D_w$ is no longer a 
 
 
 
-\begin{figure}[!h]
-    \includegraphics[width=0.48\textwidth]{figures/stable_density}
-    \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
-    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
-    {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines show results from simulations with density regulation with different interaction radii $r$.
-    For $r\ll L$, density fluctuations are strongly suppressed.
-    At the same time, the time to the most recent common ancestor increases dramatically to values several fold higher than the neutral coalescence timescale $T_c=N=1000$ ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
-    {\bf Panel C} shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (triangles, solid lines, like panels A\&B) and reflecting boundaries (circles, dashed lines).
-    The dashed vertical line indicates $D=L^2/2T_c$.}
-\end{figure}
-
-
 \section*{Effects of density regulation on population structure and dispersal}
 Continuous phylogeographic inference typically assumes that the spatial diffusion process is independent of the branching pattern of the tree and ignores coupling between the two.
 Such a coupling, however, is expected since organisms compete for resources (e.g. susceptible hosts) and growth rates naturally depend on local population density.
@@ -168,6 +154,18 @@ The black line in Fig.~\ref{fig:density_reg}A shows this heterogeneity measured 
 For $D < L^2/2T_c$, diffusion is too slow to explore the entire habitat during the time since the MRCA, leading to clustering of individuals and high heterogeneity.
 This heterogeneity increases substantially for even lower $D$, when the population is essentially a cloud of width $\sqrt{4DT_c}\ll L$.
 The comparison of $D$ to the ratio $L^2/T_c$ will continue to be important below, and I therefore use diffusion constants in units of $L^2/T_c$.
+
+\begin{figure}[!h]
+    \includegraphics[width=0.48\textwidth]{figures/stable_density}
+    \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
+    When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
+    {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat. The thick black line shows the case of free diffusion, the colored lines show results from simulations with density regulation with different interaction radii $r$.
+    For $r\ll L$, density fluctuations are strongly suppressed.
+    At the same time, the time to the most recent common ancestor increases dramatically to values several fold higher than the neutral coalescence timescale $T_c=N=1000$ ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
+    {\bf Panel C} shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (triangles, solid lines, like panels A\&B) and reflecting boundaries (circles, dashed lines).
+    The dashed vertical line indicates $D=L^2/2T_c$.}
+\end{figure}
+
 
 Biological populations spread into areas that support them and will quickly populate fertile areas that are below their carrying capacity.
 A simple model for the population density $\phi(\rvec,t)$ would be
@@ -368,10 +366,10 @@ The tails of the inferred distributions are determined by properties of the mode
 This concern also applies to scenarios where the spatial component of the likelihood strongly influences the posterior of phylogenetic or phylodynamic parameters. In such cases, chances are that model misspecification such as missing interaction between spatial location and population dynamics will lead to biased inferences.
 
 
-A common approach in the field is to make models more complex and sample a larger parameter space, for example allow for a broad distribution of diffusion constants in relaxed random walk models.
-Such expansion of parameter space and integration over additional phenomenological parameters like $D$ will result in better fits and make the model more permissive to absorb  misspecifications, but does not address the underlying problem.
-The computational resources necessary to infer such models increase rapidly with complexity, and it becomes hard to understand how the data inform and constrain the inferences.
-In absence of a good understanding of the dispersal properties past how population dynamics in time and space, simple models that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models that nevertheless can fail to faithfully infer history or essential parameters.
+A common approach in the field is to make models more complex and sample a larger parameter space, for example by allowing for a broad distribution of diffusion constants in relaxed random walk models.
+Such expansion of parameter space and integration over additional phenomenological parameters like $D$ will result in better fits and make the model more permissive to absorb misspecifications, but does not address the underlying problem.
+The computational resources necessary to infer such models increase rapidly with complexity, it becomes harder to understand how the data inform the inferences, and interpretation of inferred parameter values becomes ambiguous as they might have absorbed effects not explicitly modeled.
+In absence of a good understanding of the dispersal properties past how population dynamics in time and space that defines model structure, simple approaches that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models that can nevertheless fail to faithfully infer history or essential parameters.
 
 
 \section*{Materials and methods}
