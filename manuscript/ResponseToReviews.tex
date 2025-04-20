@@ -41,7 +41,7 @@ Below are point-by-point responses to each reviewer.
 {\bf Comments for the Authors.}
 In this study, the author rigorously critiques continuous phylogeographic models and shows how their posterior inferences are unreliable due to shifts/changes in the habitats or environmental conditions, particularly in poorly sampled areas. I enjoyed reading this well-written paper and analyses, and I might agree with many points raised by the author. However, I have also issues with his illustration summarized in the following points:
 
-\response{Thank you very much for this assessment and for highlighting where the manuscript falls short. I address these points individually below.}
+\response{Thank you very much for this assessment and for highlighting where the manuscript could be improved. I address these points individually below.}
 
 
 {\bf Major concerns:}
@@ -55,15 +55,15 @@ I discuss the expansion of West Nile virus in the US as an example where the ass
 
 2. Also, it is very important to note that most of the published results from phylogeographic models do exhibit acceptable epidemiological plausibility to biology and the distribution of species in space and time.
 
-\response{I discuss this towards the end of the manuscript. Phylogeographic methods tend to produce a parsimonious reconstruction of past migrations which is often plausible (and will often also cover the actual history). However, these inferences depend on certain assumptions about the past and extrapolations into the past are dangerous.
+\response{It is true that phylogeographic reconstructions often produce plausible results. I discuss this towards the end of the manuscript. Phylogeographic methods tend to produce a parsimonious reconstruction of past migrations which is often plausible (and will often also cover the actual history). However, these inferences depend on certain assumptions about the past and extrapolations into the past are dangerous. In particular, these reconstructions can be overconfident, don't explore scenarios that can arise when habitats shift, and summary statistics used in phylogeography don't correspond to biological parameters or are not faithfully estimated.
 
-I have extended this section in the discussion to make clear when plausible inferences are expected, and when inferences should interpreted with care.
+I have extended this section in the discussion to make clear when plausible inferences are expected, and when inferences should be interpreted with care.
 }
 
 3. Also, the journal is specialized in virus evolution, so it is important to shift the scope of the paper to the implications of such quantitative findings to the biology and genomics of viruses or similar rapidly evolving pathogens.
 
 \response{The methods that discussed in this paper are widely used in the analysis of viral sequences and often were developed in the context of viral evolution. While the implications of some of the issues might apply more broadly, I feel that phylogeographic inference is sufficiently central to the analysis of viral genomic data and the readership of Virus Evolution, that the current focus is justified.
-I discuss examples of Rabius virus and West Nile virus. }
+I discuss examples of Rabies virus and West Nile virus. }
 
 
 \section*{Reviewer 2 comments}
@@ -100,7 +100,7 @@ In the manuscript, I have now emphasized that structured models can be considere
 
 - p1, "But this model assumes dispersal of one lineage is independent of other lineages, that dispersal properties are homogeneous across the habitat, and that the habitat does not change over time": not completely true for the RRW model allowing branch dispersal velocity to vary across branches (which could potentially lead to its heterogeneity across the habitat).
 
-\response{This statement refers to the simplest model in the equation just above -- but point taken. My understanding is that RRW models assume a distribution of dispersal rates that can vary along the tree, but that this distribution is the same everywhere. This can indeed result in different inferred dispersal properties in different parts of the habitat. I added a clarifying statement. }
+\response{This statement referred to the simplest model in the equation just above -- but point taken. My understanding is that RRW models assume a distribution of dispersal rates that can vary along the tree, but that this distribution is the same everywhere. This can indeed result in different inferred dispersal properties in different parts of the habitat, though does not generate an explicit coupling between density and tree statistics. I added a clarifying statement. }
 
 
 - p2, "Popular summaries of the dispersal process are empirical estimates of the diffusion constant Dw (Pybus et al., 2012; Trovao et al., 2015) and a so called dispersal velocity vw (Dellicour et al., 2017; Lemey et al., 2010)": the Dellicour et al. (2017) reference is irrelevant here as this paper is not introducing this metric (nor using it for the comparison of dispersal capacities). In Dellicour et al. (2017), the authors used two diffusion coefficients, and not a lineage dispersal metric, to measure and compare the dispersal capacities of RABV lineages in various settings. In addition to Lemey et al. (2010), the author could e.g. cite Raghwani et al. (2011, PLoS Path., PMID: 21655108), which is, in my knowledge, one of the first (or the first?) study using a lineage dispersal velocity metric in practice.
@@ -117,7 +117,10 @@ In the manuscript, I have now emphasized that structured models can be considere
 
 \response{
 The estimator $D_w$ is an empirical average over the squared displacement along different branches, scaled by the inverse elapsed time.
-However, the Cauchy distribution is often used to model long range dispersal, but it does not have a finite mean nor a variance. The central limit theorem does not apply for sums of many such variables and estimators based on such sums will be dominated by the largest jumps. Estimates of $D_w$ will therefore be very noisy and often dominated by largest jumps possible in the systems.
+For this estimator to be well behaved, the second moment of the displacements along branches needs to be well defined.
+
+However, if these displacements are drawn from a Cauchy distribution  (a popular model for long range dispersal), this second moment does not exist. In fact the Cauchy distribution has neither a finite mean nor a variance. For any distribution where the probability of large jumps over distance $d$ decays more slowly than $d^{-3}$, the central limit theorem does not apply for sums of many such variables and estimators based on such sums will be dominated by the largest terms. Estimates of $D_w$ in such cases will therefore be very noisy and often dominated by largest jumps possible in the systems.
+
 In the concrete case of a Cauchy distribution, the largest jump will typically be twice the distance of the second largest jump, 3 times as large as the third largest jump, etc. The sum in the estimator $D_w$ is them dominated by the largest jump (and hence hugely variable).
 I have added a footnote elaborating this issue.
 
@@ -142,7 +145,7 @@ I think broad distribution are fine as fairly uninformative priors for inference
 
 - p5, "For this inference, I make the common assumption of continuous phylogeography that growth and location are uncoupled and that dispersal is diffusive": the RRW is far more common that the strict BM in phylogeographic analyses (personally, I cannot think of a single application of the strict Brownian motion model).
 
-\response{I would argue as stated, these assumptions are true for both the BM and RRW model. The latter allows the diffusion coefficient to vary which allows to accommodate a lot of scenarios in inference, but it does make the tree prior in anyway depend on location. }.
+\response{I would argue as stated, these assumptions are true for both the BM and RRW model. The latter allows the diffusion coefficient to vary which allows to accommodate more flexible scenarios during inference, but it does make the tree prior in anyway depend on location or density. }.
 
 
 - Figure 4: a colour scale is missing in panel A, which I didn't find intuitive. Also, in the legend: "moved [to?] the left"?
@@ -152,12 +155,12 @@ I think broad distribution are fine as fairly uninformative priors for inference
 
 - p5, "This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential of misleading inference, in particular when extrapolating far into the past": (i) do you get the same trend while considering a RRW model? (ii) Is the process only sample at the end? (What happens if we have dated samples?) (iii) Without a complex time varying environment, a RRW model with drift (Gill et al. 2017) might potentially achieve the same kind of result where the root does not lie in between the samples.
 
-\response{This statement refers explicitly to 'extrapolation' into the past and the inference in this case was made form data gathered at one time point. If there were samples from the time of the $T_{mrca}$ to the present, the task would be interpolation rather than extrapolation and I would expect the biases to disappear. Integrating over a distribution of diffusion constants will likely broaden the confidence intervals and thus make the estimates more consistent with reality, but I don't expect the bias to go away.}
+\response{This statement refers explicitly to 'extrapolation' into the past and the inference in this case was made from data gathered at one time point. If there were samples from the time of the $T_{mrca}$ to the present, the task would be interpolation rather than extrapolation and I would expect the biases to disappear. Integrating over a distribution of diffusion constants will likely broaden the confidence intervals and thus make the estimates more consistent with reality, but I don't expect the bias to go away.}
 
 
 - similar questions related to the results presented in Figure 5: (i) What would be the outcome if a RRW model was used? (ii) What about the "RRW with drift" (Gill et al. 2017), which appears particularly suited here? (iii) How is the process sampled in time? (All at the end or dynamically?)
 
-\response{Note that the dispersal model used to generate these data is purely diffusive with no drift. The only part that is time varying is the habitat. The point of this analysis is to illustrate the importance of coupling between location and growth. It would probably be possible to capture this in a model with drift, but one would again estimate an effective parameter that does not describe the dispersal process. Instead, these data should be analysed using a wavefront model. As before, this analysis is focussed on snapshots from a single time point. I have added a statement to the legend to make this clear.}
+\response{Note that the dispersal model used to generate these data is purely diffusive with no drift or any variation in the diffusion process. The only part that is time varying is the habitat. The point of this analysis is to illustrate the importance of coupling between location and growth. It would probably be possible to capture this in a model with drift, but one would again estimate an effective parameter that does not describe the dispersal process. Instead, these data should be analysed using a wavefront model. As before, this analysis is focussed on snapshots from a single time point. I have added a statement to the legend to make this clear.}
 
 
 - p6, "This equation admits solutions with a traveling front, i.e. ...": not clear to me to which equation this is referring to (?).
@@ -178,11 +181,11 @@ I have now included a reference along with a footnote.}
 
 - p8. "Furthermore, rare long range dispersal could have strongly influenced the spread of the virus in ways not captured by Brownian or relaxed random walks": a RRW model can, in principle, capture long-range dispersal events.
 
-\response{It can accommodate such jumps, but the inferred parameters still won't be meaningful. }
+\response{It can accommodate such jumps will lead to much better fits (in the sense of a higher posterior probability), but the inferred parameters still won't be meaningful and extrapolation back time can not be trusted. }
 
 - p8, "This picture is also consistent with the apparent “slowing down” of lineages after the initial expansion across North America (Dellicour et al., 2020): Once the habitat was fully explored, directed range expansion with vf ceases": agree, and purely FYI this is somehow something already mentioned in that study ("which could reflect a consequence of increased bird immunity through time slowing down spatial dispersal").
 
-\response{Thanks for highlighting.}
+\response{Thanks for highlighting. But the wording ``[...] increased bird immunity through time slowing down spatial dispersal'' highlights the core point of this manuscript and its critique of phylogeographic inference: immunity does not affect the dispersal process -- birds and mosquitos fly around just the same way. But immunity affects how fast the viral population can expand. If this differs spatially, dispersal and growth lead to a wave-like expansion. While the resulting data can be fit with a (maybe RRW) diffusion model, it is fundamentally the wrong model for the expansion phase. As a result, parameter estimates don't have a biological interpretation and confidence intervals, even of interpretable quantities like locations, can not be trusted.}
 
 
 
