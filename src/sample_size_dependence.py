@@ -1,7 +1,6 @@
 import numpy as np
-from free_diffusion import *
-from estimate_diffusion_from_tree import *
-from itertools import product
+from free_diffusion import random_tree, add_positions
+from estimate_diffusion_from_tree import estimate_diffusion
 
 if __name__=="__main__":
     replicates = 100
@@ -13,7 +12,7 @@ if __name__=="__main__":
             res = []
             for i in range(replicates):
                 tree = random_tree(n, yule=coal=='yule')['tree']
-                add_positions(tree, 1)
+                add_positions(tree, 1, gauss=False, exponent=2.5, generation_time=0.1)
                 D = estimate_diffusion(tree)
                 res.append(D)
             print(n, np.mean([x['t_total'] for x in res]))
@@ -50,4 +49,4 @@ if __name__=="__main__":
         ax.set_xscale('log')
     plt.tight_layout()
 
-    plt.savefig(f'figures/dispersal_stats.pdf')
+    plt.savefig('figures/dispersal_stats.pdf')

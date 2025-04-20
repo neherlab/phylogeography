@@ -1,0 +1,8 @@
+# latex gitignore
+*toc
+*aux
+*bbl
+*out
+*log
+*blg
+*pdf
