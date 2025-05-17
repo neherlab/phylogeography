@@ -18,7 +18,7 @@
 %\title{Phylogeography: unsafe at any speed}
 \title{Lost in the woods: shifting habitats can lead phylogeography astray}
 \author{Richard A.~Neher}
-\affiliation{Swiss Institute of Bioinformatics, and Biozentrum, University of Basel, Switzerland \looseness=-5}
+\affiliation{Biozentrum, University of Basel and Swiss Institute of Bioinformatics, Switzerland \looseness=-5}
 
 \date{\today}
 \begin{abstract}
@@ -64,7 +64,7 @@ Such models are flexible enough to allow for different population dynamics in di
 
 
 \begin{figure}[tb]
-    \includegraphics*[width=\columnwidth]{figures/illustration_tree.pdf}
+    \includegraphics*[width=\columnwidth]{figures/Fig1}
     \caption{\label{fig:illustration_tree}{\bf Illustration Yule and Kingman trees with $N=100$ tips and the spatial location of the tips.}
     The total tree length of Yule trees is proportional to the number of tips $n$ and the time to the MRCA is $\log(n)$.
     Kingman trees have a total tree length that is proportional to $\log(n)$ and are characterized by rapid merging close to the present.
@@ -111,7 +111,7 @@ Examples for each ensemble are shown in Fig.~\ref{fig:illustration_tree}.
 
 
 \begin{figure*}[tb]
-    \includegraphics*[width=0.99\textwidth]{figures/dispersal_stats.pdf}
+    \includegraphics*[width=0.99\textwidth]{figures/Fig2}
     \caption{\label{fig:D_and_v}{\bf Empirical summary statistics of $D$ and ``dispersal velocity'' for different sample sizes.}
     While the diffusion constant $D$ (equal to 1 in this example) can be robustly estimated from simulation data of the underlying model, the dispersal rate $v_w$ (weighted) and $v_b$ (by branch) are not well-defined quantities. For Kingman coalescent tree their numerical value depends strongly on sample size and there is no ground truth to compare to. The expected scaling $v_w \sim \sqrt{n}$ of $v$ estimates is indicated by the dashed line.}
 \end{figure*}
@@ -155,7 +155,7 @@ This heterogeneity increases substantially for even lower $D$, when the populati
 The comparison of $D$ to the ratio $L^2/T_c$ will continue to be important below, and I therefore use diffusion constants in units of $L^2/T_c$.
 
 \begin{figure}[!h]
-    \includegraphics[width=0.48\textwidth]{figures/stable_density}
+    \includegraphics[width=0.48\textwidth]{figures/Fig3}
     \caption{\label{fig:density_reg}  {\bf Effects of population density regulation.}
     When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
     {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat (dashed horizontal line). The thick black line shows the case of free diffusion, the colored lines show results from simulations with density regulation with different interaction radii $r$.
@@ -210,8 +210,7 @@ Such fragmentation could potentially be accounted for in structured coalescent m
 If $D\gg L^2/T_{c}$, the boundaries of the habitat restrict free diffusion, resulting in underestimated dispersal parameters, while estimates of deeper ancestral locations have uncertainties comparable to the habitat size and are thus uninformative.
 
 \begin{figure*}[tb]
-    \includegraphics[width=\textwidth]{figures/seasaw_example}
-    \includegraphics[width=\textwidth]{figures/seasaw}
+    \includegraphics[width=\textwidth]{figures/Fig4}
     \caption{\label{fig:seasaw} {\bf Phylogeographic estimates in rapidly changing environments.} {\bf Panel A} shows the time course of the carrying capacity through half a period. The color indicates time along the periodic habitat oscillations with yellow and purple representing most turning points of the oscillations. The carrying capacity first peaks on the left, becomes flat, and then peaks on the right before shifting back in the second half of the period. The habitat size is $L_x=3$, $L_y=1$.
     {\bf Panel B} shows a tree from a simulation under these conditions with $T=500$, $D=0.0008$ and $N=500$, while {\bf panel C} on the right shows the inferred (triangles, orange) and true positions (circles, blue) of internal nodes, highlighting the root with large markers and a red border.
     The population is sampled at a time when the carrying capacity is flat after having moved to the left, that is the population is about to spread to the right.
@@ -270,8 +269,7 @@ The speed at which the population invades space is given as compound of diffusio
 
 
 \begin{figure}[tb]
-    \includegraphics[width=0.3\textwidth]{figures/traveling_wave}
-    \includegraphics[width=0.48\textwidth]{figures/waves}
+    \includegraphics[width=\columnwidth]{figures/Fig5}
     \caption{\label{fig:traveling_wave}{\bf Phylogeographic inference in a moving habitat.}
     {\bf Panel A} shows an illustration of the simulated set-up: a carrying capacity with a Gaussian profile with $\sigma=0.5$ that moves along the $x$-axis with velocity $v$ on a patch with $L_x=3$, $L_y=1$, and periodic boundary conditions.
     {\bf Panels B\&C} show estimates of diffusion coefficients and velocities, relative to their true values, as a function of the ratio of the FKPP velocity to the external velocity $v$. }
