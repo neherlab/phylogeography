@@ -14,11 +14,10 @@
 \newcommand{\vfkpp}{v_f}
 
 \begin{document}
-%\title{On the robustness and consistency of continuous phylogeographic inference}
-%\title{Phylogeography: unsafe at any speed}
 \title{Lost in the woods: shifting habitats can lead phylogeography astray}
 \author{Richard A.~Neher}
 \affiliation{Biozentrum, University of Basel and Swiss Institute of Bioinformatics, Switzerland \looseness=-5}
+\email{richard.neher@unibas.ch}
 
 \date{\today}
 \begin{abstract}
@@ -372,7 +371,319 @@ All simulation were performed in Python and the associated code is available in 
 \section*{Acknowledgements}
 I am grateful to Louis de Plessis, Oskar Hallatscheck, Emma Hodcroft, Philippe Lemey, and particularly Simon Dellicour for stimulating discussions and useful feedback on earlier versions of this manuscript.
 
-\bibliography{bib}
+\begin{thebibliography}{27}
+    \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+    \expandafter\ifx\csname bibnamefont\endcsname\relax
+      \def\bibnamefont#1{#1}\fi
+    \expandafter\ifx\csname bibfnamefont\endcsname\relax
+      \def\bibfnamefont#1{#1}\fi
+    \expandafter\ifx\csname citenamefont\endcsname\relax
+      \def\citenamefont#1{#1}\fi
+    \expandafter\ifx\csname url\endcsname\relax
+      \def\url#1{\texttt{#1}}\fi
+    \expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+    \providecommand{\bibinfo}[2]{#2}
+    \providecommand{\eprint}[2][]{\url{#2}}
+
+    \bibitem[{\citenamefont{Bolker and Pacala}(1997)}]{bolker_using_1997}
+    \bibinfo{author}{\bibnamefont{Bolker}, \bibfnamefont{B.}}, and
+      \bibinfo{author}{\bibfnamefont{S.~W.} \bibnamefont{Pacala}},
+      \bibinfo{year}{1997}, \bibinfo{journal}{Theoretical Population Biology}
+      \textbf{\bibinfo{volume}{52}}(\bibinfo{number}{3}), \bibinfo{pages}{179},
+      ISSN \bibinfo{issn}{0040-5809}.
+
+    \bibitem[{\citenamefont{Brunker} \emph{et~al.}(2015)\citenamefont{Brunker,
+      Marston, Horton, Cleaveland, Fooks, Kazwala, Ngeleja, Lembo, Sambo, Mtema,
+      Sikana, Wilkie} \emph{et~al.}}]{brunker_elucidating_2015}
+    \bibinfo{author}{\bibnamefont{Brunker}, \bibfnamefont{K.}},
+      \bibinfo{author}{\bibfnamefont{D.~A.} \bibnamefont{Marston}},
+      \bibinfo{author}{\bibfnamefont{D.~L.} \bibnamefont{Horton}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Cleaveland}},
+      \bibinfo{author}{\bibfnamefont{A.~R.} \bibnamefont{Fooks}},
+      \bibinfo{author}{\bibfnamefont{R.}~\bibnamefont{Kazwala}},
+      \bibinfo{author}{\bibfnamefont{C.}~\bibnamefont{Ngeleja}},
+      \bibinfo{author}{\bibfnamefont{T.}~\bibnamefont{Lembo}},
+      \bibinfo{author}{\bibfnamefont{M.}~\bibnamefont{Sambo}},
+      \bibinfo{author}{\bibfnamefont{Z.~J.} \bibnamefont{Mtema}},
+      \bibinfo{author}{\bibfnamefont{L.}~\bibnamefont{Sikana}},
+      \bibinfo{author}{\bibfnamefont{G.}~\bibnamefont{Wilkie}}, \emph{et~al.},
+      \bibinfo{year}{2015}, \bibinfo{journal}{Virus Evolution}
+      \textbf{\bibinfo{volume}{1}}(\bibinfo{number}{1}), \bibinfo{pages}{vev011},
+      ISSN \bibinfo{issn}{2057-1577}.
+
+    \bibitem[{\citenamefont{Dellicour} \emph{et~al.}(2024)\citenamefont{Dellicour,
+      Bastide, Rocu, Fargette, Hardy, Suchard, Guindon, and
+      Lemey}}]{dellicour_how_2024}
+    \bibinfo{author}{\bibnamefont{Dellicour}, \bibfnamefont{S.}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Bastide}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Rocu}},
+      \bibinfo{author}{\bibfnamefont{D.}~\bibnamefont{Fargette}},
+      \bibinfo{author}{\bibfnamefont{O.~J.} \bibnamefont{Hardy}},
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Guindon}}, and
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}},
+      \bibinfo{year}{2024}, \bibinfo{journal}{PLOS Biology}
+      \textbf{\bibinfo{volume}{22}}(\bibinfo{number}{12}),
+      \bibinfo{pages}{e3002914}, ISSN \bibinfo{issn}{1545-7885},
+      \bibinfo{note}{publisher: Public Library of Science}.
+
+    \bibitem[{\citenamefont{Dellicour} \emph{et~al.}(2021)\citenamefont{Dellicour,
+      Gill, Faria, Rambaut, Pybus, Suchard, and Lemey}}]{dellicour_relax_2021}
+    \bibinfo{author}{\bibnamefont{Dellicour}, \bibfnamefont{S.}},
+      \bibinfo{author}{\bibfnamefont{M.~S.} \bibnamefont{Gill}},
+      \bibinfo{author}{\bibfnamefont{N.~R.} \bibnamefont{Faria}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Rambaut}},
+      \bibinfo{author}{\bibfnamefont{O.~G.} \bibnamefont{Pybus}},
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}}, and
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}},
+      \bibinfo{year}{2021}, \bibinfo{journal}{Molecular Biology and Evolution}
+      \textbf{\bibinfo{volume}{38}}(\bibinfo{number}{8}), \bibinfo{pages}{3486},
+      ISSN \bibinfo{issn}{1537-1719}.
+
+    \bibitem[{\citenamefont{Dellicour} \emph{et~al.}(2020)\citenamefont{Dellicour,
+      Lequime, Vrancken, Gill, Bastide, Gangavarapu, Matteson, Tan, du~Plessis,
+      Fisher, Nelson, Gilbert} \emph{et~al.}}]{dellicour_epidemiological_2020}
+    \bibinfo{author}{\bibnamefont{Dellicour}, \bibfnamefont{S.}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Lequime}},
+      \bibinfo{author}{\bibfnamefont{B.}~\bibnamefont{Vrancken}},
+      \bibinfo{author}{\bibfnamefont{M.~S.} \bibnamefont{Gill}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Bastide}},
+      \bibinfo{author}{\bibfnamefont{K.}~\bibnamefont{Gangavarapu}},
+      \bibinfo{author}{\bibfnamefont{N.~L.} \bibnamefont{Matteson}},
+      \bibinfo{author}{\bibfnamefont{Y.}~\bibnamefont{Tan}},
+      \bibinfo{author}{\bibfnamefont{L.}~\bibnamefont{du~Plessis}},
+      \bibinfo{author}{\bibfnamefont{A.~A.} \bibnamefont{Fisher}},
+      \bibinfo{author}{\bibfnamefont{M.~I.} \bibnamefont{Nelson}},
+      \bibinfo{author}{\bibfnamefont{M.}~\bibnamefont{Gilbert}}, \emph{et~al.},
+      \bibinfo{year}{2020}, \bibinfo{journal}{Nature Communications}
+      \textbf{\bibinfo{volume}{11}}(\bibinfo{number}{1}), \bibinfo{pages}{5620},
+      ISSN \bibinfo{issn}{2041-1723}, \bibinfo{note}{publisher: Nature Publishing
+      Group}.
+
+    \bibitem[{\citenamefont{Dellicour} \emph{et~al.}(2017)\citenamefont{Dellicour,
+      Rose, Faria, Vieira, Bourhy, Gilbert, Lemey, and
+      Pybus}}]{dellicour_using_2017}
+    \bibinfo{author}{\bibnamefont{Dellicour}, \bibfnamefont{S.}},
+      \bibinfo{author}{\bibfnamefont{R.}~\bibnamefont{Rose}},
+      \bibinfo{author}{\bibfnamefont{N.~R.} \bibnamefont{Faria}},
+      \bibinfo{author}{\bibfnamefont{L.~F.~P.} \bibnamefont{Vieira}},
+      \bibinfo{author}{\bibfnamefont{H.}~\bibnamefont{Bourhy}},
+      \bibinfo{author}{\bibfnamefont{M.}~\bibnamefont{Gilbert}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}}, and
+      \bibinfo{author}{\bibfnamefont{O.~G.} \bibnamefont{Pybus}},
+      \bibinfo{year}{2017}, \bibinfo{journal}{Molecular Biology and Evolution}
+      \textbf{\bibinfo{volume}{34}}(\bibinfo{number}{10}), \bibinfo{pages}{2563},
+      ISSN \bibinfo{issn}{0737-4038}.
+
+    \bibitem[{\citenamefont{Desai and Nelson}(2005)}]{desai_quasispecies_2005}
+    \bibinfo{author}{\bibnamefont{Desai}, \bibfnamefont{M.~M.}}, and
+      \bibinfo{author}{\bibfnamefont{D.~R.} \bibnamefont{Nelson}},
+      \bibinfo{year}{2005}, \bibinfo{journal}{Theoretical Population Biology}
+      \textbf{\bibinfo{volume}{67}}(\bibinfo{number}{1}), \bibinfo{pages}{33}, ISSN
+      \bibinfo{issn}{0040-5809}.
+
+    \bibitem[{\citenamefont{Etheridge}(2004)}]{etheridge_survival_2004}
+    \bibinfo{author}{\bibnamefont{Etheridge}, \bibfnamefont{A.~M.}},
+      \bibinfo{year}{2004}, \bibinfo{journal}{The Annals of Applied Probability}
+      \textbf{\bibinfo{volume}{14}}(\bibinfo{number}{1}), \bibinfo{pages}{188},
+      ISSN \bibinfo{issn}{1050-5164}, \bibinfo{note}{publisher: Institute of
+      Mathematical Statistics}.
+
+    \bibitem[{\citenamefont{Felsenstein}(1975)}]{felsenstein_pain_1975}
+    \bibinfo{author}{\bibnamefont{Felsenstein}, \bibfnamefont{J.}},
+      \bibinfo{year}{1975}, \bibinfo{journal}{The American Naturalist}
+      \textbf{\bibinfo{volume}{109}}(\bibinfo{number}{967}), \bibinfo{pages}{359},
+      ISSN \bibinfo{issn}{0003-0147}, \bibinfo{note}{publisher: The University of
+      Chicago Press}.
+
+    \bibitem[{\citenamefont{Fisher}(1937)}]{fisher_wave_1937}
+    \bibinfo{author}{\bibnamefont{Fisher}, \bibfnamefont{R.~A.}},
+      \bibinfo{year}{1937}, \bibinfo{journal}{Annals of Eugenics}
+      \textbf{\bibinfo{volume}{7}}(\bibinfo{number}{4}), \bibinfo{pages}{355}, ISSN
+      \bibinfo{issn}{2050-1439}.
+
+    \bibitem[{\citenamefont{Gill} \emph{et~al.}(2017)\citenamefont{Gill, Tung~Ho,
+      Baele, Lemey, and Suchard}}]{gill_relaxed_2017}
+    \bibinfo{author}{\bibnamefont{Gill}, \bibfnamefont{M.~S.}},
+      \bibinfo{author}{\bibfnamefont{L.~S.} \bibnamefont{Tung~Ho}},
+      \bibinfo{author}{\bibfnamefont{G.}~\bibnamefont{Baele}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}}, and
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{year}{2017}, \bibinfo{journal}{Systematic Biology}
+      \textbf{\bibinfo{volume}{66}}(\bibinfo{number}{3}), \bibinfo{pages}{299},
+      ISSN \bibinfo{issn}{1063-5157}.
+
+    \bibitem[{\citenamefont{Guindon} \emph{et~al.}(2016)\citenamefont{Guindon, Guo,
+      and Welch}}]{guindon_demographic_2016}
+    \bibinfo{author}{\bibnamefont{Guindon}, \bibfnamefont{S.}},
+      \bibinfo{author}{\bibfnamefont{H.}~\bibnamefont{Guo}}, and
+      \bibinfo{author}{\bibfnamefont{D.}~\bibnamefont{Welch}},
+      \bibinfo{year}{2016}, \bibinfo{journal}{Theoretical Population Biology}
+      \textbf{\bibinfo{volume}{111}}, \bibinfo{pages}{43}, ISSN
+      \bibinfo{issn}{0040-5809}.
+
+    \bibitem[{\citenamefont{Hallatschek and
+      Fisher}(2014)}]{hallatschek_acceleration_2014}
+    \bibinfo{author}{\bibnamefont{Hallatschek}, \bibfnamefont{O.}}, and
+      \bibinfo{author}{\bibfnamefont{D.~S.} \bibnamefont{Fisher}},
+      \bibinfo{year}{2014}, \bibinfo{journal}{Proceedings of the National Academy
+      of Sciences} \textbf{\bibinfo{volume}{111}}(\bibinfo{number}{46}),
+      \bibinfo{pages}{E4911}, \bibinfo{note}{publisher: Proceedings of the National
+      Academy of Sciences}.
+
+    \bibitem[{\citenamefont{Hallatschek and Nelson}(2008)}]{hallatschek_gene_2008}
+    \bibinfo{author}{\bibnamefont{Hallatschek}, \bibfnamefont{O.}}, and
+      \bibinfo{author}{\bibfnamefont{D.~R.} \bibnamefont{Nelson}},
+      \bibinfo{year}{2008}, \bibinfo{journal}{Theoretical Population Biology}
+      \textbf{\bibinfo{volume}{73}}(\bibinfo{number}{1}), \bibinfo{pages}{158},
+      ISSN \bibinfo{issn}{0040-5809}.
+
+    \bibitem[{\citenamefont{Hallatschek and Nelson}(2010)}]{hallatschek_life_2010}
+    \bibinfo{author}{\bibnamefont{Hallatschek}, \bibfnamefont{O.}}, and
+      \bibinfo{author}{\bibfnamefont{D.~R.} \bibnamefont{Nelson}},
+      \bibinfo{year}{2010}, \bibinfo{journal}{Evolution}
+      \textbf{\bibinfo{volume}{64}}(\bibinfo{number}{1}), \bibinfo{pages}{193},
+      ISSN \bibinfo{issn}{0014-3820}.
+
+    \bibitem[{\citenamefont{Kalkauskas}
+      \emph{et~al.}(2021)\citenamefont{Kalkauskas, Perron, Sun, Goldman, Baele,
+      Guindon, and Maio}}]{kalkauskas_sampling_2021}
+    \bibinfo{author}{\bibnamefont{Kalkauskas}, \bibfnamefont{A.}},
+      \bibinfo{author}{\bibfnamefont{U.}~\bibnamefont{Perron}},
+      \bibinfo{author}{\bibfnamefont{Y.}~\bibnamefont{Sun}},
+      \bibinfo{author}{\bibfnamefont{N.}~\bibnamefont{Goldman}},
+      \bibinfo{author}{\bibfnamefont{G.}~\bibnamefont{Baele}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Guindon}}, and
+      \bibinfo{author}{\bibfnamefont{N.~D.} \bibnamefont{Maio}},
+      \bibinfo{year}{2021}, \bibinfo{journal}{PLOS Computational Biology}
+      \textbf{\bibinfo{volume}{17}}(\bibinfo{number}{1}),
+      \bibinfo{pages}{e1008561}, ISSN \bibinfo{issn}{1553-7358},
+      \bibinfo{note}{publisher: Public Library of Science}.
+
+    \bibitem[{\citenamefont{Kingman}(1982)}]{kingman_coalescent_1982}
+    \bibinfo{author}{\bibnamefont{Kingman}, \bibfnamefont{J.~F.~C.}},
+      \bibinfo{year}{1982}, \bibinfo{journal}{Stochastic Processes and their
+      Applications} \textbf{\bibinfo{volume}{13}}(\bibinfo{number}{3}),
+      \bibinfo{pages}{235}, ISSN \bibinfo{issn}{0304-4149}.
+
+    \bibitem[{\citenamefont{Kolmogorov}
+      \emph{et~al.}(1937)\citenamefont{Kolmogorov, Petrovskii, and
+      Piscunov}}]{KPP1937}
+    \bibinfo{author}{\bibnamefont{Kolmogorov}, \bibfnamefont{A.}},
+      \bibinfo{author}{\bibfnamefont{I.}~\bibnamefont{Petrovskii}}, and
+      \bibinfo{author}{\bibfnamefont{N.}~\bibnamefont{Piscunov}},
+      \bibinfo{year}{1937}, \bibinfo{journal}{Byul. Moskovskogo Gos. Univ.}
+      \textbf{\bibinfo{volume}{1}}(\bibinfo{number}{6}), \bibinfo{pages}{1}.
+
+    \bibitem[{\citenamefont{Layan} \emph{et~al.}(2023)\citenamefont{Layan, Müller,
+      Dellicour, De~Maio, Bourhy, Cauchemez, and Baele}}]{layan_impact_2023}
+    \bibinfo{author}{\bibnamefont{Layan}, \bibfnamefont{M.}},
+      \bibinfo{author}{\bibfnamefont{N.~F.} \bibnamefont{Müller}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Dellicour}},
+      \bibinfo{author}{\bibfnamefont{N.}~\bibnamefont{De~Maio}},
+      \bibinfo{author}{\bibfnamefont{H.}~\bibnamefont{Bourhy}},
+      \bibinfo{author}{\bibfnamefont{S.}~\bibnamefont{Cauchemez}}, and
+      \bibinfo{author}{\bibfnamefont{G.}~\bibnamefont{Baele}},
+      \bibinfo{year}{2023}, \bibinfo{journal}{Virus Evolution}
+      \textbf{\bibinfo{volume}{9}}(\bibinfo{number}{1}), \bibinfo{pages}{vead010},
+      ISSN \bibinfo{issn}{2057-1577}.
+
+    \bibitem[{\citenamefont{Lemey} \emph{et~al.}(2009)\citenamefont{Lemey, Rambaut,
+      Drummond, and Suchard}}]{lemey_bayesian_2009}
+    \bibinfo{author}{\bibnamefont{Lemey}, \bibfnamefont{P.}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Rambaut}},
+      \bibinfo{author}{\bibfnamefont{A.~J.} \bibnamefont{Drummond}}, and
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{year}{2009}, \bibinfo{journal}{PLOS Computational Biology}
+      \textbf{\bibinfo{volume}{5}}(\bibinfo{number}{9}), \bibinfo{pages}{e1000520},
+      ISSN \bibinfo{issn}{1553-7358}, \bibinfo{note}{publisher: Public Library of
+      Science}.
+
+    \bibitem[{\citenamefont{Lemey} \emph{et~al.}(2010)\citenamefont{Lemey, Rambaut,
+      Welch, and Suchard}}]{lemey_phylogeography_2010}
+    \bibinfo{author}{\bibnamefont{Lemey}, \bibfnamefont{P.}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Rambaut}},
+      \bibinfo{author}{\bibfnamefont{J.~J.} \bibnamefont{Welch}}, and
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{year}{2010}, \bibinfo{journal}{Molecular Biology and Evolution}
+      \textbf{\bibinfo{volume}{27}}(\bibinfo{number}{8}), \bibinfo{pages}{1877},
+      ISSN \bibinfo{issn}{0737-4038}.
+
+    \bibitem[{\citenamefont{Pybus} \emph{et~al.}(2012)\citenamefont{Pybus, Suchard,
+      Lemey, Bernardin, Rambaut, Crawford, Gray, Arinaminpathy, Stramer, Busch, and
+      Delwart}}]{pybus_unifying_2012}
+    \bibinfo{author}{\bibnamefont{Pybus}, \bibfnamefont{O.~G.}},
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}},
+      \bibinfo{author}{\bibfnamefont{F.~J.} \bibnamefont{Bernardin}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Rambaut}},
+      \bibinfo{author}{\bibfnamefont{F.~W.} \bibnamefont{Crawford}},
+      \bibinfo{author}{\bibfnamefont{R.~R.} \bibnamefont{Gray}},
+      \bibinfo{author}{\bibfnamefont{N.}~\bibnamefont{Arinaminpathy}},
+      \bibinfo{author}{\bibfnamefont{S.~L.} \bibnamefont{Stramer}},
+      \bibinfo{author}{\bibfnamefont{M.~P.} \bibnamefont{Busch}}, and
+      \bibinfo{author}{\bibfnamefont{E.~L.} \bibnamefont{Delwart}},
+      \bibinfo{year}{2012}, \bibinfo{journal}{Proceedings of the National Academy
+      of Sciences} \textbf{\bibinfo{volume}{109}}(\bibinfo{number}{37}),
+      \bibinfo{pages}{15066}, \bibinfo{note}{publisher: Proceedings of the National
+      Academy of Sciences}.
+
+    \bibitem[{\citenamefont{Raghwani} \emph{et~al.}(2011)\citenamefont{Raghwani,
+      Rambaut, Holmes, Hang, Hien, Farrar, Wills, Lennon, Birren, Henn, and
+      Simmons}}]{raghwani_endemic_2011}
+    \bibinfo{author}{\bibnamefont{Raghwani}, \bibfnamefont{J.}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Rambaut}},
+      \bibinfo{author}{\bibfnamefont{E.~C.} \bibnamefont{Holmes}},
+      \bibinfo{author}{\bibfnamefont{V.~T.} \bibnamefont{Hang}},
+      \bibinfo{author}{\bibfnamefont{T.~T.} \bibnamefont{Hien}},
+      \bibinfo{author}{\bibfnamefont{J.}~\bibnamefont{Farrar}},
+      \bibinfo{author}{\bibfnamefont{B.}~\bibnamefont{Wills}},
+      \bibinfo{author}{\bibfnamefont{N.~J.} \bibnamefont{Lennon}},
+      \bibinfo{author}{\bibfnamefont{B.~W.} \bibnamefont{Birren}},
+      \bibinfo{author}{\bibfnamefont{M.~R.} \bibnamefont{Henn}}, and
+      \bibinfo{author}{\bibfnamefont{C.~P.} \bibnamefont{Simmons}},
+      \bibinfo{year}{2011}, \bibinfo{journal}{PLOS Pathogens}
+      \textbf{\bibinfo{volume}{7}}(\bibinfo{number}{6}), \bibinfo{pages}{e1002064},
+      ISSN \bibinfo{issn}{1553-7374}, \bibinfo{note}{publisher: Public Library of
+      Science}.
+
+    \bibitem[{\citenamefont{Trovão} \emph{et~al.}(2015)\citenamefont{Trovão,
+      Suchard, Baele, Gilbert, and Lemey}}]{trovao_bayesian_2015}
+    \bibinfo{author}{\bibnamefont{Trovão}, \bibfnamefont{N.~S.}},
+      \bibinfo{author}{\bibfnamefont{M.~A.} \bibnamefont{Suchard}},
+      \bibinfo{author}{\bibfnamefont{G.}~\bibnamefont{Baele}},
+      \bibinfo{author}{\bibfnamefont{M.}~\bibnamefont{Gilbert}}, and
+      \bibinfo{author}{\bibfnamefont{P.}~\bibnamefont{Lemey}},
+      \bibinfo{year}{2015}, \bibinfo{journal}{Molecular Biology and Evolution}
+      \textbf{\bibinfo{volume}{32}}(\bibinfo{number}{12}), \bibinfo{pages}{3264},
+      ISSN \bibinfo{issn}{0737-4038}.
+
+    \bibitem[{\citenamefont{Vaughan} \emph{et~al.}(2014)\citenamefont{Vaughan,
+      Kühnert, Popinga, Welch, and Drummond}}]{vaughan_efficient_2014}
+    \bibinfo{author}{\bibnamefont{Vaughan}, \bibfnamefont{T.~G.}},
+      \bibinfo{author}{\bibfnamefont{D.}~\bibnamefont{Kühnert}},
+      \bibinfo{author}{\bibfnamefont{A.}~\bibnamefont{Popinga}},
+      \bibinfo{author}{\bibfnamefont{D.}~\bibnamefont{Welch}}, and
+      \bibinfo{author}{\bibfnamefont{A.~J.} \bibnamefont{Drummond}},
+      \bibinfo{year}{2014}, \bibinfo{journal}{Bioinformatics}
+      \textbf{\bibinfo{volume}{30}}(\bibinfo{number}{16}), \bibinfo{pages}{2272},
+      ISSN \bibinfo{issn}{1367-4803}.
+
+    \bibitem[{\citenamefont{Wilkins and Wakeley}(2002)}]{wilkins_coalescent_2002}
+    \bibinfo{author}{\bibnamefont{Wilkins}, \bibfnamefont{J.~F.}}, and
+      \bibinfo{author}{\bibfnamefont{J.}~\bibnamefont{Wakeley}},
+      \bibinfo{year}{2002}, \bibinfo{journal}{Genetics}
+      \textbf{\bibinfo{volume}{161}}(\bibinfo{number}{2}), \bibinfo{pages}{873},
+      ISSN \bibinfo{issn}{0016-6731}.
+
+    \bibitem[{\citenamefont{Yule}(1925)}]{yule_iimathematical_1925}
+    \bibinfo{author}{\bibnamefont{Yule}, \bibfnamefont{G.~U.}},
+      \bibinfo{year}{1925}, \bibinfo{journal}{Philosophical Transactions of the
+      Royal Society of London. Series B, Containing Papers of a Biological
+      Character} \textbf{\bibinfo{volume}{213}}(\bibinfo{number}{402-410}),
+      \bibinfo{pages}{21}, \bibinfo{note}{publisher: Royal Society}.
+
+    \end{thebibliography}
 
 
 \end{document}
