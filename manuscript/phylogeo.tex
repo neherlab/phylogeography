@@ -159,7 +159,7 @@ The comparison of $D$ to the ratio $L^2/T_c$ will continue to be important below
     When spatial motion is independent of population density and coalescence is sufficiently rapid, the realized population density fluctuates strongly across the habitat.
     {\bf Panel A} shows the standard deviation of the population density in bins of linear dimension $L/5$ as a function of the diffusion coefficient relative to the expected value if individuals were independently distributed across the habitat (dashed horizontal line). The thick black line shows the case of free diffusion, the colored lines show results from simulations with density regulation with different interaction radii $r$.
     For $r\ll L$, density fluctuations are strongly suppressed.
-    When density regulation homogenizes density, the time to the most recent common ancestor increases dramatically to values several fold higher than the neutral coalescence timescale $T_c=N=1000$ ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
+    When density regulation homogenizes the population distribution, the time to the most recent common ancestor increases dramatically to values several fold higher than the neutral coalescence timescale $T_c=N=1000$ ({\bf panel B}), indicating that the population fragments in subpopulations that don't interact.
     {\bf Panel C} shows the fold-error of the dispersal estimator $D_w$ for periodic boundary conditions (triangles, solid lines, like panels A\&B) and reflecting boundaries (circles, dashed lines).
     The dashed vertical line indicates $D=L^2/2T_c$.}
 \end{figure}
@@ -237,7 +237,7 @@ The positions of older nodes and in particular of the root (symbols with bold re
 Their true locations are to the right of the current population, but the inferred locations are central in the shifted population.
 This is expected as there is no information in the current sample to suggest otherwise, but it highlights the potential of misleading inference, in particular when extrapolating far into the past.
 
-The severity of such biases depends on the period $T$ at which the carrying capacity oscillates, the population size, and on the dispersal rate. The bias tends to be strongest when the period $T$ is of the same magnitude as the coalescent timescale.
+The severity of such biases depends on the period $T$ at which the carrying capacity oscillates, on the population size, and on the dispersal rate. The bias tends to be strongest when the period $T$ is of the same magnitude as the coalescent timescale.
 Fig.~\ref{fig:seasaw}D shows the estimated diffusion constant (using Eq.~\ref{eq:dispersal_parameters}) in $x$ (solid lines) and $y$ (dashed) direction relative to the true value used in the simulations.
 At very high diffusion constants, both $D_x$ and $D_y$ are underestimated due to the spatial constraints of carrying capacity as also discussed above (see Fig.~\ref{fig:density_reg}).
 With decreasing $D$, $D_x$ starts to be overestimated and peaks at a value that depends on the period $T$, before decreasing to (noisy) estimates that are broadly compatible with the true value.
@@ -255,7 +255,7 @@ Conversely, at high dispersal rates, the average $z_x^2$ and $z_y^2$ are both sm
 In this range, the estimated uncertainty is larger than the true uncertainty since the diffusion is constrained by the boundaries of the habitat while the estimated uncertainty extends beyond the habitat.
 
 The above results show that behavior of a population in shifting habitats and the interpretation of phylogeographic inferences can depend strongly on the rate of environmental change and how it compares to the dispersal rate.
-At very low $D$ when the population can not follow shifting habitat, the situation is similar to the static case and often leads to fragmented populations.
+At very low $D$ the population can not follow shifting habitat and the situation is similar to the static case discussed above, which often leads to fragmented populations.
 With increasing $D$, the population starts following the shifting habitat, but inferred ancestral locations of deep nodes become unreliable.
 At high dispersal rates the expected uncertainties are larger than the habitat size and there is little information on deep ancestral locations.
 
@@ -278,8 +278,8 @@ The speed at which the population invades space is given as compound of diffusio
 Fig \ref{fig:traveling_wave}B\&C show simulation results for this traveling habitat. In Panel B, estimates of $D_x$ using Eq.~\ref{eq:dispersal_parameters} are shown as a function of the ratio of the FKPP velocity $v_f$ to the external velocity $v$.
 As expected, estimates of $\hat{D}_x$ are often dramatically too high (by up to factors of 1000).
 They peak right around when the external velocity matches the FKPP velocity $\vfkpp$, corresponding to the situation where the population dynamics is maximally affected by the moving carrying capacity.
-At higher diffusion constants (to the right of the peak in Fig \ref{fig:traveling_wave}B), the effects of the moving habitat are less pronounced compared to undirected diffusion and the estimates $\hat{D}$ are close to the true value $D$.
-At lower diffusion (to the left of the peak) the population is unable to follow the moving carrying capacity.
+At higher diffusion constants (to the right of the peak in Fig \ref{fig:traveling_wave}B), the effects of the moving habitat are less pronounced compared to the more vigorous undirected diffusion and the estimates $\hat{D}$ approach the true value as $D$ increases.
+At lower diffusion constants (to the left of the peak) the population is unable to follow the moving carrying capacity.
 
 I showed above that estimates of $v$ using Eq.~\ref{eq:dispersal_parameters} are ill-defined in models with diffusive dispersal, but it is worth exploring how they behave in cases when the habitat is moving with an external velocity.
 Fig.~\ref{fig:traveling_wave}C shows the estimator $v_w$ in $x$ direction relative to velocity of the habitat.
@@ -327,7 +327,7 @@ The parameter range where both ancestral locations and dispersal parameters are 
 Phylogeographic methods are often studied using the spread of West Nile virus in North America and Rabies virus.
 West-Nile virus was first detected on the East Coast of the US in 1999 and reached the West Coast five years later in 2004 \citep{pybus_unifying_2012}, translating to a wave front velocity of about 1000 km/year.
 \citet{pybus_unifying_2012} estimated a diffusion coefficient between 200 and 5000 km$^2$/day, where the latter refers to branches with particularly high diffusion constant.
-\citet{dellicour_how_2024} estimated a comparable diffusion constant of 310$km^2$/day ($D_w$ rather than $D_b$) for the expansion phase of the virus in North America and 2-3-fold lower rate after the initial expansion.
+\citet{dellicour_how_2024} estimated a comparable diffusion constant of 310$km^2$/day (via $D_w$ rather than $D_b$) for the expansion phase of the virus in North America and 2-3-fold lower rate after the initial expansion.
 These extremely high estimates of diffusive dispersal are implausible and likely indicate that directed elements of the spread of the virus are interpreted as undirected dispersal.
 Alternatively, one can interpret the spread from east to west as a range expansion.
 To this end, we need an estimate of the growth rate $\alpha$ of the population at low density, which we can roughly obtain from the fact that the virus is seasonal: over the course of a few months, its prevalence increases by orders of magnitude, which typically requires a doubling time of about a week or a growth rate of $\alpha=0.1/$day.
@@ -357,16 +357,16 @@ And while phylogeographic inferences will still often yield plausible results by
 When population densities are not at equilibrium, there is no guarantee (and indeed we should not expect) that the posterior distributions suggested by such models accurately capture the uncertainty of ancestral events prior to the time interval covered by the data.
 While typical or most likely scenarios might often be predicted correctly, confidence statements should be treated with extreme caution.
 The tails of the inferred distributions are determined by properties of the model and the underlying assumptions typically do not reflect the wide spectrum of possible environmental histories. Model misspecification of the kind discussed here can strongly affect the probability mass in the tails of distributions.
-This concern also applies to scenarios where the spatial component of the likelihood strongly influences the posterior of phylogenetic or phylodynamic parameters. In such cases, model misspecification such as missing interaction between spatial location and population dynamics can lead to biased inferences.
+This concern particularly applies to scenarios population density, expansion, or contraction varies strongly in space and time. In such cases, model misspecification such as missing interaction between spatial location and population dynamics can lead to biased inferences.
 
-A common approach in the field is to make models more complex and sample a larger parameter space, for example by allowing for a broad distribution of diffusion constants in relaxed random walk models.
+A common approach in the field is to make models more complex and increase model flexibility by adding more parameters, for example by allowing for a broad distribution of diffusion constants in relaxed random walk models.
 Such expansion of parameter space and integration over additional phenomenological parameters like $D$ will result in better fits and make the model more permissive to absorb misspecifications, but does not address the underlying problem.
 The computational resources necessary to infer such models increase rapidly with complexity, it becomes harder to understand how the data inform the inferences, and interpretation of inferred parameter values becomes ambiguous as they might have absorbed effects that were not explicitly modeled.
 In absence of a good understanding of the dispersal properties and the population history in time and space, simple approaches that allow transparent interpretation of how results are informed by features of the data are preferable to complex and computationally demanding models that can nevertheless fail to faithfully infer history or essential parameters.
 
 
 \section*{Materials and methods}
-All simulation were performed in Python and the associated code is available in the github repository \href{https://github.com/neherlab/phylogeography}{github.com/neherlab/phylogeography}.
+All simulations were performed in Python and the associated code is available in the github repository \href{https://github.com/neherlab/phylogeography}{github.com/neherlab/phylogeography}.
 
 \section*{Acknowledgements}
 I am grateful to Louis de Plessis, Oskar Hallatscheck, Emma Hodcroft, Philippe Lemey, and particularly Simon Dellicour for stimulating discussions and useful feedback on earlier versions of this manuscript.
