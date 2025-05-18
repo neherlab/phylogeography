@@ -1,6 +1,6 @@
-# Analysis of phylogeographic inference
+# Analysis of phylogeographic inference in shifting habitats
 
-This repository contains the files associated with the manuscript entitled ``Lost in the woods: shifting habitats can lead phylogeography astray'', along with additional notes, and simulations.
+This repository contains the files associated with the manuscript entitled []``Lost in the woods: shifting habitats can lead phylogeography astray''](https://www.biorxiv.org/content/10.1101/2024.07.03.601889v1), along with additional notes, and simulations.
 
 ## Simulations and figures
 
